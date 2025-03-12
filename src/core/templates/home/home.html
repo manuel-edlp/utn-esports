@@ -1,5 +1,245 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block main %}
-    <div><p>Hola mundo</p></div>
+<section id="inicio" class="section-style text-center my-5">
+    <h1>¡Bienvenidos al torneo de League of Legends!</h1>
+    <p>Prepárate para un evento épico organizado por la UTN FRLP.</p>
+</section>
+
+<div id="video-banner" class="my-4">
+    <video autoplay loop muted playsinline class="w-100">
+        <source src="{% static 'videos/jinx-animated-cut-26.mp4' %}" type="video/mp4">
+        Tu navegador no soporta videos.
+    </video>
+</div>
+
+<section id="quienes-somos" class="section-style text-center my-5">
+    <h2>¿Quiénes somos?</h2>
+    <p>Somos el equipo organizador del Torneo de Esports de la UTN FRLP. Nuestro objetivo principal es promover el mundo
+        de los esports dentro de nuestra universidad, ofreciendo un espacio para que los jugadores puedan competir,
+        divertirse y crecer en el ámbito competitivo.
+
+        Este evento busca ser una plataforma para todos los niveles de jugadores, desde los más principiantes
+        hasta los más experimentados. Además de fomentar la competencia sana, queremos brindar una experiencia única,
+        divertida y emocionante para todos los participantes.
+
+        ¡Únete al torneo y forma parte de este gran evento!</p>
+</section>
+
+<section id="inscripcion" class="section-style text-center my-5">
+    <h2>Inscripción</h2>
+    <p>¡Inscríbete ahora para participar en el torneo de LoL!</p>
+    <button>
+        INSCRIBIRSE
+        <div id="clip">
+            <div id="leftTop" class="corner"></div>
+            <div id="rightBottom" class="corner"></div>
+            <div id="rightTop" class="corner"></div>
+            <div id="leftBottom" class="corner"></div>
+        </div>
+        <span id="rightArrow" class="arrow"></span>
+        <span id="leftArrow" class="arrow"></span>
+    </button>
+
+</section>
+
+<section id="twitch" class="section-style text-center my-5">
+    <h2>Twitch</h2>
+    <p>Disfruta de nuestro último clip en Twitch:</p>
+    <iframe src="https://clips.twitch.tv/embed?clip=ObservantTenaciousKaleCorgiDerp-H9d9rJ5iiOc6Tc04&parent=127.0.0.1"
+        height="360" width="640" allowfullscreen>
+    </iframe>
+</section>
+
+<style>
+    /* Estilo para el banner de video */
+    #video-banner {
+        width: 100%;
+        max-height: 900px;
+        overflow: hidden;
+    }
+
+    /* Estilo para las secciones con fondo, bordes redondeados y opacidad */
+    .section-style {
+        background-color: rgba(0, 0, 0, 0.18);
+        border-radius: 10px;
+        padding: 40px;
+        color: rgb(255, 255, 255);
+    }
+
+    .section-style h1,
+    .section-style h2 {
+        margin-bottom: 20px;
+    }
+
+    .section-style p {
+        font-size: 1.2rem;
+    }
+
+
+    button {
+        position: relative;
+        width: 11em;
+        height: 4em;
+        outline: none;
+        transition: 0.1s;
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+        font-weight: bold;
+        color: #ddebf0;
+    }
+
+    #clip {
+        --color: #2761c3;
+        position: absolute;
+        top: 0;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        border: 5px double var(--color);
+        box-shadow: inset 0px 0px 15px #195480;
+        -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+    }
+
+    .arrow {
+        position: absolute;
+        transition: 0.2s;
+        background-color: #2761c3;
+        top: 35%;
+        width: 11%;
+        height: 30%;
+    }
+
+    #leftArrow {
+        left: -13.5%;
+        -webkit-clip-path: polygon(100% 0, 100% 100%, 0 50%);
+    }
+
+    #rightArrow {
+        -webkit-clip-path: polygon(100% 49%, 0 0, 0 100%);
+        left: 111%;
+    }
+
+    button:hover #rightArrow {
+        background-color: #27c39f;
+        left: -15%;
+        animation: 0.6s ease-in-out both infinite alternate rightArrow8;
+    }
+
+    button:hover #leftArrow {
+        background-color: #27c39f;
+        left: 108%;
+        animation: 0.6s ease-in-out both infinite alternate leftArrow8;
+    }
+
+    .corner {
+        position: absolute;
+        width: 4em;
+        height: 4em;
+        background-color: #2761c3;
+        box-shadow: inset 1px 1px 8px #2781c3;
+        transform: scale(1) rotate(45deg);
+        transition: 0.2s;
+    }
+
+    #rightTop {
+        top: -1.98em;
+        left: 91%;
+    }
+
+    #leftTop {
+        top: -1.96em;
+        left: -3.0em;
+    }
+
+    #leftBottom {
+        top: 2.10em;
+        left: -2.15em;
+    }
+
+    #rightBottom {
+        top: 45%;
+        left: 88%;
+    }
+
+    button:hover #leftTop {
+        animation: 0.1s ease-in-out 0.05s both changeColor8,
+            0.2s linear 0.4s both lightEffect8;
+    }
+
+    button:hover #rightTop {
+        animation: 0.1s ease-in-out 0.15s both changeColor8,
+            0.2s linear 0.4s both lightEffect8;
+    }
+
+    button:hover #rightBottom {
+        animation: 0.1s ease-in-out 0.25s both changeColor8,
+            0.2s linear 0.4s both lightEffect8;
+    }
+
+    button:hover #leftBottom {
+        animation: 0.1s ease-in-out 0.35s both changeColor8,
+            0.2s linear 0.4s both lightEffect8;
+    }
+
+    button:hover .corner {
+        transform: scale(1.25) rotate(45deg);
+    }
+
+    button:hover #clip {
+        animation: 0.2s ease-in-out 0.55s both greenLight8;
+        --color: #27c39f;
+    }
+
+    @keyframes changeColor8 {
+        from {
+            background-color: #2781c3;
+        }
+
+        to {
+            background-color: #27c39f;
+        }
+    }
+
+    @keyframes lightEffect8 {
+        from {
+            box-shadow: 1px 1px 5px #27c39f;
+        }
+
+        to {
+            box-shadow: 0 0 2px #27c39f;
+        }
+    }
+
+    @keyframes greenLight8 {
+        from {}
+
+        to {
+            box-shadow: inset 0px 0px 32px #27c39f;
+        }
+    }
+
+    @keyframes leftArrow8 {
+        from {
+            transform: translate(0px);
+        }
+
+        to {
+            transform: translateX(10px);
+        }
+    }
+
+    @keyframes rightArrow8 {
+        from {
+            transform: translate(0px);
+        }
+
+        to {
+            transform: translateX(-10px);
+        }
+    }
+</style>
 {% endblock %}
