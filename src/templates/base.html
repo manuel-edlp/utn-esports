@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,51 +8,121 @@
     <title>ESPORTS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&family=Varela+Round&display=swap" rel="stylesheet">
+    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
 </head>
 
-<br>
-<nav class="navbar navbar-dark bg-dark fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">ESPORTS</a>
-    </div>
-</nav>
 <body data-bs-theme="light" id="body-theme">
+    <br>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'images/utn-logo.png' %}" alt="Logo" width="150" height="65" class="d-inline-block align-text-top">
+                ESPORTS
+            </a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="#">Inicio</a>
+                    <a class="nav-link" href="#quienes-somos">¿Quiénes Somos?</a>
+                    <a class="nav-link" href="#preguntas-frecuentes">Preguntas Frecuentes</a>
+                    <a class="nav-link" href="#inscripcion">Inscripción</a>
+                    <a class="nav-link" href="#sponsors">Sponsors</a>
+                    <a class="nav-link" href="#contacto">Contacto</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <main class="mt-5">
         {% block main %}{% endblock %}
     </main>
+
+    <footer id="footer">
+        {% include 'home/contacto.html' %}
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
-<footer id="footer" class="bg-dark text-white">
-    <div class="row">
-        <div class="col-6 text-start">
-            <p>&copy; UTN-FRLP ESPORTS</p>
-        </div>
-        <div class="col-6 text-end">
-            <p>&copy; 2025</p>
-        </div>
-    </div>
-</footer>
-
-
-</html>
-
 <style>
     body {
-      display: flex;
-      min-height: 100vh;
-      flex-direction: column;
-    }
-    main {
-      flex: 1;
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        background-color: black;
+        margin: 0;
+        overflow-x: hidden;
+        position: relative;
+        font-family: 'Inter', 'Varela Round', Arial, sans-serif;
     }
 
-    footer {
-            position: end;
-            bottom: 0;
-            width: 100%;
-            background-color: #f8f9fa;
-            padding: 10px;
-            text-align: end;
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("{% static 'images/image.png' %}");
+        background-size: cover;
+        background-position: center;
+        filter: blur(30px);
+        z-index: -1;
     }
-  </style>
+
+    main {
+        flex: 1;
+        position: relative;
+        z-index: 1;
+    }
+    
+    footer {
+        position: relative;
+        background-color: #f8f9fa;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .navbar {
+         background-color: black;
+    }
+
+    .navbar .nav-link {
+        color: white;
+    }
+
+    .navbar .nav-link:hover {
+        color: #ac0078;
+    }
+
+    .navbar-toggler {
+        border: none;
+        outline: none;
+    }
+
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+
+    #footer {
+        background-color: #000;
+        color: #fff;
+        padding: 20px 0;
+        text-align: center;
+        position: relative;
+        bottom: 0;
+        width: 100%;
+    }
+</style>
+
+</html>
