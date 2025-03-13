@@ -124,6 +124,24 @@
         bottom: 0;
         width: 100%;
     }
+
+    @media (max-width: 991px) {
+    .navbar-collapse.show { /* Estilos para cuando el menu hamburguesa este abierto */
+        text-align: center;
+    }
+
+    .navbar-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar-nav .nav-link {
+        display: block; /* para que cada enlace ocupe una linea completa */
+        width: 100%;
+        text-align: center; /* centra el texto dentro de cada enlace */
+    }
+}
 </style>
 
 </html>
