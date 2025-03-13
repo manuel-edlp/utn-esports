@@ -6,3 +6,6 @@ class Home(TemplateView):
 
 class Faq(TemplateView):
     template_name = 'faq/faq.html'
+
+class Sponsors(TemplateView):
+    template_name = 'sponsors/sponsors.html'
