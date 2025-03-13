@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block main %}
+
+<section id="frecuentes" class="section-style text-center my-5">
+    <h1>Preguntas Frecuentes</h1>
+    <p>A continuación, te presentamos algunas preguntas frecuentes que podrías tener sobre la Liga Leyendas del Sur.</p>
+</section>
+
+<div id="video-banner" class="my-4">
+    <video autoplay loop muted playsinline class="w-100">
+        <source src="{% static 'videos/jinx-2.mp4' %}" type="video/mp4">
+        Tu navegador no soporta videos.
+    </video>
+</div>
+
+<div class="container">
+    <a href="#" class="card">
+        <div class="card-inner">
+            <div class="text">
+                <h3>¿Cómo puedo inscribirme?</h3>
+                <p>Información sobre el proceso de inscripción a la Liga Leyendas del Sur.</p>
+            </div>
+            <div class="image">
+                <img src="{% static 'images/card1.png' %}" alt="Juego 1">
+            </div>
+        </div>
+    </a>
+    <a href="#" class="card">
+        <div class="card-inner">
+            <div class="text">
+                <h3>¿Cuáles son las reglas del torneo?</h3>
+                <p>Explicación detallada sobre las reglas del torneo.</p>
+            </div>
+            <div class="image">
+                <img src="{% static 'images/card1.png' %}" alt="Juego 2">
+            </div>
+        </div>
+    </a>
+    <a href="#" class="card">
+        <div class="card-inner">
+            <div class="text">
+                <h3>¿Cuáles son los premios?</h3>
+                <p>Información sobre los premios para los ganadores del torneo.</p>
+            </div>
+            <div class="image">
+                <img src="{% static 'images/card1.png' %}" alt="Juego 3">
+            </div>
+        </div>
+    </a>
+    <a href="#" class="card">
+        <div class="card-inner">
+            <div class="text">
+                <h3>¿Qué juegos se jugarán?</h3>
+                <p>Lista de los juegos que se jugarán en el torneo.</p>
+            </div>
+            <div class="image">
+                <img src="{% static 'images/card1.png' %}" alt="Juego 4">
+            </div>
+        </div>
+    </a>
+</div>
+
+<style>
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("{% static 'images/jinx-2.png' %}");
+        background-size: cover;
+        background-position: center;
+        filter: blur(30px);
+        z-index: -1;
+    }
+
+    .section-style {
+        background-color: rgba(0, 0, 0, 0.18);
+        border-radius: 0.375em;
+        padding: 40px;
+        color: rgb(255, 255, 255);
+    }
+
+    .container {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(300px, 1fr)); /* 2 columnas */
+        gap: 20px;
+        width: 90%;
+        margin: auto;
+        padding-bottom: 30px;
+    }
+
+    .card {
+        display: block;
+        text-decoration: none;
+        transition: transform 0.3s ease;
+        padding: 0px !important;
+        border: 0 !important;
+    }
+
+    .card-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch;
+        height: 100%;
+        border-radius: 0.375em;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .text {
+        flex: 1;
+        padding: 20px;
+        color: white;
+    }
+
+    .text h3 {
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    .text p {
+        font-size: 1em;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .image {
+        flex: 1;
+        display: flex;
+        align-items: stretch;
+        overflow: hidden;
+        border-top-right-radius: 0.375em;
+        border-bottom-right-radius: 0.375em;
+    }
+
+    .image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-top-right-radius: 0.375em;
+        border-bottom-right-radius: 0.375em;
+    }
+
+    .card-inner::before {
+        content: "";
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        border: 2px solid gray;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        border-radius: 0.6875em;
+    }
+
+    .card:hover .card-inner::before {
+        opacity: 1;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            grid-template-columns: repeat(1, minmax(300px, 1fr)); /* 1 columna en pantallas pequeñas */
+        }
+    }
+</style>
+
+{% endblock %}
