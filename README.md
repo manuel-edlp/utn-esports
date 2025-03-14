@@ -85,12 +85,13 @@ Este proyecto, desarrollado con Django, es una plataforma web diseñada para ges
     ```
 
 5. **Ejecutar las migraciones:**
-
+   
+   Nota: asegurese de estar posicionado en la consola al mismo nivel del archivo manage.py siempre que ingrese un comando que haga uso de este (como los de a continuación).
    ```bash
    python manage.py migrate
    ```
 
-6. **Iniciar el servidor de desarrollo:**
+7. **Iniciar el servidor de desarrollo:**
 
    ```bash
    python manage.py runserver
