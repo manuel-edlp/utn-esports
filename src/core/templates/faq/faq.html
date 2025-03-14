@@ -17,50 +17,78 @@
 </div>
 
 <div class="container">
-    <a href="#" class="card">
+    <div class="card">
         <div class="card-inner">
-            <div class="text">
-                <h3>¿Cómo puedo inscribirme?</h3>
-                <p>Información sobre el proceso de inscripción a la Liga Leyendas del Sur.</p>
+            <div class="content">
+                <div class="text">
+                    <div class="text-content">
+                        <h3>¿Cómo puedo inscribirme?</h3>
+                        <p>Información sobre el proceso de inscripción a la Liga Leyendas del Sur.</p>
+                    </div>
+                </div>
+                <div class="image">
+                    <img src="{% static 'images/yasuo.png' %}" alt="Juego 1">
+                </div>
             </div>
-            <div class="image">
-                <img src="{% static 'images/card1.png' %}" alt="Juego 1">
+            <div class="expandable">
+                <p>Para inscribirte, debes registrarte en nuestro sitio web y completar el formulario de inscripción. Una vez enviado, recibirás un correo de confirmación con los siguientes pasos.</p>
             </div>
         </div>
-    </a>
-    <a href="#" class="card">
+    </div>
+    <div class="card">
         <div class="card-inner">
-            <div class="text">
-                <h3>¿Cuáles son las reglas del torneo?</h3>
-                <p>Explicación detallada sobre las reglas del torneo.</p>
+            <div class="content">
+                <div class="text">
+                    <div class="text-content">
+                        <h3>¿Cuáles son las reglas del torneo?</h3>
+                        <p>Explicación detallada sobre las reglas del torneo.</p>
+                    </div>
+                </div>
+                <div class="image">
+                    <img src="{% static 'images/card2.png' %}" alt="Juego 2">
+                </div>
             </div>
-            <div class="image">
-                <img src="{% static 'images/card2.png' %}" alt="Juego 2">
+            <div class="expandable">
+                <p>Las reglas del torneo incluyen: respeto entre jugadores, prohibición de hacks o trampas, y cumplimiento de los horarios establecidos. Consulta el reglamento completo en nuestra página.</p>
             </div>
         </div>
-    </a>
-    <a href="#" class="card">
+    </div>
+    <div class="card">
         <div class="card-inner">
-            <div class="text">
-                <h3>¿Cuáles son los premios?</h3>
-                <p>Información sobre los premios para los ganadores del torneo.</p>
+            <div class="content">
+                <div class="text">
+                    <div class="text-content">
+                        <h3>¿Cuáles son los premios?</h3>
+                        <p>Información sobre los premios para los ganadores del torneo.</p>
+                    </div>
+                </div>
+                <div class="image">
+                    <img src="{% static 'images/ezreal.jpg' %}" alt="Juego 3">
+                </div>
             </div>
-            <div class="image">
-                <img src="{% static 'images/card3.png' %}" alt="Juego 3">
+            <div class="expandable">
+                <p>Los premios incluyen efectivo, trofeos y productos de nuestros patrocinadores. El primer lugar recibirá $1000, el segundo $500 y el tercero $250.</p>
             </div>
         </div>
-    </a>
-    <a href="#" class="card">
+    </div>
+    <div class="card">
         <div class="card-inner">
-            <div class="text">
-                <h3>¿Qué juegos se jugarán?</h3>
-                <p>Lista de los juegos que se jugarán en el torneo.</p>
+            <div class="content">
+                <div class="text">
+                    <div class="text-content">
+                        <h3>¿Cómo se estructurará el torneo?</h3>
+                        <p>Detalles sobre el formato de la competencia.</p>
+                    </div>
+                </div>
+                <div class="image">
+                    <img src="{% static 'images/card1.png' %}" alt="Juego 4">
+                </div>
             </div>
-            <div class="image">
-                <img src="{% static 'images/card1.png' %}" alt="Juego 4">
+            <div class="expandable">
+                <p>El torneo se jugará en un formato de eliminación directa con partidas al mejor de tres (Bo3) hasta la final, que será al mejor de cinco (Bo5). Los emparejamientos se determinarán mediante sorteo.</p>
             </div>
         </div>
-    </a>
+    </div>
 </div>
 
 <style>
@@ -100,22 +128,34 @@
         transition: transform 0.3s ease;
         padding: 0px !important;
         border: 0 !important;
+        cursor: pointer;
     }
 
     .card-inner {
         display: flex;
-        justify-content: space-between;
-        align-items: stretch;
-        height: 100%;
+        flex-direction: column;
         border-radius: 0.375em;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
+        background-color: rgba(0, 0, 0, 0.5);
+        box-sizing: border-box;
+    }
+
+    .content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
     .text {
         flex: 1;
-        padding: 20px;
+        padding: 20px 20px 0;
         color: white;
+        box-sizing: border-box;
+    }
+
+    .text-content {
+        padding-bottom: 10px;
     }
 
     .text h3 {
@@ -127,23 +167,35 @@
     .text p {
         font-size: 1em;
         color: rgba(255, 255, 255, 0.8);
+        margin: 0;
     }
 
     .image {
-        flex: 1;
+        flex: 0 0 150px;
+        height: 150px;
         display: flex;
-        align-items: stretch;
+        align-items: center;
+        justify-content: center;
         overflow: hidden;
-        border-top-right-radius: 0.375em;
-        border-bottom-right-radius: 0.375em;
     }
 
     .image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-top-right-radius: 0.375em;
-        border-bottom-right-radius: 0.375em;
+    }
+
+    .expandable {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        padding: 0 20px;
+        color: white;
+    }
+
+    .card.active .expandable {
+        max-height: 200px;
+        padding: 20px;
     }
 
     .card-inner::before {
@@ -173,5 +225,17 @@
         }
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.addEventListener('click', function () {
+                card.classList.toggle('active');
+            });
+        });
+    });
+</script>
 
 {% endblock %}
