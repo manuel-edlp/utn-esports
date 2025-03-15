@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block main %}
+
+<div class="profile-container">
+    <h2>Bienvenido, {{ jugador.nombre }} {{ jugador.apellido }}</h2>
+    <p>Esta es tu área personal.</p>
+
+    <div class="profile-info">
+        <h3>Datos de tu perfil</h3>
+        <div class="profile-field">
+            <strong>Nombre:</strong> {{ jugador.nombre }}
+        </div>
+        <div class="profile-field">
+            <strong>Apellido:</strong> {{ jugador.apellido }}
+        </div>
+        <div class="profile-field">
+            <strong>DNI:</strong> {{ jugador.dni }}
+        </div>
+        <div class="profile-field">
+            <strong>Teléfono:</strong> {{ jugador.telefono }}
+        </div>
+        <div class="profile-field">
+            <strong>País:</strong> {{ jugador.pais }}
+        </div>
+        <div class="profile-field">
+            <strong>Usuario de Riot:</strong> {{ jugador.usuario_riot }}
+        </div>
+        <div class="profile-field">
+            <strong>Riot ID:</strong> {{ jugador.riot_id }}
+        </div>
+        <div class="profile-field">
+            <strong>Correo electrónico:</strong> {{ jugador.email }}
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #2a2a2a;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        color: #fff;
+    }
+
+    .profile-info {
+        margin-top: 20px;
+    }
+
+    .profile-field {
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .profile-field strong {
+        color: #2781c3;
+    }
+</style>
+
+{% endblock %}
