@@ -26,7 +26,7 @@ Este proyecto, desarrollado con Django, es una plataforma web diseñada para ges
 1. **Clonar el repositorio:**
 
    ```bash
-   git clone https://tu-repositorio.git
+   git clone https://github.com/manuel-edlp/utn-esports
    ```
 
 2. **Crear un entorno virtual:**
