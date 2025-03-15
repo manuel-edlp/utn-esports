@@ -1,9 +1,12 @@
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import Jugador
 from django.urls import reverse_lazy
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class Home(TemplateView):
     template_name = 'home/home.html'
@@ -76,3 +79,40 @@ class RegistroView(View):
 
         # Redirige a la página de inicio
         return redirect(self.success_url)
+    
+class LoginView(TemplateView):
+    template_name = 'login/login.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+    
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Autenticar al usuario
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            # Iniciar sesión
+            login(request, user)
+            return redirect('player_home')  # Redirijo al home del jugador
+        else:
+            # Mostrar mensaje de error si las credenciales son incorrectas
+            messages.error(request, 'Correo electrónico o contraseña incorrectos.')
+            return render(request, self.template_name)
+        
+class PlayerHomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'player/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Obtener el jugador asociado al usuario actual
+        try:
+            jugador = Jugador.objects.get(user=self.request.user)
+            context['jugador'] = jugador  # Pasar los datos del jugador a la plantilla
+        except Jugador.DoesNotExist:
+            context['jugador'] = None  # Si no existe, pasar None
+
+        return context
