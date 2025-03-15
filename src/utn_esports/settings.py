@@ -32,7 +32,7 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
-if env('DEBUG') == False:
+if env('DEBUG') == True:
     CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1']
 
 SESSION_COOKIE_AGE = 60*60*1  # 1 hs
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'core',
 ]
 
 MIDDLEWARE = [
