@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 from django.contrib.auth.views import LogoutView
 
@@ -12,4 +14,14 @@ urlpatterns = [
 
     # Jugador
     path('player/home/', views.PlayerHomeView.as_view(), name='player_home'),
+    path('player/perfil/', views.PerfilView.as_view(), name='perfil'),
+    path('player/crear_equipo/', views.CrearEquipoView.as_view(), name='crear_equipo'),
+    path('player/editar_equipo/<int:equipo_id>/', views.EditarEquipoView.as_view(), name='editar_equipo'),
+    path('player/eliminar_equipo/<int:equipo_id>/', views.EliminarEquipoView.as_view(), name='eliminar_equipo'),
+
 ]
+
+
+# Sirve archivos multimedia en modo de desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
