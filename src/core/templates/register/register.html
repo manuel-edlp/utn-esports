@@ -5,6 +5,11 @@
 {% block main %}
 
 <section class="register-section">
+    <video autoplay muted loop id="video-background">
+        <source src="{% static 'videos/animated-freljord-24fps-crf24.mp4' %}" type="video/mp4">
+        Tu navegador no soporta el video.
+    </video>
+
     <div class="register-container">
         <h2>Regístrate en el Torneo</h2>
         <p>Únete a la Liga Leyendas del Sur y demuestra tus habilidades.</p>
@@ -91,11 +96,15 @@
 </section>
 
 <style>
-    body {
-        margin: 0;
-        font-family: 'Arial', sans-serif;
-        background-color: #1a1a1a;
-        color: #fff;
+
+    #video-background {
+        position: fixed; /* Asegura que el video esté fijo en el fondo */
+        top: 0;
+        left: 0;
+        width: 100%; /* Asegura que el video cubra todo el ancho de la pantalla */
+        height: 100%; /* Asegura que el video cubra toda la altura de la pantalla */
+        object-fit: cover; /* Asegura que el video cubra todo el fondo sin distorsionar la relación de aspecto */
+        z-index: -1; /* Asegura que el video quede detrás de los otros elementos */
     }
 
     #condicionesLabel{
@@ -109,12 +118,12 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background-color: rgba(0, 0, 0, 0.7);
         padding: 20px;
     }
 
     .register-container {
-        background-color: #2a2a2a;
+        background-color: #00000096;
+        margin-top: 20px;
         padding: 40px;
         border-radius: 10px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -126,13 +135,13 @@
     .register-container h2 {
         margin-bottom: 10px;
         font-size: 24px;
-        color: #2781c3;
+        color: #ffffff;
     }
 
     .register-container p {
         margin-bottom: 20px;
         font-size: 14px;
-        color: #ccc;
+        color: #ffffff;
     }
 
     /* Barra de progreso */
@@ -216,11 +225,14 @@
         padding: 10px;
         border: 1px solid #444;
         border-radius: 5px;
-        background-color: #444;
+        background-color: #000000b3;
         color: #fff;
         font-size: 14px;
     }
 
+    h3{
+        color: white;
+    }
     .form-group input::placeholder {
         color: #888;
     }
@@ -233,7 +245,7 @@
     /* Botones */
     .next-button, .prev-button, .register-button {
         background-color: #2781c3;
-        color: #1a1a1a;
+        color: #ffffff;
         padding: 10px 20px;
         border: none;
         border-radius: 5px;
