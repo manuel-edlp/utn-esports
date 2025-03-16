@@ -6,60 +6,297 @@
 
 <div class="profile-container">
     <h2>Bienvenido, {{ jugador.nombre }} {{ jugador.apellido }}</h2>
-    <p>Esta es tu área personal.</p>
+    <p>Esta es tu área personal. Aquí podrás adminitstrar tu equipo para la liga Leyendas del Sur</p>
 
-    <div class="profile-info">
-        <h3>Datos de tu perfil</h3>
-        <div class="profile-field">
-            <strong>Nombre:</strong> {{ jugador.nombre }}
+    <!-- Mostrar el equipo creado -->
+    {% if jugador.equipos_creados.all %}
+        <div class="team-card">
+            <h3>Tu Equipo</h3>
+            {% for equipo in jugador.equipos_creados.all %}
+                <div class="card">
+                    <img src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ equipo.nombre }} ({{equipo.abreviatura}})</h5>
+                        <p class="card-text">
+                            Estado de aprobación: 
+                            {{ equipo.aprobado|yesno:"Aprobado,Pendiente" }}
+                            <span class="help-icon" title="El estado de aprobación indica si tu equipo ha sido revisado y aprobado por los administradores de la liga.">?</span>
+                        </p>
+                        <div class="card-actions">
+                            <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit">Editar</a>
+                            <button class="btn btn-delete" 
+                                    data-equipo-id="{{ equipo.id }}" 
+                                    data-equipo-nombre="{{ equipo.nombre }}" 
+                                    onclick="mostrarModal(this)">Eliminar</button>
+                        </div>
+                        
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        <div class="profile-field">
-            <strong>Apellido:</strong> {{ jugador.apellido }}
+    {% else %}
+        <!-- Botón para crear equipo -->
+        <div class="create-team-section">
+            <h3>Crear Equipo</h3>
+            <a href="{% url 'crear_equipo' %}" class="create-team-button">
+                <span class="icon">+</span>
+            </a>
         </div>
-        <div class="profile-field">
-            <strong>DNI:</strong> {{ jugador.dni }}
-        </div>
-        <div class="profile-field">
-            <strong>Teléfono:</strong> {{ jugador.telefono }}
-        </div>
-        <div class="profile-field">
-            <strong>País:</strong> {{ jugador.pais }}
-        </div>
-        <div class="profile-field">
-            <strong>Usuario de Riot:</strong> {{ jugador.usuario_riot }}
-        </div>
-        <div class="profile-field">
-            <strong>Riot ID:</strong> {{ jugador.riot_id }}
-        </div>
-        <div class="profile-field">
-            <strong>Correo electrónico:</strong> {{ jugador.email }}
-        </div>
+    {% endif %}
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div id="modal-eliminar" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-titulo"></h3>
+        <p>Esta acción no se puede deshacer.</p>
+        <form id="form-eliminar" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-delete">Eliminar</button>
+            <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        </form>
     </div>
 </div>
 
 <style>
+    /* Estilos para el modal */
+    .modal {
+        display: none; /* Oculto por defecto */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semi-transparente */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background-color: #2a2a2a;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .modal h3 {
+        margin-bottom: 10px;
+        font-size: 24px;
+        color: #fff;
+    }
+
+    .modal p {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #ccc;
+    }
+
+    .modal .btn-delete {
+        background-color: #dc3545;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .modal .btn-secondary {
+        background-color: #444;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .modal .btn-delete:hover {
+        background-color: #c82333;
+    }
+
+    .modal .btn-secondary:hover {
+        background-color: #555;
+    }
+
+    /* Estilos existentes */
     .profile-container {
         max-width: 800px;
         margin: 0 auto;
         padding: 20px;
+        margin-top: 30px;
         background-color: #2a2a2a;
         border-radius: 10px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         color: #fff;
     }
 
-    .profile-info {
+    .team-card {
         margin-top: 20px;
     }
 
-    .profile-field {
-        margin-bottom: 15px;
-        font-size: 16px;
+    .card {
+        background-color: #3a3a3a;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        color: #fff;
+        padding: 15px;
+        margin-bottom: 20px;
+        overflow: hidden; /* Evita que el contenido desborde */
     }
 
-    .profile-field strong {
-        color: #2781c3;
+    .card-img-top {
+        width: 100%; /* La imagen ocupa el 100% del ancho del contenedor */
+        max-width: 150px; /* Limita el ancho máximo de la imagen */
+        height: auto; /* Mantiene la proporción de la imagen */
+        border-radius: 10px;
+        display: block; /* Asegura que la imagen no tenga espacio adicional */
+        margin: 0 auto 15px; /* Centra la imagen y añade margen inferior */
     }
+
+    .card-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .card-text {
+        font-size: 16px;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+
+    .card-actions {
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    .btn-edit {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-right: 10px;
+    }
+
+    .btn-delete {
+        background-color: #dc3545;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .btn-edit:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-delete:hover {
+        background-color: #c82333;
+    }
+
+    .create-team-section {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .create-team-section h3 {
+        margin-bottom: 10px;
+        font-size: 24px;
+    }
+
+    .create-team-button {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        font-size: 50px;
+        color: #fff;
+        background-color: #007bff;
+        border-radius: 50%;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .create-team-button:hover {
+        background-color: #0056b3;
+    }
+
+    .create-team-button .icon {
+        display: block;
+    }
+
+    .help-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: #444;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: help;
+    margin-left: 5px;
+    position: relative;
+}
+
+.help-icon:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #444;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
 </style>
+
+<script>
+    // Función para mostrar el modal
+    function mostrarModal(button) {
+        const modal = document.getElementById('modal-eliminar');
+        const form = document.getElementById('form-eliminar');
+        const modalTitulo = document.getElementById('modal-titulo');
+        const equipoId = button.dataset.equipoId;
+        const equipoNombre = button.dataset.equipoNombre;
+
+        // título del modal
+        modalTitulo.textContent = `¿Estás seguro de eliminar el equipo "${equipoNombre}"?`;
+
+        // acción del formulario para eliminar el equipo específico
+        form.action = `/player/eliminar_equipo/${equipoId}/`;
+
+        // Mostrar el modal
+        modal.style.display = 'flex';
+    }
+
+    // Función para cerrar el modal
+    function cerrarModal() {
+        const modal = document.getElementById('modal-eliminar');
+        modal.style.display = 'none';
+    }
+
+    // Cerrar el modal si se hace clic fuera del contenido
+    window.onclick = function(event) {
+        const modal = document.getElementById('modal-eliminar');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+</script>
 
 {% endblock %}
