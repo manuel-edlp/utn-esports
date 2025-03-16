@@ -1,9 +1,9 @@
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
-from .models import Jugador
+from .models import Equipo, Jugador
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -90,15 +90,15 @@ class LoginView(TemplateView):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # Autenticar al usuario
+        # Autentica al usuario
         user = authenticate(request, username=email, password=password)
 
         if user is not None:
-            # Iniciar sesión
+            # Inicia sesión
             login(request, user)
             return redirect('player_home')  # Redirijo al home del jugador
         else:
-            # Mostrar mensaje de error si las credenciales son incorrectas
+            # Muestra mensaje de error si las credenciales son incorrectas
             messages.error(request, 'Correo electrónico o contraseña incorrectos.')
             return render(request, self.template_name)
         
@@ -108,11 +108,103 @@ class PlayerHomeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Obtener el jugador asociado al usuario actual
+        # Obtiene el jugador asociado al usuario actual
         try:
             jugador = Jugador.objects.get(user=self.request.user)
-            context['jugador'] = jugador  # Pasar los datos del jugador a la plantilla
+            context['jugador'] = jugador  # Pasa los datos del jugador a la plantilla
         except Jugador.DoesNotExist:
-            context['jugador'] = None  # Si no existe, pasar None
+            context['jugador'] = None  # Si no existe, pasa None
 
         return context
+
+
+class PerfilView(LoginRequiredMixin, TemplateView):
+    template_name = 'player/perfil.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Obtiene el jugador asociado al usuario actual
+        try:
+            jugador = Jugador.objects.get(user=self.request.user)
+            context['jugador'] = jugador  # Pasa los datos del jugador a la plantilla
+        except Jugador.DoesNotExist:
+            context['jugador'] = None  # Si no existe, pasa None
+
+        return context
+    
+
+
+class CrearEquipoView(LoginRequiredMixin, TemplateView):
+    template_name = 'player/crear_equipo.html'
+
+    def get(self, request, *args, **kwargs):
+        # Verificar si el usuario es un jugador
+        if not hasattr(request.user, 'jugador'):
+            messages.error(request, "Solo los jugadores pueden crear equipos.")
+            return redirect('player_home')
+
+        return render(request, self.template_name)
+
+    def post(self, request, *args, **kwargs):
+        # Verifica si el usuario es un jugador
+        if not hasattr(request.user, 'jugador'):
+            messages.error(request, "Solo los jugadores pueden crear equipos.")
+            return redirect('player_home')
+
+        # Obteniene los datos del formulario
+        nombre = request.POST.get('nombre')
+        abreviatura = request.POST.get('abreviatura')
+        logo = request.FILES.get('logo')
+        comprobante_pago = request.FILES.get('comprobante_pago')
+
+        # Valida los datos
+        if not nombre or not abreviatura or not logo or not comprobante_pago:
+            messages.error(request, "Todos los campos son obligatorios.")
+            return render(request, self.template_name)
+
+        # Crear el equipo
+        try:
+            equipo = Equipo(
+                nombre=nombre,
+                abreviatura=abreviatura,
+                logo=logo,
+                comprobante_pago=comprobante_pago,
+                creado_por=request.user.jugador
+            )
+            equipo.save()
+
+            # Mensaje de éxito
+            messages.success(request, f"Equipo '{equipo.nombre}' creado exitosamente.")
+            return redirect('player_home')
+
+        except Exception as e:
+            messages.error(request, f"Error al crear el equipo: {str(e)}")
+            return render(request, self.template_name)
+
+
+class EditarEquipoView(LoginRequiredMixin, TemplateView):
+    template_name = 'player/editar_equipo.html'
+
+    def get(self, request, equipo_id, *args, **kwargs):
+        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
+        return render(request, self.template_name, {'equipo': equipo})
+
+    def post(self, request, equipo_id, *args, **kwargs):
+        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
+        equipo.nombre = request.POST.get('nombre')
+        equipo.abreviatura = request.POST.get('abreviatura')
+        if 'logo' in request.FILES:
+            equipo.logo = request.FILES['logo']
+        if 'comprobante_pago' in request.FILES:
+            equipo.comprobante_pago = request.FILES['comprobante_pago']
+        equipo.save()
+        messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
+        return redirect('player_home')
+    
+class EliminarEquipoView(LoginRequiredMixin, View):
+    def post(self, request, equipo_id, *args, **kwargs):
+        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
+        equipo.delete()
+        messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
+        return redirect('player_home')
