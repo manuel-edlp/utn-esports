@@ -151,6 +151,11 @@ STATICFILES_DIRS = [
 ]
 
 
+# Configuración para archivos multimedia
+MEDIA_URL = '/media/'  # URL base para servir archivos multimedia
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ruta en el sistema de archivos donde se almacenan los archivos multimedia
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
