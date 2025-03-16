@@ -56,11 +56,11 @@
                                   <a class="dropdown-item" href="{% url 'perfil' %}">Ver Perfil</a>
                             </li>
                             <li>
-                              <form method="post" action="{% url 'logout' %}">
-                                  {% csrf_token %}
-                                  <button type="submit" class="dropdown-item">Cerrar Sesión</button>
-                              </form>
-                          </li>
+                              <a href="#" class="dropdown-item" onclick="document.getElementById('logout-form').submit();">Cerrar Sesión</a>
+                            </li>
+                            <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+                              {% csrf_token %}
+                            </form>
                         </ul>
                     </div>
                     {% else %}
@@ -206,93 +206,125 @@
 
 
 
-    body {
-        display: flex;
-        min-height: 100vh;
-        flex-direction: column;
-        background-color: black;
-        margin: 0;
-        overflow-x: hidden;
-        position: relative;
-        font-family: 'Inter', 'Varela Round', Arial, sans-serif;
-    }
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background-color: black;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+    font-family: 'Inter', 'Varela Round', Arial, sans-serif;
+}
 
-    main {
-        flex: 1;
-        position: relative;
-        z-index: 1;
-    }
+main {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+footer {
+    position: relative;
+    background-color: #f8f9fa;
+    padding: 10px;
+    text-align: center;
+}
+
+.navbar {
+    background-color: black;
+}
+
+.navbar .nav-link {
+    color: white;
+    position: relative;
+}
+
+.navbar .nav-link:after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 0%;
+    content: '.';
+    color: transparent;
+    background: #c900a7;
+    height: 2px;
+    transition: width 0.3s ease-in-out;
+}
+
+.dropdown-menu {
+  background-color: black !important; /* Fondo negro */
+  border: 1px solid #444; /* Opcional: Borde sutil */
+}
+
+
+.dropdown-menu .dropdown-item {
+    color: white !important;
+}
+
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #222 !important; /* Negro más clarito para hover */
+  color: white !important; /* Mantener texto blanco */
+}
+
+.navbar .nav-link:hover:after {
+    width: 100%;
+}
+
+.navbar-toggler {
+    border: none;
+    outline: none;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+#userDropdown {
+  font-size: 16px; /* Tamaño de fuente más pequeño */
+  padding: 5px 10px; /* Menos espacio interno */
+  height: 41px; /* Altura reducida */
+  width: 100px; /* Ancho reducido */
+  line-height: 1; /* Ajusta la alineación del texto */
+  background-color: black;
+  color: white;
+  border: 2px solid transparent; /* Borde transparente  */
+  transition: border-color 0.3s ease-in-out; /* Transición suave */
+}
+
+#userDropdown:hover {
+  border-color: rgb(212, 37, 174); /* Cambia el borde a violeta */
+}
     
-    footer {
-        position: relative;
-        background-color: #f8f9fa;
-        padding: 10px;
-        text-align: center;
-    }
+#footer {
+    background-color: #000;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
 
-    .navbar {
-        background-color: black;
-    }
+@media (max-width: 991px) {
+  .navbar-collapse.show { /* Estilos para cuando el menu hamburguesa este abierto */
+      text-align: center;
+  }
 
-    .navbar .nav-link {
-        color: white;
-        position: relative;
-    }
+  .navbar-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
 
-    .navbar .nav-link:after {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: auto;
-        width: 0%;
-        content: '.';
-        color: transparent;
-        background: #c900a7;
-        height: 2px;
-        transition: width 0.3s ease-in-out;
-    }
-
-    .navbar .nav-link:hover:after {
-        width: 100%;
-    }
-
-    .navbar-toggler {
-        border: none;
-        outline: none;
-    }
-
-    .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-    }
-
-    #footer {
-        background-color: #000;
-        color: #fff;
-        padding: 20px 0;
-        text-align: center;
-        position: relative;
-        bottom: 0;
-        width: 100%;
-    }
-
-    @media (max-width: 991px) {
-    .navbar-collapse.show { /* Estilos para cuando el menu hamburguesa este abierto */
-        text-align: center;
-    }
-
-    .navbar-nav {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-        .navbar-nav .nav-link {
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-    }
+  .navbar-nav .nav-link {
+      display: block;
+      width: 100%;
+      text-align: center;
+  }
+}
 </style>
 
 </html>
