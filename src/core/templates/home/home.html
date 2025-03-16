@@ -10,7 +10,7 @@
 
 <div id="video-banner" class="my-4">
     <video autoplay loop muted playsinline class="w-100">
-        <source src="{% static 'videos/jinx-animated-cut-26.mp4' %}" type="video/mp4">
+        <source src="{% static 'videos/jinx-1-compres.mp4' %}" type="video/mp4">
         Tu navegador no soporta videos.
     </video>
 </div>
@@ -102,7 +102,11 @@
     #inicio{
         margin-top: 0px !important;
         margin-bottom: 0px !important;
-        background-color: black
+        background-image: url("{% static 'images/image3.png' %}");
+        background-size: 100% 100%; /* Estira la imagen tanto en ancho como en alto */
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 50vh; /* Asegura que el contenedor tenga al menos el 50% de la altura de la ventana */
     }
 
     #video-banner{
