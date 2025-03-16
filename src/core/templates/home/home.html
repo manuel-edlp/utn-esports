@@ -120,6 +120,12 @@
     }
 
     #inicio{
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
         margin-top: 0px !important;
         margin-bottom: 0px !important;
         background-image: url("{% static 'images/image3.png' %}");
@@ -311,5 +317,27 @@
         color: #ccc;
     }
     
+
+
+@media screen and (max-width: 700px) {
+    #inicio {
+        height: auto;
+        padding: 15px;
+    }
+
+    #titulo {
+        font-size: 30px;
+        margin-top: 20px;
+    }
+
+    #video-banner {
+        max-height: 300px;
+        margin-bottom: 0px !important;
+    }
+
+    #quienes-somos {
+        margin-top: 15px !important;
+    }
+}
 </style>
 {% endblock %}
