@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block main %}
 <section class="register-section">
     <div class="register-container">
@@ -41,19 +43,27 @@
                 <p>Recuerda que para que tu equipo sea aprobado y puedas participar en la liga, debes realizar el pago correspondiente al alias: <strong>leyendas.del.sur</strong> y adjuntar el comprobante.</p>
             </div>
 
-            <!-- Botón de enviar -->
-            <button type="submit" class="register-button">Guardar Cambios</button>
-            <a href="{% url 'player_home' %}" class="btn btn-secondary" style="background-color: #444; color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 10px;">Cancelar</a>
+            <!-- Botones: Cancelar y Guardar Cambios -->
+            <div class="form-buttons">
+                <a href="{% url 'player_home' %}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-secondary">Guardar Cambios</button>
+            </div>
         </form>
     </div>
 </section>
 
 <style>
-    body {
-        margin: 0;
-        font-family: 'Arial', sans-serif;
-        background-color: #1a1a1a;
-        color: #fff;
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("{% static 'images/pyke.png' %}");
+        background-size: cover;
+        background-position: center;
+        z-index: -1;
     }
 
     .register-section {
@@ -61,12 +71,11 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background-color: rgba(0, 0, 0, 0.7);
         padding: 20px;
     }
 
     .register-container {
-        background-color: #2a2a2a;
+        background-color: #000000b8;
         padding: 40px;
         border-radius: 10px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -78,13 +87,13 @@
     .register-container h2 {
         margin-bottom: 10px;
         font-size: 24px;
-        color: #2781c3;
+        color: #ffffff;
     }
 
     .register-container p {
         margin-bottom: 20px;
         font-size: 14px;
-        color: #ccc;
+        color: #ffffff;
     }
 
     .register-form {
@@ -107,7 +116,7 @@
         padding: 10px;
         border: 1px solid #444;
         border-radius: 5px;
-        background-color: #444;
+        background-color: #000000b3;
         color: #fff;
         font-size: 14px;
     }
@@ -125,35 +134,29 @@
         padding: 5px;
     }
 
-    .register-button {
-        background-color: #2781c3;
-        color: #1a1a1a;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        width: 100%;
-    }
-
-    .register-button:hover {
-        background-color: #1e76b4;
+    .form-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Espacio entre los botones */
+        margin-top: 20px;
+        flex-wrap: wrap; /* Para que los botones se apilen en pantallas pequeñas */
     }
 
     .btn-secondary {
-        background-color: #444;
+        background-color: #00000096 !important;
         color: #fff;
         padding: 10px 20px;
         border-radius: 5px;
         text-decoration: none;
         display: inline-block;
         margin-top: 10px;
+        flex-grow: 1; /* Para que los botones se expandan y ocupen el mismo espacio en pantallas más grandes */
+        max-width: 200px; /* Máximo tamaño en pantallas grandes */
+        text-align: center; /* Centrar el texto dentro del botón */
     }
 
     .btn-secondary:hover {
-        background-color: #555;
+        background-color: #272727 !important;
     }
 </style>
 {% endblock %}
