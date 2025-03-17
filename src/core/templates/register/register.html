@@ -93,7 +93,7 @@
                         href="{% url 'reglamento' %}" target="_blank">reglamento del torneo</a>.</label><br><br>
     
                 <button type="button" class="prev-button">Anterior</button>
-                <button type="submit" class="register-button">Registrarse</button>
+                <button type="submit" id="register-btn" class="register-button">Registrarse</button>
             </div>
         </form>
     
@@ -113,6 +113,10 @@
         height: 100%;
         object-fit: cover;
         z-index: -1;
+    }
+
+    #condiciones{
+        transform: scale(1.5);
     }
 
     #condicionesLabel{
@@ -266,6 +270,17 @@
         margin-right: 10px;
     }
 
+
+    .register-button:disabled {
+        background-color: #444;
+        color: #fff;
+        cursor: not-allowed;
+    }
+
+    .register-button:disabled:hover {
+        background-color: #5a5a5a !important;
+    }
+
     .prev-button {
         background-color: #444;
         color: #fff;
@@ -337,6 +352,22 @@
                 }
             });
         });
+
+
+
+        // Habilitacion del Boton registrarse segun el checkbox de terminos y condiciones
+
+        const checkbox = document.getElementById("condiciones");
+        const boton = document.getElementById("register-btn");
+
+        if (checkbox && boton) {
+            boton.disabled = true;
+
+            checkbox.addEventListener("change", function () {
+                boton.disabled = !this.checked;
+
+            });
+        }
     });
 </script>
 
