@@ -70,8 +70,7 @@
             <li class="invitacion-item">
                 <div class="invitacion-info">
                     <p>Te han invitado a unirte al equipo <strong>{{ invitacion.equipo.nombre }}</strong>.</p>
-                    <p>Invitado por: {{ invitacion.equipo.creado_por.nombre }} {{ invitacion.equipo.creado_por.apellido
-                        }}</p>
+                    <p>Invitado por: {{ invitacion.equipo.creado_por.nombre }} {{ invitacion.equipo.creado_por.apellido}}</p>
                 </div>
                 <div class="invitacion-actions">
                     <form method="post" action="{% url 'aceptar_invitacion' invitacion.id %}">
@@ -91,25 +90,28 @@
         {% endif %}
     </div>
 
-    <!-- Modal de invitación -->
-    <div id="modal-invitacion" class="modal">
-        <div class="modal-content">
-            <h3>Invitar a un Jugador</h3>
-            <p>Ingresa el correo electrónico de la persona a la que deseas invitar. (Debe estar previamente registrada)</p>
-            {% if equipo %}
-            <form id="form-invitacion" method="post" action="{% url 'invitar_jugador' equipo.id %}">
-                {% csrf_token %}
-                <input type="email" id="email-invitacion" name="email" placeholder="Correo electrónico" required>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="cerrarModalInvitacion()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Enviar Invitación</button>
-                </div>
-            </form>
-            {% else %}
-            <p class="no-equipo">No tienes un equipo creado. Crea un equipo para poder invitar a otros jugadores.</p>
-            {% endif %}
-        </div>
+<!-- Modal de invitación -->
+<div id="modal-invitacion" class="modal">
+    <div class="modal-content">
+        <h3>Invitar a un Jugador</h3>
+        <p>Ingresa el correo electrónico de la persona a la que deseas invitar. (Debe estar previamente registrada)</p>
+        {% if equipo %}
+        <form id="form-invitacion" method="post" action="{% url 'invitar_jugador' equipo.id %}">
+            {% csrf_token %}
+            <input type="email" id="email-invitacion" name="email" placeholder="Correo electrónico" required>
+            <!-- Mensaje de error, advertencia o éxito -->
+            <div id="mensaje-error" style="color: red; display: none;"></div>
+            <div id="mensaje-exito" style="color: green; display: none;"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalInvitacion()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Enviar Invitación</button>
+            </div>
+        </form>
+        {% else %}
+        <p class="no-equipo">No tienes un equipo creado. Crea un equipo para poder invitar a otros jugadores.</p>
+        {% endif %}
     </div>
+</div>
 
     <!-- Modal de confirmación de eliminación -->
     <div id="modal-eliminar" class="modal">
@@ -567,10 +569,36 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        .mensaje {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .mensaje-exito {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .mensaje-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 
     <script>
-        // Función para mostrar el modal
+        // Función para borrar los mensajes de error y éxito
+        function borrarMensajes() {
+            // Borra el texto de los mensajes de error y éxito
+            document.getElementById('mensaje-error').textContent = '';
+            document.getElementById('mensaje-exito').textContent = '';
+        }
+
+
+        // Función para mostrar el modal eliminar
         function mostrarModal(button) {
             const modal = document.getElementById('modal-eliminar');
             const form = document.getElementById('form-eliminar');
@@ -588,13 +616,13 @@
             modal.style.display = 'flex';
         }
 
-        // Función para cerrar el modal
+        // Función para cerrar el modal de eliminar
         function cerrarModal() {
             const modal = document.getElementById('modal-eliminar');
             modal.style.display = 'none';
         }
 
-        // Cierra el modal si se hace clic fuera del contenido
+        // Cierra el modal eliminar si se hace clic fuera del contenido
         window.onclick = function (event) {
             const modal = document.getElementById('modal-eliminar');
             if (event.target === modal) {
@@ -613,15 +641,56 @@
         function cerrarModalInvitacion() {
             const modal = document.getElementById('modal-invitacion');
             modal.style.display = 'none';
+            borrarMensajes();
         }
 
-        // Cerrar el modal si se hace clic fuera del contenido
-        window.onclick = function (event) {
-            const modal = document.getElementById('modal-invitacion');
-            if (event.target === modal) {
-                modal.style.display = 'none';
+
+
+
+
+        document.getElementById('form-invitacion').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email-invitacion').value;
+        const form = this;
+        
+        const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({
+                'email': email
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                // Muestra el mensaje de error
+                document.getElementById('mensaje-error').textContent = data.error;
+                document.getElementById('mensaje-error').style.display = 'block';
+                document.getElementById('mensaje-exito').style.display = 'none';
+            } else if (data.warning) {
+                // Muestra el mensaje de advertencia
+                document.getElementById('mensaje-error').textContent = data.warning;
+                document.getElementById('mensaje-error').style.display = 'block';
+                document.getElementById('mensaje-exito').style.display = 'none';
+            } else if (data.success) {
+                // Muestra el mensaje de éxito
+                document.getElementById('mensaje-exito').textContent = data.success;
+                document.getElementById('mensaje-exito').style.display = 'block';
+                document.getElementById('mensaje-error').style.display = 'none';
             }
-        };
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
     </script>
+
 
     {% endblock %}

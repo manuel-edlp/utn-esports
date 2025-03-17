@@ -1,3 +1,5 @@
+import json
+from django.http import JsonResponse
 from django.views.generic import TemplateView, RedirectView, ListView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -238,30 +240,25 @@ class EliminarEquipoView(LoginRequiredMixin, View):
 
 class InvitarJugadorView(View):
     def post(self, request, *args, **kwargs):
-        email = request.POST.get('email')
-        equipo_id = self.kwargs.get('equipo_id')  # Obtiene el ID del equipo desde la URL
+        try:
+            data = json.loads(request.body)  # Decodifica el JSON
+            email = data.get('email', '').strip().lower()  # Normaliza el correo
+        except json.JSONDecodeError:
+            return JsonResponse({'error': "Formato de datos inválido."}, status=400)
+
+        equipo_id = self.kwargs.get('equipo_id')
         equipo = get_object_or_404(Equipo, id=equipo_id)
 
-        # Busca al jugador por su email
         try:
             jugador_invitado = Jugador.objects.get(email=email)
         except Jugador.DoesNotExist:
-            messages.error(request, "No se encontró un jugador con ese correo electrónico.")
-            return redirect(reverse('player_home'))
+            return JsonResponse({'error': "No se encontró un jugador con ese correo electrónico."}, status=400)
 
-        # Verifica si ya existe una invitación pendiente para este jugador
         if Invitacion.objects.filter(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False).exists():
-            messages.warning(request, "Ya has enviado una invitación a este jugador.")
-            return redirect(reverse('player_home'))
+            return JsonResponse({'warning': "Ya has enviado una invitación a este jugador."}, status=200)
 
-        Invitacion.objects.create(
-            equipo=equipo,
-            jugador_invitado=jugador_invitado,
-            aceptada=False
-        )
-
-        messages.success(request, f"Invitación enviada a {jugador_invitado.nombre} {jugador_invitado.apellido}.")
-        return redirect(reverse('player_home'))
+        Invitacion.objects.create(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False)
+        return JsonResponse({'success': f"Invitación enviada a {jugador_invitado.nombre} {jugador_invitado.apellido}."}, status=200)
     
 class ListarInvitacionesView(ListView):
     template_name = 'player_home.html'
