@@ -1,10 +1,10 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView, ListView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
-from .models import Equipo, Jugador
-from django.urls import reverse_lazy
+from .models import Equipo, Invitacion, Jugador
+from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -96,7 +96,7 @@ class LoginView(TemplateView):
         if user is not None:
             # Inicia sesión
             login(request, user)
-            return redirect('player_home')  # Redirijo al home del jugador
+            return redirect('player_home')
         else:
             # Muestra mensaje de error si las credenciales son incorrectas
             messages.error(request, 'Correo electrónico o contraseña incorrectos.')
@@ -112,8 +112,19 @@ class PlayerHomeView(LoginRequiredMixin, TemplateView):
         try:
             jugador = Jugador.objects.get(user=self.request.user)
             context['jugador'] = jugador  # Pasa los datos del jugador a la plantilla
+
+            # Obtiene el equipo al que pertenece el jugador (si existe)
+            equipo = jugador.equipo
+            context['equipo'] = equipo  # Pasa el equipo a la plantilla
+
+            # Obtiene las invitaciones pendientes del jugador
+            invitaciones = Invitacion.objects.filter(jugador_invitado=jugador, aceptada=False)
+            context['invitaciones'] = invitaciones  # Pasa las invitaciones a la plantilla
+
         except Jugador.DoesNotExist:
-            context['jugador'] = None  # Si no existe, pasa None
+            context['jugador'] = None
+            context['equipo'] = None
+            context['invitaciones'] = []
 
         return context
 
@@ -207,4 +218,86 @@ class EliminarEquipoView(LoginRequiredMixin, View):
         equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
         equipo.delete()
         messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
+        return redirect('player_home')
+    
+
+class InvitarJugadorView(View):
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email')
+        equipo_id = self.kwargs.get('equipo_id')  # Obtiene el ID del equipo desde la URL
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+
+        # Busca al jugador por su email
+        try:
+            jugador_invitado = Jugador.objects.get(email=email)
+        except Jugador.DoesNotExist:
+            messages.error(request, "No se encontró un jugador con ese correo electrónico.")
+            return redirect(reverse('player_home'))
+
+        # Verifica si ya existe una invitación pendiente para este jugador
+        if Invitacion.objects.filter(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False).exists():
+            messages.warning(request, "Ya has enviado una invitación a este jugador.")
+            return redirect(reverse('player_home'))
+
+        Invitacion.objects.create(
+            equipo=equipo,
+            jugador_invitado=jugador_invitado,
+            aceptada=False
+        )
+
+        messages.success(request, f"Invitación enviada a {jugador_invitado.nombre} {jugador_invitado.apellido}.")
+        return redirect(reverse('player_home'))
+    
+class ListarInvitacionesView(ListView):
+    template_name = 'player_home.html'
+    context_object_name = 'invitaciones'
+
+    def get_queryset(self):
+        # Obtiene las invitaciones del jugador actual
+        return Invitacion.objects.filter(jugador_invitado=self.request.user.jugador, aceptada=False)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['equipo'] = self.request.user.jugador.equipos_creados.first()
+        return context
+
+class AceptarInvitacionView(View):
+    def post(self, request, *args, **kwargs):
+        invitacion_id = self.kwargs.get('invitacion_id')
+        invitacion = get_object_or_404(Invitacion, id=invitacion_id)
+
+        # Verifica que la invitación no haya sido aceptada previamente
+        if invitacion.aceptada:
+            messages.warning(request, "Esta invitación ya ha sido aceptada.")
+            return redirect('player_home')
+
+        # Verifica que el jugador no esté ya en un equipo
+        if invitacion.jugador_invitado.equipo:
+            messages.warning(request, "Ya perteneces a un equipo.")
+            return redirect('player_home')
+
+        # Acepta la invitación
+        invitacion.aceptada = True
+        invitacion.save()
+
+        # Asigna el equipo al jugador
+        invitacion.jugador_invitado.equipo = invitacion.equipo
+        invitacion.jugador_invitado.save()
+
+        messages.success(request, f"Has aceptado la invitación para unirte a {invitacion.equipo.nombre}.")
+        return redirect('player_home')
+    
+class RechazarInvitacionView(View):
+    def post(self, request, *args, **kwargs):
+        invitacion_id = self.kwargs.get('invitacion_id')
+        invitacion = get_object_or_404(Invitacion, id=invitacion_id)
+
+        # Verifica que la invitación no haya sido aceptada previamente
+        if invitacion.aceptada:
+            messages.warning(request, "Esta invitación ya ha sido aceptada.")
+            return redirect('player_home')
+
+        invitacion.delete()
+
+        messages.success(request, "Has rechazado la invitación.")
         return redirect('player_home')
