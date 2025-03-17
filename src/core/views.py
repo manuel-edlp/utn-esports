@@ -14,6 +14,9 @@ class Home(TemplateView):
 class Faq(TemplateView):
     template_name = 'faq/faq.html'
 
+class Reglamento(TemplateView):
+    template_name = 'reglamento/reglamento.html'
+
 class Sponsors(TemplateView):
     template_name = 'sponsors/sponsors.html'
 
