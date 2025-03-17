@@ -8,32 +8,50 @@
     <h2>Bienvenido, {{ jugador.nombre }} {{ jugador.apellido }}</h2>
     <p>Esta es tu área personal. Aquí podrás adminitstrar tu equipo para la liga Leyendas del Sur</p>
 
-    <!-- Mostrar el equipo creado -->
-    {% if jugador.equipos_creados.all %}
-        <div class="team-card">
-            <h3>Tu Equipo</h3>
-            {% for equipo in jugador.equipos_creados.all %}
-                <div class="card">
-                    <img src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ equipo.nombre }} ({{equipo.abreviatura}})</h5>
-                        <p class="card-text">
-                            Estado de aprobación: 
-                            {{ equipo.aprobado|yesno:"Aprobado,Pendiente" }}
-                            <span class="help-icon" title="El estado de aprobación indica si tu equipo ha sido revisado y aprobado por los administradores de la liga.">?</span>
-                        </p>
-                        <div class="card-actions">
-                            <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit">Editar</a>
-                            <button class="btn btn-delete" 
-                                    data-equipo-id="{{ equipo.id }}" 
-                                    data-equipo-nombre="{{ equipo.nombre }}" 
-                                    onclick="mostrarModal(this)">Eliminar</button>
-                        </div>
-                        
-                    </div>
+    <!-- Muestra el equipo creado -->
+    {% if jugador.equipo %}
+        <!-- Muestra el equipo al que pertenece el jugador -->
+<div class="team-card">
+    <h3>Tu Equipo</h3>
+    {% if equipo %}
+        <div class="card">
+            <img src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
+            <div class="card-body">
+                <h5 class="card-title">{{ equipo.nombre }} ({{ equipo.abreviatura }})</h5>
+                <p class="card-text">
+                    Estado de aprobación: 
+                    {{ equipo.aprobado|yesno:"Aprobado,Pendiente" }}
+                    <span class="help-icon"
+                        title="El estado de aprobación indica si tu equipo ha sido revisado y aprobado por los administradores de la liga.">?</span>
+                </p>
+                <div class="card-actions">
+                    <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit">Editar</a>
+                    <button class="btn btn-delete" data-equipo-id="{{ equipo.id }}" data-equipo-nombre="{{ equipo.nombre }}"
+                        onclick="mostrarModal(this)">Eliminar</button>
                 </div>
-            {% endfor %}
+
+                <!-- Sección de Miembros -->
+                <div class="team-members">
+                    <h4>Miembros</h4>
+                    {% if equipo.miembros.all %}
+                        <ul class="members-list">
+                            {% for jugador in equipo.miembros.all %}
+                                <li>{{ jugador.nombre }} {{ jugador.apellido }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="no-members">Aún no hay miembros, invita a alguien.</p>
+                    {% endif %}
+                    <button class="btn-invite" onclick="mostrarModalInvitacion()">
+                        <span class="icon">+</span> Invitar
+                    </button>
+                </div>
+            </div>
         </div>
+    {% else %}
+        <p class="no-equipo">No perteneces a ningún equipo.</p>
+    {% endif %}
+</div>
     {% else %}
         <!-- Botón para crear equipo -->
         <div class="create-team-section">
@@ -43,6 +61,53 @@
             </a>
         </div>
     {% endif %}
+<!-- Muestra invitaciones pendientes -->
+<div class="invitaciones-container">
+    <h3>Invitaciones Pendientes</h3>
+    {% if invitaciones %}
+        <ul class="invitaciones-list">
+            {% for invitacion in invitaciones %}
+                <li class="invitacion-item">
+                    <div class="invitacion-info">
+                        <p>Te han invitado a unirte al equipo <strong>{{ invitacion.equipo.nombre }}</strong>.</p>
+                        <p>Invitado por: {{ invitacion.equipo.creado_por.nombre }} {{ invitacion.equipo.creado_por.apellido }}</p>
+                    </div>
+                    <div class="invitacion-actions">
+                        <form method="post" action="{% url 'aceptar_invitacion' invitacion.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-aceptar">Aceptar</button>
+                        </form>
+                        <form method="post" action="{% url 'rechazar_invitacion' invitacion.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-rechazar">Rechazar</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-invitaciones">No tienes invitaciones pendientes.</p>
+    {% endif %}
+</div>
+
+<!-- Modal de invitación -->
+<div id="modal-invitacion" class="modal">
+    <div class="modal-content">
+        <h3>Invitar a un Jugador</h3>
+        <p>Ingresa el correo electrónico de la persona a la que deseas invitar.</p>
+        {% if equipo %}
+            <form id="form-invitacion" method="post" action="{% url 'invitar_jugador' equipo.id %}">
+                {% csrf_token %}
+                <input type="email" id="email-invitacion" name="email" placeholder="Correo electrónico" required>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalInvitacion()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Enviar Invitación</button>
+                </div>
+            </form>
+        {% else %}
+            <p class="no-equipo">No tienes un equipo creado. Crea un equipo para poder invitar a otros jugadores.</p>
+        {% endif %}
+    </div>
 </div>
 
 <!-- Modal de confirmación de eliminación -->
@@ -67,7 +132,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semi-transparente */
+        background-color: rgba(0, 0, 0, 0.7);
         justify-content: center;
         align-items: center;
         z-index: 1000;
@@ -145,16 +210,16 @@
         color: #fff;
         padding: 15px;
         margin-bottom: 20px;
-        overflow: hidden; /* Evita que el contenido desborde */
+        overflow: hidden;
     }
 
     .card-img-top {
-        width: 100%; /* La imagen ocupa el 100% del ancho del contenedor */
-        max-width: 150px; /* Limita el ancho máximo de la imagen */
-        height: auto; /* Mantiene la proporción de la imagen */
+        width: 100%;
+        max-width: 150px;
+        height: auto;
         border-radius: 10px;
-        display: block; /* Asegura que la imagen no tenga espacio adicional */
-        margin: 0 auto 15px; /* Centra la imagen y añade margen inferior */
+        display: block;
+        margin: 0 auto 15px;
     }
 
     .card-title {
@@ -263,6 +328,230 @@
     z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
+
+
+/* Estilos para la sección de miembros */
+.team-members {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
+}
+
+.team-members h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.members-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.members-list li {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+
+.no-members {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.btn-invite {
+    background-color: #28a745;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-invite:hover {
+    background-color: #218838;
+}
+
+.btn-invite .icon {
+    font-size: 16px;
+}
+
+/* Estilos para el modal de invitación */
+#modal-invitacion {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#modal-invitacion .modal-content {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+#modal-invitacion h3 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #fff;
+}
+
+#modal-invitacion p {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+#modal-invitacion input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #3a3a3a;
+    color: #fff;
+    font-size: 14px;
+}
+
+#modal-invitacion input[type="email"]::placeholder {
+    color: #888;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-actions .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.modal-actions .btn-primary {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.modal-actions .btn-primary:hover {
+    background-color: #218838;
+}
+
+.modal-actions .btn-secondary {
+    background-color: #444;
+    color: #fff;
+}
+
+.modal-actions .btn-secondary:hover {
+    background-color: #555;
+}
+
+
+
+
+/* Estilos para el contenedor de invitaciones */
+.invitaciones-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.invitaciones-container h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.invitaciones-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.invitacion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #3a3a3a;
+    border-radius: 10px;
+    color: #fff;
+}
+
+.invitacion-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.invitacion-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-aceptar {
+    background-color: #28a745;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-rechazar {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-aceptar:hover {
+    background-color: #218838;
+}
+
+.btn-rechazar:hover {
+    background-color: #c82333;
+}
+
+.no-invitaciones {
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+}
+
+.no-equipo {
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+    margin-top: 10px;
+}
 </style>
 
 <script>
@@ -290,13 +579,34 @@
         modal.style.display = 'none';
     }
 
-    // Cerrar el modal si se hace clic fuera del contenido
+    // Cierra el modal si se hace clic fuera del contenido
     window.onclick = function(event) {
         const modal = document.getElementById('modal-eliminar');
         if (event.target === modal) {
             modal.style.display = 'none';
         }
     };
+
+
+// Función para mostrar el modal de invitación
+function mostrarModalInvitacion() {
+    const modal = document.getElementById('modal-invitacion');
+    modal.style.display = 'flex';
+}
+
+// Función para cerrar el modal de invitación
+function cerrarModalInvitacion() {
+    const modal = document.getElementById('modal-invitacion');
+    modal.style.display = 'none';
+}
+
+// Cerrar el modal si se hace clic fuera del contenido
+window.onclick = function(event) {
+    const modal = document.getElementById('modal-invitacion');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+};
 </script>
 
 {% endblock %}
