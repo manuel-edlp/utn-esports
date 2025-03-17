@@ -201,11 +201,23 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
     template_name = 'player/editar_equipo.html'
 
     def get(self, request, equipo_id, *args, **kwargs):
-        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+        
+        # Verifica si el jugador es miembro del equipo
+        if request.user.jugador not in equipo.miembros.all():
+            messages.error(request, "No tienes permisos para editar este equipo.")
+
         return render(request, self.template_name, {'equipo': equipo})
 
     def post(self, request, equipo_id, *args, **kwargs):
-        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+        
+        # Verifica si el jugador es miembro del equipo
+        if request.user.jugador not in equipo.miembros.all():
+            messages.error(request, "No tienes permisos para editar este equipo.")
+        
+
+        # Continuar con la actualización del equipo
         equipo.nombre = request.POST.get('nombre')
         equipo.abreviatura = request.POST.get('abreviatura')
         if 'logo' in request.FILES:
