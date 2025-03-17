@@ -49,6 +49,10 @@ class Jugador(Usuario):
     usuario_riot = models.CharField(max_length=40, unique=True)
     riot_id = models.CharField(max_length=40, unique=True)
 
+    # Relación ForeignKey con Equipo
+    equipo = models.ForeignKey('Equipo', on_delete=models.SET_NULL, null=True, blank=True, related_name='miembros')
+
+    
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
