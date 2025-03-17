@@ -95,7 +95,7 @@
     <div id="modal-invitacion" class="modal">
         <div class="modal-content">
             <h3>Invitar a un Jugador</h3>
-            <p>Ingresa el correo electrónico de la persona a la que deseas invitar.</p>
+            <p>Ingresa el correo electrónico de la persona a la que deseas invitar. (Debe estar previamente registrada)</p>
             {% if equipo %}
             <form id="form-invitacion" method="post" action="{% url 'invitar_jugador' equipo.id %}">
                 {% csrf_token %}
