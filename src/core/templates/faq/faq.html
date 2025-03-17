@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div class="expandable">
-                <p>Las reglas del torneo incluyen: respeto entre jugadores, prohibición de hacks o trampas, y cumplimiento de los horarios establecidos. Consulta el <a href="">Reglamento</a> para más detalless.</p>
+                <p>Las reglas del torneo incluyen: respeto entre jugadores, prohibición de hacks o trampas, y cumplimiento de los horarios establecidos. Consulta el <a href="{% url 'reglamento' %}">Reglamento</a> para más detalles.</p>
             </div>
         </div>
     </div>
@@ -85,7 +85,7 @@
                 </div>
             </div>
             <div class="expandable">
-                <p>El torneo se jugará en un formato de eliminación directa con partidas al mejor de uno (Bo1). Luego en las semifinales y en la final, se pasara a jugar al mejor de tres (Bo3). Para ver reglamento completo <a href="">haz click aquí</a>.</p>
+                <p>El torneo se jugará en un formato de eliminación directa con partidas al mejor de uno (Bo1). Luego en las semifinales y en la final, se pasara a jugar al mejor de tres (Bo3). Para ver el <a href="{% url 'reglamento' %}"> Reglamento</a> completo.</p>
             </div>
         </div>
     </div>
@@ -141,6 +141,7 @@
         box-sizing: border-box;
     }
 
+    
     .content {
         display: flex;
         justify-content: space-between;
@@ -199,6 +200,7 @@
     }
 
     .card-inner::before {
+        pointer-events: none;
         content: "";
         position: absolute;
         top: -5px;
