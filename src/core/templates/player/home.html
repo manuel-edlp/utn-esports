@@ -14,7 +14,7 @@
     <div class="team-card">
         <h3>Tu Equipo</h3>
         {% if equipo %}
-        <div class="card">
+        <div id="tarjeta" class="card">
             <img src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
             <div class="card-body">
                 <h5 class="card-title">{{ equipo.nombre }} ({{ equipo.abreviatura }})</h5>
@@ -219,8 +219,11 @@
             margin-top: 20px;
         }
 
-        .card {
+        #tarjeta{
             background-color: #202020c7 !important;
+        }
+        
+        .card {
             border-radius: 10px;
             border: none;
             color: #fff;
