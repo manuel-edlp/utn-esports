@@ -241,7 +241,17 @@ class EliminarEquipoView(LoginRequiredMixin, View):
         equipo.delete()
         messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
         return redirect('player_home')
-    
+
+class AbandonarEquipoView(LoginRequiredMixin, View):
+    def post(self, request, equipo_id, *args, **kwargs):
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+        if request.user.jugador in equipo.miembros.all():
+            equipo.miembros.remove(request.user.jugador)
+            messages.success(request, f"Has abandonado el equipo '{equipo.nombre}' exitosamente.")
+            return redirect('player_home')
+        else:
+            messages.error(request, "Error. No eres miembro de este equipo.")
+            return redirect('player_home')
 
 class InvitarJugadorView(View):
     def post(self, request, *args, **kwargs):
