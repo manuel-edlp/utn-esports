@@ -24,7 +24,7 @@ class Sponsors(TemplateView):
 
 class RegistroView(View):
     template_name = "register/register.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("login")
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -36,9 +36,9 @@ class RegistroView(View):
         dni = request.POST.get("dni")
         telefono = request.POST.get("telefono")
         pais = request.POST.get("pais")
+        legajo = request.POST.get("legajo")
 
         # Paso 2: Datos de Riot
-        usuario_riot = request.POST.get("riot-username")
         riot_id = request.POST.get("riot-tag")
 
         # Paso 3: Credenciales
@@ -72,10 +72,10 @@ class RegistroView(View):
                 nombre=nombre,
                 apellido=apellido,
                 dni=dni,
+                legajo=legajo,
                 email=email,
                 telefono=telefono,
                 pais=pais,
-                usuario_riot=usuario_riot,
                 riot_id=riot_id
             )
         except Exception as e:
@@ -189,6 +189,11 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
                 creado_por=request.user.jugador
             )
             equipo.save()
+
+            # Asocia el equipo al jugador que lo creos
+            jugador = request.user.jugador
+            jugador.equipo = equipo
+            jugador.save()
 
             # Mensaje de éxito
             messages.success(request, f"Equipo '{equipo.nombre}' creado exitosamente.")
