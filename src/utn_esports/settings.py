@@ -37,6 +37,7 @@ if env('DEBUG') == True:
 
 SESSION_COOKIE_AGE = 60*60*1  # 1 hs
 
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 

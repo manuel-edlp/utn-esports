@@ -10,6 +10,15 @@
         Tu navegador no soporta el video.
     </video>
     <div class="login-container">
+        {% if messages %}
+            {% for message in messages %}
+                {% if 'session_expired' in message.tags %}
+                    <div class="alert alert-warning">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
         <h2>Iniciar Sesión</h2>
          <p>Ingresa a tu cuenta para participar en el torneo.</p>
  
@@ -145,6 +154,17 @@
 
     .register-link a:hover {
         text-decoration: underline;
+    }
+
+    .alert.alert-warning {
+        background-color: #ffcc00;
+        color: #000;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        border: 1px solid #e6b800;
+        text-align: center;
     }
 </style>
 

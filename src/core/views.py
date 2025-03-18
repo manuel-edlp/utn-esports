@@ -89,6 +89,9 @@ class LoginView(TemplateView):
     template_name = 'login/login.html'
 
     def get(self, request, *args, **kwargs):
+        # Compruebo si hay un parámetro 'next' en la URL, lo que indica que la sesión ha expirado
+        if request.GET.get('next'):
+            messages.warning(request, "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.", extra_tags='session_expired')
         return render(request, self.template_name)
     
     def post(self, request, *args, **kwargs):
