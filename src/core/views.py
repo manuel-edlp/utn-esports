@@ -273,7 +273,7 @@ class InvitarJugadorView(View):
             return JsonResponse({'error': "No se encontró un jugador con ese correo electrónico."}, status=400)
 
         if Invitacion.objects.filter(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False).exists():
-            return JsonResponse({'warning': "Ya has enviado una invitación a este jugador."}, status=200)
+            return JsonResponse({'warning': "El jugador ya ha recibido una invitación para este equipo."}, status=200)
 
         Invitacion.objects.create(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False)
         return JsonResponse({'success': f"Invitación enviada a {jugador_invitado.nombre} {jugador_invitado.apellido}."}, status=200)
