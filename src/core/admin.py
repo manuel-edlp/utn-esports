@@ -5,8 +5,8 @@ from .models import Usuario, Jugador, Staff, Equipo, Invitacion
 
 @admin.register(Jugador)
 class JugadorAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'usuario_riot', 'riot_id', 'telefono', 'pais')
-    search_fields = ('nombre', 'apellido', 'usuario_riot', 'riot_id')
+    list_display = ('nombre', 'apellido', 'legajo', 'riot_id', 'telefono', 'pais')
+    search_fields = ('nombre', 'apellido', 'legajo','riot_id')
 
 @admin.register(Staff)
 class StaffAdmin(admin.ModelAdmin):
