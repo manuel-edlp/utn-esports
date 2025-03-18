@@ -36,7 +36,6 @@ class RegistroView(View):
         pais = request.POST.get("pais")
 
         # Paso 2: Datos de Riot
-        usuario_riot = request.POST.get("riot-username")
         riot_id = request.POST.get("riot-tag")
 
         # Paso 3: Credenciales
@@ -73,7 +72,6 @@ class RegistroView(View):
                 email=email,
                 telefono=telefono,
                 pais=pais,
-                usuario_riot=usuario_riot,
                 riot_id=riot_id
             )
         except Exception as e:

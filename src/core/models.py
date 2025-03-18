@@ -46,7 +46,6 @@ class Jugador(Usuario):
     foto = models.ImageField(upload_to='fotos/', blank=True, null=True)
 
     # Datos de Riot
-    usuario_riot = models.CharField(max_length=40, unique=True)
     riot_id = models.CharField(max_length=40, unique=True)
 
     # Relación ForeignKey con Equipo
