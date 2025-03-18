@@ -298,12 +298,12 @@ class AceptarInvitacionView(View):
 
         # Verifica que la invitación no haya sido aceptada previamente
         if invitacion.aceptada:
-            messages.warning(request, "Esta invitación ya ha sido aceptada.")
+            messages.warning(request, "Esta invitación ya ha sido aceptada.", extra_tags='invitacion')
             return redirect('player_home')
 
         # Verifica que el jugador no esté ya en un equipo
         if invitacion.jugador_invitado.equipo:
-            messages.warning(request, "Ya perteneces a un equipo.")
+            messages.warning(request, "Ya perteneces a un equipo.", extra_tags='invitacion')
             return redirect('player_home')
 
         # Acepta la invitación
