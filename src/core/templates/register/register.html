@@ -39,6 +39,21 @@
                     <label for="dni">DNI (Documento Nacional de Identidad)</label>
                     <input type="text" id="dni" name="dni" required placeholder="Ingresa tu DNI">
                 </div>
+
+                <div class="form-group">
+                    <label for="pertenece-utn">¿Perteneces a la UTN FRLP?</label>
+                    <select id="pertenece-utn" name="pertenece-utn" required>
+                        <option value="">Selecciona...</option>
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="legajo-group" style="display:none;">
+                    <label for="legajo">Legajo</label>
+                    <input type="text" id="legajo" name="legajo" placeholder="Ingresa tu legajo">
+                </div>
+
                 <div class="form-group">
                     <label for="telefono">Teléfono celular (con código de pais y de area)</label>
                     <input type="text" id="telefono" name="telefono" required
@@ -54,11 +69,6 @@
             <!-- Paso 2: Datos de Riot -->
             <div class="form-step" data-step="2">
                 <h3>Datos de Riot</h3>
-                <div class="form-group">
-                    <label for="riot-username">Nombre de usuario de Riot</label>
-                    <input type="text" id="riot-username" name="riot-username" required
-                        placeholder="Ingresa tu nombre de usuario de Riot">
-                </div>
                 <div class="form-group">
                     <label for="riot-tag">Riot ID</label>
                     <input type="text" id="riot-tag" name="riot-tag" required
@@ -256,6 +266,36 @@
         outline: none;
     }
 
+
+    #pertenece-utn {
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border: 1px solid #444;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    /* Estilo cuando el select está en focus */
+    #pertenece-utn:focus {
+        outline: none;
+        border-color: #2781c3;
+    }
+
+    /* Estilo para las opciones dentro del select */
+    #pertenece-utn option {
+        background-color: #000000b3;
+        color: #fff;
+    }
+
+    /* Cambio de color para la opción seleccionada */
+    #pertenece-utn option:checked {
+        background-color: #2781c3;
+    }
+
+
     /* Botones */
     .next-button, .prev-button, .register-button {
         background-color: #2781c3;
@@ -353,7 +393,15 @@
             });
         });
 
-
+        // Mouestra u oculta el campo de legajo según si el usuario pertenece a la UTN o no
+        document.getElementById('pertenece-utn').addEventListener('change', function() {
+            const legajoGroup = document.getElementById('legajo-group');
+            if (this.value === 'si') {
+                legajoGroup.style.display = 'block';
+            } else {
+                legajoGroup.style.display = 'none';
+            }
+        });
 
         // Habilitacion del Boton registrarse segun el checkbox de terminos y condiciones
 
