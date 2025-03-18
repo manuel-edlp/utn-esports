@@ -16,7 +16,7 @@
     </video>
 </div>
 
-<div class="container">
+<div class="container-card">
     <div class="card">
         <div class="card-inner">
             <div class="content">
@@ -113,7 +113,7 @@
         color: rgb(255, 255, 255);
     }
 
-    .container {
+    .container-card {
         display: grid;
         grid-template-columns: repeat(2, minmax(300px, 1fr)); /* 2 columnas */
         gap: 20px;
@@ -222,7 +222,7 @@
     }
 
     @media (max-width: 768px) {
-        .container {
+        .container-card {
             grid-template-columns: repeat(1, minmax(300px, 1fr)); /* 1 columna en pantallas pequeñas */
         }
     }
