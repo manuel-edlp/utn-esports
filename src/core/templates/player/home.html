@@ -28,6 +28,10 @@
                     <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit">Editar</a>
                     <button class="btn btn-delete" data-equipo-id="{{ equipo.id }}"
                         data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)">Eliminar</button>
+
+                    <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
+                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)">Abandonar Equipo</button>
+
                 </div>
 
                 <!-- Sección de Miembros -->
@@ -117,7 +121,7 @@
     <div id="modal-eliminar" class="modal">
         <div class="modal-content">
             <h3 id="modal-titulo"></h3>
-            <p>Esta acción no se puede deshacer.</p>
+            <p>¿Estas seguro que deseas eliminar este equipo?</p>
             <form id="form-eliminar" method="post" action="">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-delete">Eliminar</button>
@@ -125,6 +129,19 @@
             </form>
         </div>
     </div>
+
+        <!-- Modal de confirmación de abandonar equipo -->
+        <div id="modal-abandonar" class="modal">
+            <div class="modal-content">
+                <h3 id="modal-titulo"></h3>
+                <p>¿Estas seguro que deseas abandonar este equipo?</p>
+                <form id="form-abandonar" method="post" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-delete">Abandonar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                </form>
+            </div>
+        </div>
 
     <style>
         body::before {
@@ -222,7 +239,7 @@
         #tarjeta{
             background-color: #202020c7 !important;
         }
-        
+
         .card {
             border-radius: 10px;
             border: none;
@@ -552,6 +569,10 @@
             font-size: 14px;
         }
 
+        #btn-abandonar{
+            background-color: #dc5635 !important;
+        }
+
         .btn-aceptar:hover {
             background-color: #218838;
         }
@@ -628,6 +649,39 @@
         // Cierra el modal eliminar si se hace clic fuera del contenido
         window.onclick = function (event) {
             const modal = document.getElementById('modal-eliminar');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+
+        // Función para mostrar el modal abandonar
+        function mostrarModal(button) {
+            const modal = document.getElementById('modal-abandonar');
+            const form = document.getElementById('form-abandonar');
+            const modalTitulo = document.getElementById('modal-titulo');
+            const equipoId = button.dataset.equipoId;
+            const equipoNombre = button.dataset.equipoNombre;
+
+            // título del modal
+            modalTitulo.textContent = `¿Estás seguro de abandonar el equipo "${equipoNombre}"?`;
+
+            // acción del formulario para abandonar el equipo específico
+            form.action = `/player/abandonar_equipo/${equipoId}/`;
+
+            // Mostrar el modal
+            modal.style.display = 'flex';
+        }
+
+        // Función para cerrar el modal de abandonar
+        function cerrarModal() {
+            const modal = document.getElementById('modal-abandonar');
+            modal.style.display = 'none';
+        }
+
+        // Cierra el modal abandonar si se hace clic fuera del contenido
+        window.onclick = function (event) {
+            const modal = document.getElementById('modal-abandonar');
             if (event.target === modal) {
                 modal.style.display = 'none';
             }
