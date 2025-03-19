@@ -13,32 +13,64 @@
 
     <div class="profile-info">
         <h3>Datos de tu perfil</h3>
-        <div class="profile-field">
-            <strong>Nombre:</strong> {{ jugador.nombre }}
+
+        <!-- Sección de la foto de perfil -->
+        <div class="profile-photo-section">
+            {% if jugador.foto %}
+                <img src="{{ jugador.foto.url }}" alt="Foto de {{ jugador.nombre }}" class="profile-photo">
+            {% else %}
+                <div class="no-photo">
+                    <span class="icon">📷</span>
+                    <p>No has subido una foto</p>
+                </div>
+            {% endif %}
         </div>
-        <div class="profile-field">
-            <strong>Apellido:</strong> {{ jugador.apellido }}
-        </div>
-        <div class="profile-field">
-            <strong>DNI:</strong> {{ jugador.dni }}
-        </div>
-        <div class="profile-field">
-            <strong>Teléfono:</strong> {{ jugador.telefono }}
-        </div>
-        <div class="profile-field">
-            <strong>Telegram:</strong> {{ jugador.telegram }}
-        </div>
-        <div class="profile-field">
-            <strong>País:</strong> {{ jugador.pais }}
-        </div>
-        <div class="profile-field">
-            <strong>Legajo:</strong> {{ jugador.leagajo }}
-        </div>
-        <div class="profile-field">
-            <strong>Riot ID:</strong> {{ jugador.riot_id }}
-        </div>
-        <div class="profile-field">
-            <strong>Correo electrónico:</strong> {{ jugador.email }}
+
+        <!-- Sección de los datos del perfil -->
+        <div class="profile-details">
+            <div class="profile-field">
+                <span class="field-label">Nombre:</span>
+                <span class="field-value">{{ jugador.nombre }}</span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Apellido:</span>
+                <span class="field-value">{{ jugador.apellido }}</span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">DNI:</span>
+                <span class="field-value">{{ jugador.dni }}</span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Teléfono:</span>
+                <span class="field-value">{{ jugador.telefono }}</span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Telegram:</span>
+                <span class="field-value">{{ jugador.telegram }}</span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">País:</span>
+                <span class="field-value">{{ jugador.pais }}</span>
+            </div>
+            {% if jugador.leagajo %}
+                <div class="profile-field">
+                    <span class="field-label">Legajo:</span>
+                    <span class="field-value">{{ jugador.legajo }}</span>
+                </div>
+            {% else %}
+            <div class="profile-field">
+                <span class="field-label">Legajo:</span>
+                <span class="field-value"> - </span>
+            </div>
+            {% endif %}
+            <div class="profile-field">
+                <span class="field-label">Riot ID:</span>
+                <span class="field-value">{{ jugador.riot_id }}</span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">Correo electrónico:</span>
+                <span class="field-value">{{ jugador.email }}</span>
+            </div>
         </div>
     </div>
 </div>
