@@ -54,7 +54,7 @@
                 <strong>Alias:</strong> leyendas.del.sur
                 <strong>CBU:</strong> 0000003100065678901234
             </p>
-            <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/png, image/jpeg, image/jpg, application/zip, application/x-rar-compressed">
+            <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/png, image/jpeg, image/jpg, application/zip, .rar">
                 {% if equipo.comprobante_pago %}
                     <p>Comprobante actual: <a href="{{ equipo.comprobante_pago.url }}" target="_blank">{{ equipo.comprobante_pago.name }}</a></p>
                 {% endif %}
