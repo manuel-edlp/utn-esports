@@ -1,0 +1,280 @@
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../images/jinx-1.png");
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px);
+    z-index: -1;
+}
+
+/* Estilo para el banner de video */
+#video-banner {
+    width: 100%;
+    max-height: 900px;
+    overflow: hidden;
+}
+
+#quienes-somos {
+    scroll-margin-top: 70px;
+}
+
+#inscripcion {
+    scroll-margin-top: 70px;
+}
+
+.iframe-container {
+    position: relative;
+    width: 80%;
+    padding-top: 56.25%; /* Relación de aspecto 16:9 (altura automática) */
+    height: 0;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Estilo para las secciones con fondo, bordes redondeados y opacidad */
+.section-style {
+    background-color: rgba(0, 0, 0, 0.35);
+    border-radius: 10px;
+    padding: 40px;
+    color: rgb(255, 255, 255);
+}
+
+#titulo {
+    font-size: 50px;
+    font-weight: bold;
+}
+
+#inicio{
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    background-image: url("{% static 'images/image3.png' %}");
+    background-size: 100% 100%; /* Estira la imagen tanto en ancho como en alto */
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 50vh; /* Asegura que el contenedor tenga al menos el 50% de la altura de la ventana */
+}
+
+#video-banner{
+    margin-top: 0px !important;
+}
+.section-style h1,
+.section-style h2 {
+    margin-bottom: 20px;
+}
+
+.section-style p {
+    font-size: 1.2rem;
+}
+
+
+button {
+    position: relative;
+    width: 11em;
+    height: 4em;
+    outline: none;
+    transition: 0.1s;
+    background-color: transparent;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ddebf0;
+}
+
+#inscribirse-btn {
+    --color: #2761c3;
+    position: absolute;
+    top: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border: 5px double var(--color);
+    box-shadow: inset 0px 0px 15px #195480;
+    -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+.arrow {
+    position: absolute;
+    transition: 0.2s;
+    background-color: #2761c3;
+    top: 35%;
+    width: 11%;
+    height: 30%;
+}
+
+#leftArrow {
+    left: -13.5%;
+    -webkit-clip-path: polygon(100% 0, 100% 100%, 0 50%);
+}
+
+#rightArrow {
+    -webkit-clip-path: polygon(100% 49%, 0 0, 0 100%);
+    left: 111%;
+}
+
+button:hover #rightArrow {
+    background-color: #315594;
+    left: -15%;
+    animation: 0.6s ease-in-out both infinite alternate rightArrow8;
+}
+
+button:hover #leftArrow {
+    background-color: #315594;
+    left: 108%;
+    animation: 0.6s ease-in-out both infinite alternate leftArrow8;
+}
+
+.corner {
+    position: absolute;
+    width: 4em;
+    height: 4em;
+    background-color: #468aff;
+    box-shadow: inset 1px 1px 8px #2781c3;
+    transform: scale(1) rotate(45deg);
+    transition: 0.2s;
+}
+
+#rightTop {
+    top: -1.98em;
+    left: 91%;
+}
+
+#leftTop {
+    top: -1.96em;
+    left: -3.0em;
+}
+
+#leftBottom {
+    top: 2.10em;
+    left: -2.15em;
+}
+
+#rightBottom {
+    top: 45%;
+    left: 88%;
+}
+
+button:hover #leftTop {
+    animation: 0.1s ease-in-out 0.05s both changeColor8,
+        0.2s linear 0.4s both lightEffect8;
+}
+
+button:hover #rightTop {
+    animation: 0.1s ease-in-out 0.15s both changeColor8,
+        0.2s linear 0.4s both lightEffect8;
+}
+
+button:hover #rightBottom {
+    animation: 0.1s ease-in-out 0.25s both changeColor8,
+        0.2s linear 0.4s both lightEffect8;
+}
+
+button:hover #leftBottom {
+    animation: 0.1s ease-in-out 0.35s both changeColor8,
+        0.2s linear 0.4s both lightEffect8;
+}
+
+button:hover .corner {
+    transform: scale(1.25) rotate(45deg);
+}
+
+button:hover #clip {
+    animation: 0.2s ease-in-out 0.55s both greenLight8;
+    --color: #315594;
+}
+
+@keyframes changeColor8 {
+    from {
+        background-color: #2781c3;
+    }
+
+    to {
+        background-color: #315594;
+    }
+}
+
+@keyframes lightEffect8 {
+    from {
+        box-shadow: 1px 1px 5px #315594;
+    }
+
+    to {
+        box-shadow: 0 0 2px #315594;
+    }
+}
+
+@keyframes greenLight8 {
+    from {}
+
+    to {
+        box-shadow: inset 0px 0px 32px #315594;
+    }
+}
+
+@keyframes leftArrow8 {
+    from {
+        transform: translate(0px);
+    }
+
+    to {
+        transform: translateX(10px);
+    }
+}
+
+@keyframes rightArrow8 {
+    from {
+        transform: translate(0px);
+    }
+
+    to {
+        transform: translateX(-10px);
+    }
+}
+
+#aviso-legal{
+    font-size: 0.9rem; 
+    margin-top: 20px;
+    color: #ccc;
+}
+
+
+
+@media screen and (max-width: 700px) {
+#inicio {
+    height: auto;
+    padding: 15px;
+}
+
+#titulo {
+    font-size: 30px;
+    margin-top: 20px;
+}
+
+#video-banner {
+    max-height: 300px;
+    margin-bottom: 0px !important;
+}
+
+#quienes-somos {
+    margin-top: 15px !important;
+}
+}
