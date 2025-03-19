@@ -5,7 +5,7 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url("{% static 'images/akali.png' %}");
+    background-image: url("../../images/akali.png");
     background-size: cover;
     background-position: center;
     filter: blur(30px);

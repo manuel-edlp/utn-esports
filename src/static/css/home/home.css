@@ -67,7 +67,7 @@ body::before {
 
     margin-top: 0px !important;
     margin-bottom: 0px !important;
-    background-image: url("{% static 'images/image3.png' %}");
+    background-image: url("../../images/image3.png");
     background-size: 100% 100%; /* Estira la imagen tanto en ancho como en alto */
     background-position: center;
     background-repeat: no-repeat;
