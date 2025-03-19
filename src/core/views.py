@@ -1,3 +1,5 @@
+import json
+from django.http import JsonResponse
 from django.views.generic import TemplateView, RedirectView, ListView
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -22,7 +24,7 @@ class Sponsors(TemplateView):
 
 class RegistroView(View):
     template_name = "register/register.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("login")
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -34,6 +36,7 @@ class RegistroView(View):
         dni = request.POST.get("dni")
         telefono = request.POST.get("telefono")
         pais = request.POST.get("pais")
+        legajo = request.POST.get("legajo")
 
         # Paso 2: Datos de Riot
         riot_id = request.POST.get("riot-tag")
@@ -69,6 +72,7 @@ class RegistroView(View):
                 nombre=nombre,
                 apellido=apellido,
                 dni=dni,
+                legajo=legajo,
                 email=email,
                 telefono=telefono,
                 pais=pais,
@@ -85,6 +89,9 @@ class LoginView(TemplateView):
     template_name = 'login/login.html'
 
     def get(self, request, *args, **kwargs):
+        # Compruebo si hay un parámetro 'next' en la URL, lo que indica que la sesión ha expirado
+        if request.GET.get('next'):
+            messages.warning(request, "Tu sesión ha expirado. Por favor, inicia sesión nuevamente.", extra_tags='session_expired')
         return render(request, self.template_name)
     
     def post(self, request, *args, **kwargs):
@@ -186,6 +193,11 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
             )
             equipo.save()
 
+            # Asocia el equipo al jugador que lo creos
+            jugador = request.user.jugador
+            jugador.equipo = equipo
+            jugador.save()
+
             # Mensaje de éxito
             messages.success(request, f"Equipo '{equipo.nombre}' creado exitosamente.")
             return redirect('player_home')
@@ -199,11 +211,23 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
     template_name = 'player/editar_equipo.html'
 
     def get(self, request, equipo_id, *args, **kwargs):
-        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+        
+        # Verifica si el jugador es miembro del equipo
+        if request.user.jugador not in equipo.miembros.all():
+            messages.error(request, "No tienes permisos para editar este equipo.")
+
         return render(request, self.template_name, {'equipo': equipo})
 
     def post(self, request, equipo_id, *args, **kwargs):
-        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+        
+        # Verifica si el jugador es miembro del equipo
+        if request.user.jugador not in equipo.miembros.all():
+            messages.error(request, "No tienes permisos para editar este equipo.")
+        
+
+        # Continuar con la actualización del equipo
         equipo.nombre = request.POST.get('nombre')
         equipo.abreviatura = request.POST.get('abreviatura')
         if 'logo' in request.FILES:
@@ -220,34 +244,39 @@ class EliminarEquipoView(LoginRequiredMixin, View):
         equipo.delete()
         messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
         return redirect('player_home')
-    
+
+class AbandonarEquipoView(LoginRequiredMixin, View):
+    def post(self, request, equipo_id, *args, **kwargs):
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+        if request.user.jugador in equipo.miembros.all():
+            equipo.miembros.remove(request.user.jugador)
+            messages.success(request, f"Has abandonado el equipo '{equipo.nombre}' exitosamente.")
+            return redirect('player_home')
+        else:
+            messages.error(request, "Error. No eres miembro de este equipo.")
+            return redirect('player_home')
 
 class InvitarJugadorView(View):
     def post(self, request, *args, **kwargs):
-        email = request.POST.get('email')
-        equipo_id = self.kwargs.get('equipo_id')  # Obtiene el ID del equipo desde la URL
+        try:
+            data = json.loads(request.body)  # Decodifica el JSON
+            email = data.get('email', '').strip().lower()  # Normaliza el correo
+        except json.JSONDecodeError:
+            return JsonResponse({'error': "Formato de datos inválido."}, status=400)
+
+        equipo_id = self.kwargs.get('equipo_id')
         equipo = get_object_or_404(Equipo, id=equipo_id)
 
-        # Busca al jugador por su email
         try:
             jugador_invitado = Jugador.objects.get(email=email)
         except Jugador.DoesNotExist:
-            messages.error(request, "No se encontró un jugador con ese correo electrónico.")
-            return redirect(reverse('player_home'))
+            return JsonResponse({'error': "No se encontró un jugador con ese correo electrónico."}, status=400)
 
-        # Verifica si ya existe una invitación pendiente para este jugador
         if Invitacion.objects.filter(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False).exists():
-            messages.warning(request, "Ya has enviado una invitación a este jugador.")
-            return redirect(reverse('player_home'))
+            return JsonResponse({'warning': "El jugador ya ha recibido una invitación para este equipo."}, status=200)
 
-        Invitacion.objects.create(
-            equipo=equipo,
-            jugador_invitado=jugador_invitado,
-            aceptada=False
-        )
-
-        messages.success(request, f"Invitación enviada a {jugador_invitado.nombre} {jugador_invitado.apellido}.")
-        return redirect(reverse('player_home'))
+        Invitacion.objects.create(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False)
+        return JsonResponse({'success': f"Invitación enviada a {jugador_invitado.nombre} {jugador_invitado.apellido}."}, status=200)
     
 class ListarInvitacionesView(ListView):
     template_name = 'player_home.html'
@@ -269,12 +298,12 @@ class AceptarInvitacionView(View):
 
         # Verifica que la invitación no haya sido aceptada previamente
         if invitacion.aceptada:
-            messages.warning(request, "Esta invitación ya ha sido aceptada.")
+            messages.warning(request, "Esta invitación ya ha sido aceptada.", extra_tags='invitacion')
             return redirect('player_home')
 
         # Verifica que el jugador no esté ya en un equipo
         if invitacion.jugador_invitado.equipo:
-            messages.warning(request, "Ya perteneces a un equipo.")
+            messages.warning(request, "Ya perteneces a un equipo.", extra_tags='invitacion')
             return redirect('player_home')
 
         # Acepta la invitación

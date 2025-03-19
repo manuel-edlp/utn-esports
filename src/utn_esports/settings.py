@@ -37,6 +37,7 @@ if env('DEBUG') == True:
 
 SESSION_COOKIE_AGE = 60*60*1  # 1 hs
 
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -143,11 +144,15 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JS, imágenes)
+# Define la URL con la que se accederá a los archivos estáticos a través del navegador.
 STATIC_URL = '/static/'
 
+# Para producción: la carpeta donde se recopilarán los archivos estáticos.
+STATIC_ROOT = BASE_DIR / 'public/static'
+
+# Para desarrollo: la carpeta donde están tus archivos estáticos, por ejemplo, CSS, JS, etc.
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'core', 'static'),
+    BASE_DIR / 'static',
 ]
 
 

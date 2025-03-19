@@ -2,6 +2,10 @@
 
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login/login.css' %}">
+{% endblock %}
+
 {% block main %}
 
 <section class="login-section">
@@ -18,117 +22,7 @@
 
 <style>
 
-    #video-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: calc(100vh - 100px);
-        object-fit: cover;
-        z-index: -1;
-    }
-
-    .login-section {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: calc(100vh - 100px);
-        padding: 20px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .login-container {
-        background-color: #00000096;
-        margin-top: 20px;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        max-width: 500px;
-        width: 100%;
-        text-align: center;
-    }
-
-    .login-container h2 {
-        margin-bottom: 10px;
-        font-size: 24px;
-        color: #ffffff;
-    }
-
-    .login-container p {
-        margin-bottom: 20px;
-        font-size: 14px;
-        color: #ffffff;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-        text-align: left;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-size: 14px;
-        color: #fff;
-    }
-
-    .form-group input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #444;
-        border-radius: 5px;
-        background-color: #000000b3;
-        color: #fff;
-        font-size: 14px;
-    }
-
-    h3{
-        color: white;
-    }
-
-    .form-group input::placeholder {
-        color: #888;
-    }
-
-    .form-group input:focus {
-        border-color: #2781c3;
-        outline: none;
-    }
-
-    .login-button {
-        background-color: #2781c3;
-        color: #ffffff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .login-button:hover {
-        background-color: #1e76b4;
-    }
-
-    .register-link {
-        margin-top: 15px;
-        font-size: 14px;
-        color: #ccc;
-    }
-
-    .register-link a {
-        color: #2781c3;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .register-link a:hover {
-        text-decoration: underline;
-    }
+  
 </style>
 
 {% endblock %}
