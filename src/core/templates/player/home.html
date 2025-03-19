@@ -133,167 +133,167 @@
     </div>
 </div>
 
-    <!-- Modal de confirmación de eliminación -->
-    <div id="modal-eliminar" class="modal">
-        <div class="modal-content">
-            <h3 id="modal-titulo"></h3>
-            <p>¿Estas seguro que deseas eliminar este equipo?</p>
-            <form id="form-eliminar" method="post" action="">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-delete">Eliminar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-            </form>
-        </div>
+<!-- Modal de confirmación de eliminación -->
+<div id="modal-eliminar" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-titulo"></h3>
+        <p>¿Estas seguro que deseas eliminar este equipo?</p>
+        <form id="form-eliminar" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-delete">Eliminar</button>
+            <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        </form>
     </div>
+</div>
 
-        <!-- Modal de confirmación de abandonar equipo -->
-        <div id="modal-abandonar" class="modal">
-            <div class="modal-content">
-                <h3 id="modal-titulo"></h3>
-                <p>¿Estas seguro que deseas abandonar este equipo?</p>
-                <form id="form-abandonar" method="post" action="">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-delete">Abandonar</button>
-                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                </form>
-            </div>
-        </div>
+<!-- Modal de confirmación de abandonar equipo -->
+<div id="modal-abandonar" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-titulo"></h3>
+        <p>¿Estas seguro que deseas abandonar este equipo?</p>
+        <form id="form-abandonar" method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-delete">Abandonar</button>
+            <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        </form>
+    </div>
+</div>
 
-    <script>
-        // Función para borrar los mensajes de error y éxito
-        function borrarMensajes() {
-            // Borra el texto de los mensajes de error y éxito
-            document.getElementById('mensaje-error').textContent = '';
-            document.getElementById('mensaje-exito').textContent = '';
-        }
+<script>
+    // Función para borrar los mensajes de error y éxito
+    function borrarMensajes() {
+        // Borra el texto de los mensajes de error y éxito
+        document.getElementById('mensaje-error').textContent = '';
+        document.getElementById('mensaje-exito').textContent = '';
+    }
 
 
-        // Función para mostrar el modal eliminar
-        function mostrarModal(button) {
-            const modal = document.getElementById('modal-eliminar');
-            const form = document.getElementById('form-eliminar');
-            const modalTitulo = document.getElementById('modal-titulo');
-            const equipoId = button.dataset.equipoId;
-            const equipoNombre = button.dataset.equipoNombre;
+    // Función para mostrar el modal eliminar
+    function mostrarModal(button) {
+        const modal = document.getElementById('modal-eliminar');
+        const form = document.getElementById('form-eliminar');
+        const modalTitulo = document.getElementById('modal-titulo');
+        const equipoId = button.dataset.equipoId;
+        const equipoNombre = button.dataset.equipoNombre;
 
-            // título del modal
-            modalTitulo.textContent = `¿Estás seguro de eliminar el equipo "${equipoNombre}"?`;
+        // título del modal
+        modalTitulo.textContent = `¿Estás seguro de eliminar el equipo "${equipoNombre}"?`;
 
-            // acción del formulario para eliminar el equipo específico
-            form.action = `/player/eliminar_equipo/${equipoId}/`;
+        // acción del formulario para eliminar el equipo específico
+        form.action = `/player/eliminar_equipo/${equipoId}/`;
 
-            // Mostrar el modal
-            modal.style.display = 'flex';
-        }
+        // Mostrar el modal
+        modal.style.display = 'flex';
+    }
 
-        // Función para cerrar el modal de eliminar
-        function cerrarModal() {
-            const modal = document.getElementById('modal-eliminar');
+    // Función para cerrar el modal de eliminar
+    function cerrarModal() {
+        const modal = document.getElementById('modal-eliminar');
+        modal.style.display = 'none';
+    }
+
+    // Cierra el modal eliminar si se hace clic fuera del contenido
+    window.onclick = function (event) {
+        const modal = document.getElementById('modal-eliminar');
+        if (event.target === modal) {
             modal.style.display = 'none';
         }
-
-        // Cierra el modal eliminar si se hace clic fuera del contenido
-        window.onclick = function (event) {
-            const modal = document.getElementById('modal-eliminar');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
+    };
 
 
-        // Función para mostrar el modal abandonar
-        function mostrarModal(button) {
-            const modal = document.getElementById('modal-abandonar');
-            const form = document.getElementById('form-abandonar');
-            const modalTitulo = document.getElementById('modal-titulo');
-            const equipoId = button.dataset.equipoId;
-            const equipoNombre = button.dataset.equipoNombre;
+    // Función para mostrar el modal abandonar
+    function mostrarModal(button) {
+        const modal = document.getElementById('modal-abandonar');
+        const form = document.getElementById('form-abandonar');
+        const modalTitulo = document.getElementById('modal-titulo');
+        const equipoId = button.dataset.equipoId;
+        const equipoNombre = button.dataset.equipoNombre;
 
-            // título del modal
-            modalTitulo.textContent = `¿Estás seguro de abandonar el equipo "${equipoNombre}"?`;
+        // título del modal
+        modalTitulo.textContent = `¿Estás seguro de abandonar el equipo "${equipoNombre}"?`;
 
-            // acción del formulario para abandonar el equipo específico
-            form.action = `/player/abandonar_equipo/${equipoId}/`;
+        // acción del formulario para abandonar el equipo específico
+        form.action = `/player/abandonar_equipo/${equipoId}/`;
 
-            // Mostrar el modal
-            modal.style.display = 'flex';
-        }
+        // Mostrar el modal
+        modal.style.display = 'flex';
+    }
 
-        // Función para cerrar el modal de abandonar
-        function cerrarModal() {
-            const modal = document.getElementById('modal-abandonar');
+    // Función para cerrar el modal de abandonar
+    function cerrarModal() {
+        const modal = document.getElementById('modal-abandonar');
+        modal.style.display = 'none';
+    }
+
+    // Cierra el modal abandonar si se hace clic fuera del contenido
+    window.onclick = function (event) {
+        const modal = document.getElementById('modal-abandonar');
+        if (event.target === modal) {
             modal.style.display = 'none';
         }
-
-        // Cierra el modal abandonar si se hace clic fuera del contenido
-        window.onclick = function (event) {
-            const modal = document.getElementById('modal-abandonar');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
+    };
 
 
-        // Función para mostrar el modal de invitación
-        function mostrarModalInvitacion() {
-            const modal = document.getElementById('modal-invitacion');
-            modal.style.display = 'flex';
-        }
+    // Función para mostrar el modal de invitación
+    function mostrarModalInvitacion() {
+        const modal = document.getElementById('modal-invitacion');
+        modal.style.display = 'flex';
+    }
 
-        // Función para cerrar el modal de invitación
-        function cerrarModalInvitacion() {
-            const modal = document.getElementById('modal-invitacion');
-            modal.style.display = 'none';
-            borrarMensajes();
-        }
+    // Función para cerrar el modal de invitación
+    function cerrarModalInvitacion() {
+        const modal = document.getElementById('modal-invitacion');
+        modal.style.display = 'none';
+        borrarMensajes();
+    }
 
 
 
 
 
-        document.getElementById('form-invitacion').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('email-invitacion').value;
-        const form = this;
-        
-        const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+    document.getElementById('form-invitacion').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email-invitacion').value;
+    const form = this;
+    
+    const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
 
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({
-                'email': email
-            })
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({
+            'email': email
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                // Muestra el mensaje de error
-                document.getElementById('mensaje-error').textContent = data.error;
-                document.getElementById('mensaje-error').style.display = 'block';
-                document.getElementById('mensaje-exito').style.display = 'none';
-            } else if (data.warning) {
-                // Muestra el mensaje de advertencia
-                document.getElementById('mensaje-error').textContent = data.warning;
-                document.getElementById('mensaje-error').style.display = 'block';
-                document.getElementById('mensaje-exito').style.display = 'none';
-            } else if (data.success) {
-                // Muestra el mensaje de éxito
-                document.getElementById('mensaje-exito').textContent = data.success;
-                document.getElementById('mensaje-exito').style.display = 'block';
-                document.getElementById('mensaje-error').style.display = 'none';
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            // Muestra el mensaje de error
+            document.getElementById('mensaje-error').textContent = data.error;
+            document.getElementById('mensaje-error').style.display = 'block';
+            document.getElementById('mensaje-exito').style.display = 'none';
+        } else if (data.warning) {
+            // Muestra el mensaje de advertencia
+            document.getElementById('mensaje-error').textContent = data.warning;
+            document.getElementById('mensaje-error').style.display = 'block';
+            document.getElementById('mensaje-exito').style.display = 'none';
+        } else if (data.success) {
+            // Muestra el mensaje de éxito
+            document.getElementById('mensaje-exito').textContent = data.success;
+            document.getElementById('mensaje-exito').style.display = 'block';
+            document.getElementById('mensaje-error').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
+});
 
-    </script>
+</script>
 
 
     {% endblock %}
