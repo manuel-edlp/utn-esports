@@ -113,7 +113,7 @@ class LoginView(TemplateView):
             return redirect('player_home')
         else:
             # Muestra mensaje de error si las credenciales son incorrectas
-            messages.error(request, 'Correo electrónico o contraseña incorrectos.')
+            messages.error(request, 'Correo electrónico o contraseña incorrectos.', extra_tags='login_error')
             return render(request, self.template_name)
         
 class PlayerHomeView(LoginRequiredMixin, TemplateView):
