@@ -1,8 +1,14 @@
-body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #1a1a1a;
-    color: #fff;
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../images/pyke.png");
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
 }
 
 .register-section {
@@ -10,12 +16,11 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
     padding: 20px;
 }
 
 .register-container {
-    background-color: #2a2a2a;
+    background-color: #000000b8;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
@@ -27,12 +32,18 @@ body {
 .register-container h2 {
     margin-bottom: 10px;
     font-size: 24px;
+    color: #ffffff;
 }
 
 .register-container p {
     margin-bottom: 20px;
     font-size: 14px;
-    color: #ccc;
+    color: #ffffff;
+}
+
+#info-pago {
+    white-space: pre-line;
+    font-size: 13px;
 }
 
 .register-form {
@@ -55,7 +66,7 @@ body {
     padding: 10px;
     border: 1px solid #444;
     border-radius: 5px;
-    background-color: #444;
+    background-color: #000000b3;
     color: #fff;
     font-size: 14px;
 }
@@ -71,6 +82,31 @@ body {
 
 .form-group input[type="file"] {
     padding: 5px;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Espacio entre los botones */
+    margin-top: 20px;
+    flex-wrap: wrap; /* Para que los botones se apilen en pantallas pequeñas */
+}
+
+.btn-secondary {
+    background-color: #00000096 !important;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    flex-grow: 1; /* Para que los botones se expandan y ocupen el mismo espacio en pantallas más grandes */
+    max-width: 200px; /* Máximo tamaño en pantallas grandes */
+    text-align: center; /* Centrar el texto dentro del botón */
+}
+
+.btn-secondary:hover {
+    background-color: #272727 !important;
 }
 
 /* Estilos para los botones del formulario */
