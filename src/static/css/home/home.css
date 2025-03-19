@@ -56,6 +56,27 @@ body::before {
 #titulo {
     font-size: 50px;
     font-weight: bold;
+    text-shadow: 
+    -3px 4px 5px black,
+    2px -2px 0 black,
+    -2px 2px 0 black,
+    2px 2px 0 black,
+    0px -2px 0 black,
+    0px 2px 0 black, 
+    -2px 0px 0 black,
+    2px 0px 0 black
+}
+
+#subtitulo {
+    text-shadow: 
+    -3px 4px 5px black,
+    2px -2px 0 black,
+    -2px 2px 0 black,
+    2px 2px 0 black,
+    0px -2px 0 black,
+    0px 2px 0 black, 
+    -2px 0px 0 black,
+    2px 0px 0 black
 }
 
 #inicio{
@@ -65,9 +86,9 @@ body::before {
     justify-content: center;
     align-items: center;
 
-    margin-top: 0px !important;
+    margin-top: 20px !important;
     margin-bottom: 0px !important;
-    background-image: url("../../images/image3.png");
+    background-image: url("../../images/banner-fondo-liso.jpg");
     background-size: 100% 100%; /* Estira la imagen tanto en ancho como en alto */
     background-position: center;
     background-repeat: no-repeat;
