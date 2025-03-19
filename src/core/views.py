@@ -143,6 +143,7 @@ class PlayerHomeView(LoginRequiredMixin, TemplateView):
 
 class PerfilView(LoginRequiredMixin, TemplateView):
     template_name = 'player/perfil.html'
+    success_url = reverse_lazy("perfil")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -155,6 +156,38 @@ class PerfilView(LoginRequiredMixin, TemplateView):
             context['jugador'] = None  # Si no existe, pasa None
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        # Obtengo el jugador actual
+        jugador = get_object_or_404(Jugador, user=request.user)
+
+        # Actualio los campos del jugador
+        jugador.nombre = request.POST.get("nombre", jugador.nombre)
+        jugador.apellido = request.POST.get("apellido", jugador.apellido)
+        jugador.dni = request.POST.get("dni", jugador.dni)
+        jugador.telefono = request.POST.get("telefono", jugador.telefono)
+        jugador.telegram = request.POST.get("telegram", jugador.telegram)
+        jugador.pais = request.POST.get("pais", jugador.pais)
+        jugador.legajo = request.POST.get("legajo", jugador.legajo)
+        jugador.riot_id = request.POST.get("riot_id", jugador.riot_id)
+        jugador.email = request.POST.get("email", jugador.email)
+
+        # Manejo la foto de perfil (si se sube una nueva)
+        if "foto" in request.FILES:
+            jugador.foto = request.FILES["foto"]
+
+        try:
+            jugador.save()
+            # Actualizo el email del usuario de Django si cambia
+            if jugador.email != request.user.email:
+                request.user.email = jugador.email
+                request.user.save()
+        except Exception as e:
+            context = self.get_context_data()
+            context["error"] = f"Error al actualizar el perfil: {e}"
+            return render(request, self.template_name, context)
+
+        return redirect(self.success_url)
     
 
 
@@ -162,7 +195,7 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
     template_name = 'player/crear_equipo.html'
 
     def get(self, request, *args, **kwargs):
-        # Verificar si el usuario es un jugador
+        # Verifica si el usuario es un jugador
         if not hasattr(request.user, 'jugador'):
             messages.error(request, "Solo los jugadores pueden crear equipos.")
             return redirect('player_home')

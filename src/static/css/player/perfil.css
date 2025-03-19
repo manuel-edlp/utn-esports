@@ -1,5 +1,4 @@
 /* Estilos generales del contenedor del perfil */
-
 body::before {
     content: "";
     position: fixed;
@@ -12,6 +11,7 @@ body::before {
     background-position: center;
     z-index: -1;
 }
+
 .profile-container {
     max-width: 800px;
     margin: 40px auto;
@@ -82,6 +82,22 @@ body::before {
     font-style: italic;
 }
 
+.btn-edit-photo {
+    display: block;
+    margin: 10px auto;
+    padding: 8px 16px;
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-edit-photo:hover {
+    background-color: #357abd;
+}
+
 /* Sección de los detalles del perfil */
 .profile-details {
     display: grid;
@@ -105,9 +121,85 @@ body::before {
     margin-bottom: 5px;
 }
 
+.field-value-container {
+    position: relative;
+}
+
 .field-value {
     font-size: 18px;
     color: #fff;
+    padding: 8px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #444;
+    transition: border-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.field-value:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+/* Estilos para los campos de entrada en modo de solo lectura */
+.field-value[readonly] {
+    cursor: default;
+}
+
+/* Estilos para los campos de entrada cuando están editables */
+.field-value:not([readonly]) {
+    cursor: text;
+}
+
+.edit-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4a90e2;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.edit-icon:hover {
+    color: #357abd;
+}
+
+/* Botones de acción */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-save {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-save:hover {
+    background-color: #218838;
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
 }
 
 /* Estilos de pantalla pequeña */
