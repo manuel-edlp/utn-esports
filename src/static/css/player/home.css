@@ -26,21 +26,13 @@ body::before {
 }
 
 /* Estilos para la tarjeta del equipo */
-.team-card {
-    margin-top: 20px;
-}
-
 #tarjeta {
     background-color: #202020c7 !important;
-}
-
-.card {
     border-radius: 10px;
-    border: none;
-    color: #fff;
     padding: 15px;
     margin-bottom: 20px;
     overflow: hidden;
+    max-width: 100%;
 }
 
 .card-img-top {
@@ -56,37 +48,53 @@ body::before {
     font-size: 24px;
     margin-bottom: 10px;
     text-align: center;
+    color: #fff;
 }
 
 .card-text {
     font-size: 16px;
     margin-bottom: 5px;
     text-align: center;
+    color: #ccc;
 }
 
 .card-actions {
     text-align: center;
     margin-top: 15px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.btn-edit,
+.btn-delete,
+#btn-abandonar {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .btn-edit {
     background-color: #007bff;
     color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    margin-right: 10px;
 }
 
 .btn-delete {
     background-color: #dc3545;
     color: #fff;
-    padding: 10px 20px;
-    margin-right: 10px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
+}
+
+#btn-abandonar {
+    background-color: #dc5635 !important;
 }
 
 .btn-edit:hover {
@@ -95,10 +103,6 @@ body::before {
 
 .btn-delete:hover {
     background-color: #c82333;
-}
-
-#btn-abandonar {
-    background-color: #dc5635 !important;
 }
 
 #btn-abandonar:hover {
@@ -116,13 +120,27 @@ body::before {
     font-size: 18px;
     margin-bottom: 10px;
     color: #fff;
+    text-align: center;
 }
 
 .members-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    text-align: left;
 }
+
+@media (max-width: 768px) {
+    .members-list {
+        grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
+        text-align: center;
+    }
+}
+
 
 .members-list li {
     font-size: 14px;
@@ -133,6 +151,7 @@ body::before {
 .no-members {
     font-size: 14px;
     color: #888;
+    text-align: center;
     margin-bottom: 10px;
 }
 
@@ -146,9 +165,11 @@ body::before {
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
     font-size: 14px;
     transition: background-color 0.3s ease;
+    width: 100%;
 }
 
 .btn-invite:hover {
@@ -157,6 +178,33 @@ body::before {
 
 .btn-invite .icon {
     font-size: 16px;
+}
+
+/* Media queries para pantallas pequeñas */
+@media (max-width: 768px) {
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .card-title {
+        font-size: 20px;
+    }
+
+    .card-text {
+        font-size: 14px;
+    }
+
+    .team-members h4 {
+        font-size: 16px;
+    }
+
+    .members-list li {
+        font-size: 12px;
+    }
+
+    .btn-invite {
+        font-size: 12px;
+    }
 }
 
 /* Estilos para la sección de crear equipo */
@@ -236,6 +284,7 @@ body::before {
     font-size: 24px;
     margin-bottom: 15px;
     color: #fff;
+    text-align: center;
 }
 
 .invitaciones-list {
@@ -253,6 +302,7 @@ body::before {
     background-color: #3a3a3a;
     border-radius: 10px;
     color: #fff;
+    text-align: center;
 }
 
 .invitacion-info p {
@@ -264,26 +314,27 @@ body::before {
 .invitacion-actions {
     display: flex;
     gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-aceptar,
+.btn-rechazar {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .btn-aceptar {
     background-color: #28a745;
     color: #fff;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
 }
 
 .btn-rechazar {
     background-color: #dc3545;
     color: #fff;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
 }
 
 .btn-aceptar:hover {
@@ -293,6 +344,29 @@ body::before {
 .btn-rechazar:hover {
     background-color: #c82333;
 }
+
+/* Media queries para pantallas pequeñas */
+@media (max-width: 768px) {
+    .invitacion-item {
+        padding: 10px; 
+    }
+
+    .invitacion-info p {
+        font-size: 12px;
+    }
+
+    .btn-aceptar,
+    .btn-rechazar {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .invitacion-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
 
 /* Estilos para los modales */
 .modal {
