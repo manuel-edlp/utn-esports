@@ -31,11 +31,11 @@
                 </p>
                 <div class="card-actions">
                     <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Editar</a>
+                    <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
+                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)"><i class="fas fa-sign-out-alt"></i> Abandonar</button>
                     <button class="btn btn-delete" data-equipo-id="{{ equipo.id }}"
                         data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)"><i class="fas fa-trash-alt"></i> Eliminar</button>
 
-                    <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
-                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)"><i class="fas fa-sign-out-alt"></i> Abandonar Equipo</button>
 
                 </div>
 
