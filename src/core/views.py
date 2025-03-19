@@ -38,6 +38,7 @@ class RegistroView(View):
         telegram = request.POST.get("telegram")
         pais = request.POST.get("pais")
         legajo = request.POST.get("legajo")
+        foto = request.FILES.get('foto')
 
         # Paso 2: Datos de Riot
         riot_id = request.POST.get("riot-tag")
@@ -73,6 +74,7 @@ class RegistroView(View):
                 nombre=nombre,
                 apellido=apellido,
                 dni=dni,
+                foto=foto,
                 legajo=legajo,
                 email=email,
                 telefono=telefono,
