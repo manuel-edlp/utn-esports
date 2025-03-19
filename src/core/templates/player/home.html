@@ -17,7 +17,6 @@
     {% if jugador.equipo %}
     <!-- Muestra el equipo al que pertenece el jugador -->
     <div class="team-card">
-        <h3>Tu Equipo</h3>
         {% if equipo %}
         <div id="tarjeta" class="card">
             <img id="img-equipo" src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
@@ -149,8 +148,10 @@
         <p>¿Estas seguro que deseas eliminar este equipo?</p>
         <form id="form-eliminar" method="post" action="">
             {% csrf_token %}
-            <button type="submit" class="btn btn-delete">Eliminar</button>
-            <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            <div class="modal-buttons">
+                <button type="submit" class="btn btn-delete">Eliminar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </div>
         </form>
     </div>
 </div>
@@ -162,8 +163,10 @@
         <p>¿Estas seguro que deseas abandonar este equipo?</p>
         <form id="form-abandonar" method="post" action="">
             {% csrf_token %}
-            <button type="submit" class="btn btn-delete">Abandonar</button>
-            <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            <div class="modal-buttons">
+                <button type="submit" class="btn btn-delete">Abandonar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            </div>
         </form>
     </div>
 </div>
