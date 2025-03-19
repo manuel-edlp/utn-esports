@@ -1,4 +1,5 @@
 import json
+from django.forms import ValidationError
 from django.http import JsonResponse
 from django.views.generic import TemplateView, RedirectView, ListView
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ from .models import Equipo, Invitacion, Jugador
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+import filetype
 
 class Home(TemplateView):
     template_name = 'home/home.html'
@@ -258,22 +260,39 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, equipo_id, *args, **kwargs):
         equipo = get_object_or_404(Equipo, id=equipo_id)
-        
-        # Verifica si el jugador es miembro del equipo
+
         if request.user.jugador not in equipo.miembros.all():
             messages.error(request, "No tienes permisos para editar este equipo.")
-        
 
-        # Continuar con la actualización del equipo
         equipo.nombre = request.POST.get('nombre')
         equipo.abreviatura = request.POST.get('abreviatura')
-        if 'logo' in request.FILES:
-            equipo.logo = request.FILES['logo']
-        if 'comprobante_pago' in request.FILES:
-            equipo.comprobante_pago = request.FILES['comprobante_pago']
-        equipo.save()
-        messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
-        return redirect('player_home')
+
+
+        try:
+
+            if 'logo' in request.FILES:
+                logo = request.FILES['logo']
+                kind = filetype.guess(logo.read(1024))  # Analiza los primeros bytes
+                if kind is None or kind.mime not in ['image/jpeg', 'image/png', 'image/jpg']:
+                    raise ValidationError("Tipo de archivo no permitido.")
+                equipo.logo = logo
+                
+            if 'comprobante_pago' in request.FILES:
+                comprobante_pago = request.FILES['comprobante_pago']
+                kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
+
+                if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
+                    raise ValidationError("Tipo de archivo no permitido.")
+
+                equipo.comprobante_pago = comprobante_pago
+
+            equipo.save()
+            messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
+            return redirect('player_home')
+
+        except ValidationError as e:
+            messages.error(request, "Tipo de archivo no permitido.", extra_tags='error-tipo-archivo')
+            return render(request, 'player/editar_equipo.html', {'equipo': equipo, 'messages': messages.get_messages(request)})
     
 class EliminarEquipoView(LoginRequiredMixin, View):
     def post(self, request, equipo_id, *args, **kwargs):

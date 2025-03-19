@@ -108,3 +108,40 @@ body::before {
 .btn-secondary:hover {
     background-color: #272727 !important;
 }
+
+/* Estilos para los mensajes de error y éxito */
+.messages {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    width: 300px;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.alert-error {
+    background-color: #ffcc00;
+    padding: 4px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px solid #e6b800;
+    text-align: center;
+    align-items: center;
+    height: 30px;
+}
+.alert-error p {
+    color: black;
+}
+
+.alert-success {
+    background-color: #ddffdd;
+    color: #4f8a10;
+    border-left: 5px solid #4f8a10;
+}

@@ -31,7 +31,7 @@
             <!-- Campo: Logo del equipo -->
             <div class="form-group">
                 <label for="logo"><strong>Logo:</strong></label>
-                <input type="file" id="logo" name="logo" accept="image/*">
+                <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/jpg">
                 {% if equipo.logo %}
                     <p>Logo actual: <a href="{{ equipo.logo.url }}" target="_blank">{{ equipo.logo.name }}</a></p>
                 {% endif %}
@@ -54,11 +54,20 @@
                 <strong>Alias:</strong> leyendas.del.sur
                 <strong>CBU:</strong> 0000003100065678901234
             </p>
-                <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/*">
+            <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/png, image/jpeg, image/jpg, application/zip, application/x-rar-compressed">
                 {% if equipo.comprobante_pago %}
                     <p>Comprobante actual: <a href="{{ equipo.comprobante_pago.url }}" target="_blank">{{ equipo.comprobante_pago.name }}</a></p>
                 {% endif %}
             </div>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "error-tipo-archivo" in message.tags %}
+                        <div class="alert-error">
+                            <p>Error: {{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
 
             <!-- Botones: Cancelar y Guardar Cambios -->
             <div class="form-buttons">
