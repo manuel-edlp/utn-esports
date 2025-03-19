@@ -41,6 +41,11 @@ body::before {
     color: #ffffff;
 }
 
+#info-pago {
+    white-space: pre-line;
+    font-size: 13px;
+}
+
 .register-form {
     text-align: left;
 }
