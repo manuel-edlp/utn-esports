@@ -317,12 +317,29 @@ class EliminarEquipoView(LoginRequiredMixin, View):
         messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
         return redirect('player_home')
 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Equipo
+
 class AbandonarEquipoView(LoginRequiredMixin, View):
     def post(self, request, equipo_id, *args, **kwargs):
         equipo = get_object_or_404(Equipo, id=equipo_id)
-        if request.user.jugador in equipo.miembros.all():
-            equipo.miembros.remove(request.user.jugador)
-            messages.success(request, f"Has abandonado el equipo '{equipo.nombre}' exitosamente.")
+        jugador = request.user.jugador
+
+        # Verifica si el jugador es miembro del equipo
+        if jugador in equipo.miembros.all():
+            # Remueve al jugador del equipo
+            equipo.miembros.remove(jugador)
+
+            # Verifica si el equipo quedó sin miembros
+            if equipo.miembros.count() == 0:
+                equipo.delete()  # Elimino el equipo si no hay más miembros
+                messages.success(request, f"Has abandonado el equipo '{equipo.nombre}'. Como eras el último miembro, el equipo ha sido eliminado.")
+            else:
+                messages.success(request, f"Has abandonado el equipo '{equipo.nombre}' exitosamente.")
+
             return redirect('player_home')
         else:
             messages.error(request, "Error. No eres miembro de este equipo.")
