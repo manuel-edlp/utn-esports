@@ -35,6 +35,7 @@ class RegistroView(View):
         apellido = request.POST.get("apellido")
         dni = request.POST.get("dni")
         telefono = request.POST.get("telefono")
+        telegram = request.POST.get("telegram")
         pais = request.POST.get("pais")
         legajo = request.POST.get("legajo")
 
@@ -75,6 +76,7 @@ class RegistroView(View):
                 legajo=legajo,
                 email=email,
                 telefono=telefono,
+                telegram=telegram,
                 pais=pais,
                 riot_id=riot_id
             )

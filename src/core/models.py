@@ -42,6 +42,7 @@ class Jugador(Usuario):
 
     # Datos adicionales para jugadores
     telefono = models.CharField(max_length=40)
+    telegram = models.CharField(max_length=40)
     pais = models.CharField(max_length=40)
     foto = models.ImageField(upload_to='fotos/', blank=True, null=True)
     legajo = models.CharField(max_length=40, blank=True)
