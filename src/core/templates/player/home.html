@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/player/home.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block main %}
@@ -19,7 +20,7 @@
         <h3>Tu Equipo</h3>
         {% if equipo %}
         <div id="tarjeta" class="card">
-            <img src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
+            <img id="img-equipo" src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
             <div class="card-body">
                 <h5 class="card-title">{{ equipo.nombre }} ({{ equipo.abreviatura }})</h5>
                 <p class="card-text">
@@ -29,12 +30,12 @@
                         title="El estado de aprobación indica si tu equipo ha sido revisado y aprobado por los administradores de la liga.">?</span>
                 </p>
                 <div class="card-actions">
-                    <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit">Editar</a>
+                    <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Editar</a>
                     <button class="btn btn-delete" data-equipo-id="{{ equipo.id }}"
-                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)">Eliminar</button>
+                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)"><i class="fas fa-trash-alt"></i> Eliminar</button>
 
                     <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
-                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)">Abandonar Equipo</button>
+                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)"><i class="fas fa-sign-out-alt"></i> Abandonar Equipo</button>
 
                 </div>
 
@@ -51,7 +52,7 @@
                     <p class="no-members">Aún no hay miembros, invita a alguien.</p>
                     {% endif %}
                     <button class="btn-invite" onclick="mostrarModalInvitacion()">
-                        <span class="icon">+</span> Invitar
+                        <i class="fas fa-user-plus"></i> Invitar
                     </button>
                 </div>
             </div>
@@ -69,7 +70,9 @@
         </a>
     </div>
     {% endif %}
-    <!-- Muestra invitaciones pendientes -->
+
+
+    <!-- Seccion de invitaciones pendientes -->
     <div class="invitaciones-container">
         <h3>Invitaciones Pendientes</h3>
         {% if invitaciones %}
@@ -110,6 +113,11 @@
         {% endif %}
     </div>
 
+
+
+<!-- Seccion de Modales: -->
+
+
 <!-- Modal de invitación -->
 <div id="modal-invitacion" class="modal">
     <div class="modal-content">
@@ -132,6 +140,7 @@
         {% endif %}
     </div>
 </div>
+
 
 <!-- Modal de confirmación de eliminación -->
 <div id="modal-eliminar" class="modal">
@@ -158,6 +167,9 @@
         </form>
     </div>
 </div>
+
+
+
 
 <script>
     // Función para borrar los mensajes de error y éxito

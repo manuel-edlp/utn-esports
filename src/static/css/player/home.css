@@ -11,68 +11,6 @@ body::before {
     z-index: -1;
 }
 
-/* Estilos para el modal */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #0000004d;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: #2a2a2a;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px #0000004d;
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-}
-
-.modal h3 {
-    margin-bottom: 10px;
-    font-size: 24px;
-    color: #fff;
-}
-
-.modal p {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #ccc;
-}
-
-.modal .btn-delete {
-    background-color: #dc3545;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-.modal .btn-secondary {
-    background-color: #444;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.modal .btn-delete:hover {
-    background-color: #c82333;
-}
-
-.modal .btn-secondary:hover {
-    background-color: #555;
-}
 
 /* Estilos para la sección de perfil */
 .profile-container {
@@ -143,6 +81,7 @@ body::before {
     background-color: #dc3545;
     color: #fff;
     padding: 10px 20px;
+    margin-right: 10px;
     border: none;
     border-radius: 5px;
     text-decoration: none;
@@ -254,6 +193,7 @@ body::before {
 .btn-invite {
     background-color: #28a745;
     color: #fff;
+    margin-top: 15px;
     padding: 8px 15px;
     border: none;
     border-radius: 5px;
@@ -272,6 +212,73 @@ body::before {
 .btn-invite .icon {
     font-size: 16px;
 }
+
+
+/* Estilos para el modal de fondo */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0000004d;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px #0000004d;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.modal h3 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #fff;
+}
+
+.modal p {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.modal .btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.modal .btn-secondary {
+    background-color: #444;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal .btn-delete:hover {
+    background-color: #c82333;
+}
+
+.modal .btn-secondary:hover {
+    background-color: #555;
+}
+
+
+
 
 /* Estilos para el modal de invitación */
 #modal-invitacion {
@@ -452,6 +459,9 @@ body::before {
     background-color: #dc5635 !important;
 }
 
+#btn-abandonar:hover {
+    background-color: #da4520 !important;
+}
 .btn-aceptar:hover {
     background-color: #218838;
 }
