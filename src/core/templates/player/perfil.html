@@ -119,24 +119,39 @@
             <!-- Botones de acción -->
             <div class="form-actions">
                 <button type="submit" class="btn-save">Guardar cambios</button>
-                <button type="button" class="btn-cancel" onclick="cancelarEdicion()">Cancelar</button>
+                <button type="button" class="btn-cancel" onclick="volver()">Volver</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    function habilitarEdicion(id) {
-        const input = document.getElementById(id);
-        input.removeAttribute("readonly");
-        input.focus();
+let inputEnEdicion = null; // Variable global para rastrear el input en edición
+
+function habilitarEdicion(id) {
+    const input = document.getElementById(id);
+
+    // Si hay otro input en edición, se deshabilita
+    if (inputEnEdicion && inputEnEdicion !== input) {
+        inputEnEdicion.setAttribute("readonly", true);
     }
 
-    function cancelarEdicion() {
-        const inputs = document.querySelectorAll(".field-value");
-        inputs.forEach(input => {
-            input.setAttribute("readonly", true);
-        });
+    // Habilita el input actual y lo enfoca
+    input.removeAttribute("readonly");
+    input.focus();
+    inputEnEdicion = input;
+}
+
+// Evento para detectar clics fuera del input en edición y deshabilitarlo
+document.addEventListener("click", function(event) {
+    if (inputEnEdicion && !event.target.closest(".field-value-container")) {
+        inputEnEdicion.setAttribute("readonly", true);
+        inputEnEdicion = null;
+    }
+});
+
+    function volver() {
+        window.location.href = "/player/home/";
     }
 
     function editarFoto() {
