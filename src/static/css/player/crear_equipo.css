@@ -73,6 +73,14 @@ body {
     padding: 5px;
 }
 
+/* Estilos para los botones del formulario */
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
 .register-button {
     background-color: #2781c3;
     color: #ffffff;
@@ -83,11 +91,33 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 100%;
+    width: 150px;
 }
 
 .register-button:hover {
     background-color: #1e76b4;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 150px;
+}
+
+.cancel-button:hover {
+    background-color: #e53935;
+}
+
+.cancel-button:focus,
+.register-button:focus {
+    outline: none;
 }
 
 .messages {
