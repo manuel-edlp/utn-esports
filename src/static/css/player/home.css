@@ -1,3 +1,4 @@
+/* Estilos generales */
 body::before {
     content: "";
     position: fixed;
@@ -10,7 +11,6 @@ body::before {
     background-position: center;
     z-index: -1;
 }
-
 
 /* Estilos para la sección de perfil */
 .profile-container {
@@ -25,6 +25,7 @@ body::before {
     color: #fff;
 }
 
+/* Estilos para la tarjeta del equipo */
 .team-card {
     margin-top: 20px;
 }
@@ -96,6 +97,69 @@ body::before {
     background-color: #c82333;
 }
 
+#btn-abandonar {
+    background-color: #dc5635 !important;
+}
+
+#btn-abandonar:hover {
+    background-color: #da4520 !important;
+}
+
+/* Estilos para la sección de miembros */
+.team-members {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
+}
+
+.team-members h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.members-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.members-list li {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+
+.no-members {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.btn-invite {
+    background-color: #28a745;
+    color: #fff;
+    margin-top: 15px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-invite:hover {
+    background-color: #218838;
+}
+
+.btn-invite .icon {
+    font-size: 16px;
+}
+
+/* Estilos para la sección de crear equipo */
 .create-team-section {
     text-align: center;
     margin-top: 30px;
@@ -159,63 +223,78 @@ body::before {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-
-/* Estilos para la sección de miembros */
-.team-members {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #444;
+/* Estilos para el contenedor de invitaciones */
+.invitaciones-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #202020c7;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.team-members h4 {
-    font-size: 18px;
-    margin-bottom: 10px;
+.invitaciones-container h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
     color: #fff;
 }
 
-.members-list {
+.invitaciones-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.members-list li {
+.invitacion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #3a3a3a;
+    border-radius: 10px;
+    color: #fff;
+}
+
+.invitacion-info p {
+    margin: 0;
     font-size: 14px;
     color: #ccc;
-    margin-bottom: 5px;
 }
 
-.no-members {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 10px;
+.invitacion-actions {
+    display: flex;
+    gap: 10px;
 }
 
-.btn-invite {
+.btn-aceptar {
     background-color: #28a745;
     color: #fff;
-    margin-top: 15px;
     padding: 8px 15px;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    text-decoration: none;
     font-size: 14px;
-    transition: background-color 0.3s ease;
 }
 
-.btn-invite:hover {
+.btn-rechazar {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-aceptar:hover {
     background-color: #218838;
 }
 
-.btn-invite .icon {
-    font-size: 16px;
+.btn-rechazar:hover {
+    background-color: #c82333;
 }
 
-
-/* Estilos para el modal de fondo */
+/* Estilos para los modales */
 .modal {
     display: none;
     position: fixed;
@@ -278,13 +357,9 @@ body::before {
     background-color: #555;
 }
 
-
-
-
 /* Estilos para el modal de invitación */
 #modal-invitacion {
     display: none;
-    /* Oculto por defecto */
     position: fixed;
     top: 0;
     left: 0;
@@ -351,7 +426,6 @@ body::before {
     display: none;
 }
 
-/* Mensaje de éxito */
 #mensaje-exito {
     background-color: #4CAF50;
     color: #fff !important;
@@ -390,87 +464,7 @@ body::before {
     background-color: #555;
 }
 
-
-
-
-/* Estilos para el contenedor de invitaciones */
-.invitaciones-container {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: #202020c7;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.invitaciones-container h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-    color: #fff;
-}
-
-.invitaciones-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.invitacion-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: #3a3a3a;
-    border-radius: 10px;
-    color: #fff;
-}
-
-.invitacion-info p {
-    margin: 0;
-    font-size: 14px;
-    color: #ccc;
-}
-
-.invitacion-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.btn-aceptar {
-    background-color: #28a745;
-    color: #fff;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.btn-rechazar {
-    background-color: #dc3545;
-    color: #fff;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-#btn-abandonar {
-    background-color: #dc5635 !important;
-}
-
-#btn-abandonar:hover {
-    background-color: #da4520 !important;
-}
-.btn-aceptar:hover {
-    background-color: #218838;
-}
-
-.btn-rechazar:hover {
-    background-color: #c82333;
-}
-
+/* Mensajes y alertas */
 .no-invitaciones {
     font-size: 14px;
     color: #888;
