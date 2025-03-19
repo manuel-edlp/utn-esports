@@ -31,9 +31,9 @@
                 <div class="card-actions">
                     <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Editar</a>
                     <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
-                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)"><i class="fas fa-sign-out-alt"></i> Abandonar</button>
+                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModalAbandonar(this)"><i class="fas fa-sign-out-alt"></i> Abandonar</button>
                     <button class="btn btn-delete" data-equipo-id="{{ equipo.id }}"
-                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModalEliminar(this)"><i class="fas fa-trash-alt"></i> Eliminar</button>
 
 
                 </div>
@@ -144,13 +144,12 @@
 <!-- Modal de confirmación de eliminación -->
 <div id="modal-eliminar" class="modal">
     <div class="modal-content">
-        <h3 id="modal-titulo"></h3>
         <p>¿Estas seguro que deseas eliminar este equipo?</p>
         <form id="form-eliminar" method="post" action="">
             {% csrf_token %}
             <div class="modal-buttons">
                 <button type="submit" class="btn btn-delete">Eliminar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalEliminar()">Cancelar</button>
             </div>
         </form>
     </div>
@@ -159,13 +158,12 @@
 <!-- Modal de confirmación de abandonar equipo -->
 <div id="modal-abandonar" class="modal">
     <div class="modal-content">
-        <h3 id="modal-titulo"></h3>
         <p>¿Estas seguro que deseas abandonar este equipo?</p>
         <form id="form-abandonar" method="post" action="">
             {% csrf_token %}
             <div class="modal-buttons">
                 <button type="submit" class="btn btn-delete">Abandonar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalAbandonar()">Cancelar</button>
             </div>
         </form>
     </div>
@@ -184,15 +182,11 @@
 
 
     // Función para mostrar el modal eliminar
-    function mostrarModal(button) {
+    function mostrarModalEliminar(button) {
         const modal = document.getElementById('modal-eliminar');
         const form = document.getElementById('form-eliminar');
-        const modalTitulo = document.getElementById('modal-titulo');
         const equipoId = button.dataset.equipoId;
         const equipoNombre = button.dataset.equipoNombre;
-
-        // título del modal
-        modalTitulo.textContent = `¿Estás seguro de eliminar el equipo "${equipoNombre}"?`;
 
         // acción del formulario para eliminar el equipo específico
         form.action = `/player/eliminar_equipo/${equipoId}/`;
@@ -202,7 +196,7 @@
     }
 
     // Función para cerrar el modal de eliminar
-    function cerrarModal() {
+    function cerrarModalEliminar() {
         const modal = document.getElementById('modal-eliminar');
         modal.style.display = 'none';
     }
@@ -217,15 +211,12 @@
 
 
     // Función para mostrar el modal abandonar
-    function mostrarModal(button) {
+    function mostrarModalAbandonar(button) {
         const modal = document.getElementById('modal-abandonar');
         const form = document.getElementById('form-abandonar');
-        const modalTitulo = document.getElementById('modal-titulo');
         const equipoId = button.dataset.equipoId;
         const equipoNombre = button.dataset.equipoNombre;
 
-        // título del modal
-        modalTitulo.textContent = `¿Estás seguro de abandonar el equipo "${equipoNombre}"?`;
 
         // acción del formulario para abandonar el equipo específico
         form.action = `/player/abandonar_equipo/${equipoId}/`;
@@ -235,7 +226,7 @@
     }
 
     // Función para cerrar el modal de abandonar
-    function cerrarModal() {
+    function cerrarModalAbandonar() {
         const modal = document.getElementById('modal-abandonar');
         modal.style.display = 'none';
     }
