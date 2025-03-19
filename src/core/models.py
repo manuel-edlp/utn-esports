@@ -44,14 +44,14 @@ class Jugador(Usuario):
     telefono = models.CharField(max_length=40)
     telegram = models.CharField(max_length=40)
     pais = models.CharField(max_length=40)
-    foto = models.ImageField(upload_to='fotos/', blank=True, null=True)
-    legajo = models.CharField(max_length=40, blank=True)
+    foto = models.ImageField(upload_to='fotos/', null=True)
+    legajo = models.CharField(max_length=40)
 
     # Datos de Riot
     riot_id = models.CharField(max_length=40, unique=True)
 
     # Relación ForeignKey con Equipo
-    equipo = models.ForeignKey('Equipo', on_delete=models.SET_NULL, null=True, blank=True, related_name='miembros')
+    equipo = models.ForeignKey('Equipo', on_delete=models.SET_NULL, null=True, related_name='miembros')
 
     
     def __str__(self):
