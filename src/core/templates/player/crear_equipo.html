@@ -31,7 +31,7 @@
             <!-- Campo: Logo del equipo -->
             <div class="form-group">
                 <label for="logo">Logo del equipo:</label>
-                <input type="file" id="logo" name="logo" accept="image/*" required>
+                <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/jpg">
             </div>
 
             <!-- Campo: Comprobante de pago -->
@@ -51,26 +51,24 @@
                     <strong>Alias:</strong> leyendas.del.sur
                     <strong>CBU:</strong> 0000003100065678901234
                 </p>
-                <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/*">
+                <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/png, image/jpeg, image/jpg, application/zip, application/x-rar-compressed">
             </div>
 
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "error-tipo-archivo" in message.tags %}
+                        <div class="alert-error-formato">
+                            <p>Error: {{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
             <!-- Botones de enviar y cancelar -->
             <div class="form-buttons">
                 <button type="button" class="cancel-button" onclick="window.location.href='/player/home/'">Cancelar</button>
                 <button type="submit" class="register-button">Crear Equipo</button>
             </div>
         </form>
-
-        <!-- Mensajes de éxito o error -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
     </div>
 </section>
 

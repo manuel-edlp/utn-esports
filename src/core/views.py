@@ -210,7 +210,7 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
             messages.error(request, "Solo los jugadores pueden crear equipos.")
             return redirect('player_home')
 
-        # Obteniene los datos del formulario
+        # Obtiene los datos del formulario
         nombre = request.POST.get('nombre')
         abreviatura = request.POST.get('abreviatura')
         logo = request.FILES.get('logo')
@@ -221,8 +221,23 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
             messages.error(request, "Todos los campos son obligatorios.")
             return render(request, self.template_name)
 
-        # Crear el equipo
+        # Validación del tipo de archivo
         try:
+            if 'logo' in request.FILES:
+                logo = request.FILES['logo']
+                kind = filetype.guess(logo.read(1024))  # Analiza los primeros bytes
+                if kind is None or kind.mime not in ['image/jpeg', 'image/png', 'image/jpg']:
+                    raise ValidationError("Tipo de archivo no permitido para el logo.")
+
+
+            if 'comprobante_pago' in request.FILES:
+                comprobante_pago = request.FILES['comprobante_pago']
+                kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
+                if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
+                    raise ValidationError("Tipo de archivo no permitido para el comprobante de pago.")
+
+
+            # Crear el equipo
             equipo = Equipo(
                 nombre=nombre,
                 abreviatura=abreviatura,
@@ -232,7 +247,7 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
             )
             equipo.save()
 
-            # Asocia el equipo al jugador que lo creos
+            # Asocia el equipo al jugador que lo creó
             jugador = request.user.jugador
             jugador.equipo = equipo
             jugador.save()
@@ -242,8 +257,8 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
             return redirect('player_home')
 
         except Exception as e:
-            messages.error(request, f"Error al crear el equipo: {str(e)}")
-            return render(request, self.template_name)
+            messages.error(request, "Tipo de archivo no permitido.", extra_tags='error-tipo-archivo')
+            return render(request, 'player/crear_equipo.html', { 'messages': messages.get_messages(request)})
 
 
 class EditarEquipoView(LoginRequiredMixin, TemplateView):
@@ -275,15 +290,16 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
                 kind = filetype.guess(logo.read(1024))  # Analiza los primeros bytes
                 if kind is None or kind.mime not in ['image/jpeg', 'image/png', 'image/jpg']:
                     raise ValidationError("Tipo de archivo no permitido.")
+                logo.seek(0)
                 equipo.logo = logo
-                
+
             if 'comprobante_pago' in request.FILES:
                 comprobante_pago = request.FILES['comprobante_pago']
                 kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
 
                 if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
                     raise ValidationError("Tipo de archivo no permitido.")
-
+                comprobante_pago.seek(0)
                 equipo.comprobante_pago = comprobante_pago
 
             equipo.save()

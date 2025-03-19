@@ -176,3 +176,18 @@ body::before {
     background-color: #f44336;
     color: #fff;
 }
+
+.alert-error-formato {
+    background-color: #ffcc00;
+    padding: 4px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px solid #e6b800;
+    text-align: center;
+    align-items: center;
+    height: 30px;
+}
+.alert-error-formato p {
+    color: black;
+}
