@@ -11,6 +11,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 import filetype
+import re
 
 class Home(TemplateView):
     template_name = 'home/home.html'
@@ -24,6 +25,74 @@ class Reglamento(TemplateView):
 class Sponsors(TemplateView):
     template_name = 'sponsors/sponsors.html'
 
+
+# Función para validar el formulario de registro
+def validar_formulario(form_data):
+    errors = {}
+
+    # Validar contraseñas
+    if form_data["password"] != form_data["confirm_password"]:
+        errors["password"] = "Las contraseñas no coinciden."
+
+    # Validar email único
+    if User.objects.filter(email=form_data["email"]).exists():
+        errors["email"] = "El correo electrónico ya está registrado."
+
+    # Validar DNI único
+    if Jugador.objects.filter(dni=form_data["dni"]).exists():
+        errors["dni"] = "El DNI ya está registrado."
+
+    # Validar Riot ID único
+    if Jugador.objects.filter(riot_id=form_data["riot_id"]).exists():
+        errors["riot_id"] = "El Riot ID ya está registrado."
+
+    # Validar formato de Riot ID
+    if form_data["riot_id"] and "#" not in form_data["riot_id"]:
+        errors["riot_id"] = "El Riot ID debe contener el símbolo '#'."
+
+    # Validar si se seleccionó una opción en "pertenece-utn"
+    if not form_data.get("pertenece_utn"):
+        errors["pertenece_utn"] = "Debes seleccionar una opción."
+
+    # Validar legajo único (si pertenece a la UTN)
+    if form_data.get("pertenece_utn") == "si":
+        if Jugador.objects.filter(legajo=form_data["legajo"]).exists():
+            errors["legajo"] = "El legajo ya está registrado."
+
+    # Validar campos obligatorios
+    required_fields = ["nombre", "apellido", "dni", "telefono", "telegram", "pais", "riot_id", "email", "password", "confirm_password"]
+    if form_data.get("pertenece_utn") == "si":
+        required_fields.append("legajo")
+
+    for field in required_fields:
+        if not form_data[field]:
+            errors[field] = "Este campo es obligatorio."
+
+    # Validar foto (si es necesario)
+    if not form_data["foto"]:
+        errors["foto"] = "Debes subir una foto."
+
+    # Validar tipo de texto en los campos (solo si el campo no está vacío)
+    if form_data["nombre"] and not re.match(r"^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ\s]+$", form_data["nombre"]):
+        errors["nombre"] = "El nombre solo puede contener letras y espacios."
+
+    if form_data["apellido"] and not re.match(r"^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ\s]+$", form_data["apellido"]):
+        errors["apellido"] = "El apellido solo puede contener letras y espacios."
+
+    if form_data["legajo"] and not re.match(r"^\d+$", form_data["legajo"]):
+        errors["legajo"] = "El legajo solo puede contener números."
+
+    if form_data["telefono"] and not re.match(r"^[0-9+\-\s]+$", form_data["telefono"]):
+        errors["telefono"] = "El teléfono solo puede contener números, espacios, guiones y el símbolo +."
+
+    if form_data["pais"] and re.search(r"\d", form_data["pais"]):
+        errors["pais"] = "El país no puede contener números."
+
+    if form_data["email"] and not re.match(r"^[^@]+@[^@]+\.[^@]+$", form_data["email"]):
+        errors["email"] = "El correo electrónico no es válido."
+
+    return errors
+
 class RegistroView(View):
     template_name = "register/register.html"
     success_url = reverse_lazy("login")
@@ -32,63 +101,62 @@ class RegistroView(View):
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
-        # Paso 1: Datos personales
-        nombre = request.POST.get("nombre")
-        apellido = request.POST.get("apellido")
-        dni = request.POST.get("dni")
-        telefono = request.POST.get("telefono")
-        telegram = request.POST.get("telegram")
-        pais = request.POST.get("pais")
-        legajo = request.POST.get("legajo")
-        foto = request.FILES.get('foto')
+        # Recuperar los datos del formulario
+        form_data = {
+            "nombre": request.POST.get("nombre"),
+            "apellido": request.POST.get("apellido"),
+            "dni": request.POST.get("dni"),
+            "telefono": request.POST.get("telefono"),
+            "telegram": request.POST.get("telegram"),
+            "pais": request.POST.get("pais"),
+            "legajo": request.POST.get("legajo"),
+            "foto": request.FILES.get("foto"),
+            "riot_id": request.POST.get("riot-tag"),
+            "email": request.POST.get("email"),
+            "password": request.POST.get("password"),
+            "confirm_password": request.POST.get("confirm-password"),
+            "pertenece_utn": request.POST.get("pertenece-utn"),
+        }
 
-        # Paso 2: Datos de Riot
-        riot_id = request.POST.get("riot-tag")
+        # Validar el formulario
+        errors = validar_formulario(form_data)
 
-        # Paso 3: Credenciales
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm-password")
+        # Si hay errores, renderizar el formulario con los errores y los datos ingresados
+        if errors:
+            return render(request, self.template_name, {"errors": errors, "form_data": form_data})
 
-        # Validaciones
-        if password != confirm_password:
-            return render(request, self.template_name, {"error": "Las contraseñas no coinciden."})
-
-        # Verifica si el usuario ya existe
-        if User.objects.filter(email=email).exists():
-            return render(request, self.template_name, {"error": "El correo electrónico ya está registrado."})
-
-        # Crea el usuario base (User de Django)
+        # Crear el usuario base (User de Django)
         try:
             user = User.objects.create_user(
-                username=email,  # Uso el email como nombre de usuario
-                email=email,
-                password=password,  # Django aplica el hash automáticamente
+                username=form_data["email"],  # Uso el email como nombre de usuario
+                email=form_data["email"],
+                password=form_data["password"],  # Django aplica el hash automáticamente
             )
         except Exception as e:
-            return render(request, self.template_name, {"error": f"Error al crear el usuario: {e}"})
+            errors["general"] = f"Error al crear el usuario: {e}"
+            return render(request, self.template_name, {"errors": errors, "form_data": form_data})
 
-        # Crea el jugador con la contraseña encriptada
+        # Crear el jugador
         try:
-
             jugador = Jugador.objects.create(
-                user=user,  # Relación uno a uno con User
-                nombre=nombre,
-                apellido=apellido,
-                dni=dni,
-                foto=foto,
-                legajo=legajo,
-                email=email,
-                telefono=telefono,
-                telegram=telegram,
-                pais=pais,
-                riot_id=riot_id
+                user=user,
+                nombre=form_data["nombre"],
+                apellido=form_data["apellido"],
+                dni=form_data["dni"],
+                foto=form_data["foto"],
+                legajo=form_data["legajo"] if form_data["pertenece_utn"] == "si" else None,
+                email=form_data["email"],
+                telefono=form_data["telefono"],
+                telegram=form_data["telegram"],
+                pais=form_data["pais"],
+                riot_id=form_data["riot_id"],
             )
         except Exception as e:
             user.delete()  # Si algo falla, eliminamos el usuario
-            return render(request, self.template_name, {"error": f"Error al crear el jugador: {e}"})
+            errors["general"] = f"Error al crear el jugador: {e}"
+            return render(request, self.template_name, {"errors": errors, "form_data": form_data})
 
-        # Redirige a la página de inicio
+        # Redirigir a la página de inicio
         return redirect(self.success_url)
     
 class LoginView(TemplateView):
