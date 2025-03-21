@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/player/crear_equipo.css' %}">
+<link rel="stylesheet" href="{% static 'css/player/pagar_inscripcion.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -55,8 +55,8 @@
             
             <!-- Botones de enviar y cancelar -->
             <div class="form-buttons">
-                <button type="button" class="cancel-button" onclick="window.location.href='/player/home/'">Cancelar</button>
-                <button type="submit" class="register-button">Subir Comprobante</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='/player/home/'">Cancelar</button>
+                <button type="submit" class="btn btn-secondary">Subir Comprobante</button>
             </div>
         </form>
     </div>

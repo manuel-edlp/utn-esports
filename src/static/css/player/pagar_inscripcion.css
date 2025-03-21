@@ -38,13 +38,13 @@ body::before {
 
 .register-container p {
     margin-bottom: 20px;
-    font-size: 14px;
+    font-size: 15px;
     color: #ffffff;
 }
 
 #info-pago {
     white-space: pre-line;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .register-form {
@@ -96,46 +96,28 @@ body::before {
     justify-content: center;
     gap: 10px;
     margin-top: 20px;
+    flex-wrap: wrap; 
 }
 
-.register-button {
-    background-color: #2781c3;
-    color: #ffffff;
+
+.btn-secondary {
+    background-color: #00000096 !important;
+    color: #fff;
     padding: 10px 20px;
-    border: none;
     border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 150px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    flex-grow: 1;
+    max-width: 200px; 
+    text-align: center;
 }
 
-.register-button:hover {
-    background-color: #1e76b4;
+.btn-secondary:hover {
+    background-color: #272727 !important;
 }
 
-.cancel-button {
-    background-color: #f44336;
-    color: #ffffff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 150px;
-}
 
-.cancel-button:hover {
-    background-color: #e53935;
-}
-
-.cancel-button:focus,
-.register-button:focus {
-    outline: none;
-}
 
 .alert-error-formato {
     background-color: #ffcc00;
