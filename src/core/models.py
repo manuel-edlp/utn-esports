@@ -85,6 +85,7 @@ class Equipo(models.Model):
         default=EstadoAprobacion.PAGO_PENDIENTE
     )
     creado_por = models.ForeignKey(Jugador, on_delete=models.CASCADE, related_name='equipos_creados')
+    capitan = models.ForeignKey(Jugador, on_delete=models.SET_NULL, null=True, blank=True, related_name='equipo_capitan')
 
     def __str__(self):
         return f"{self.nombre} - {self.get_estadoAprobacion_display()}"
