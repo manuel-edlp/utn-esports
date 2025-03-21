@@ -497,7 +497,7 @@ class PagarInscripcionView(LoginRequiredMixin, TemplateView):
             messages.error(request, str(e), extra_tags='error-tipo-archivo')
             return render(request, self.template_name, {'equipo': equipo, 'messages': messages.get_messages(request)})
 
-class InvitarJugadorView(View):
+class InvitarJugadorView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)  # Decodifica el JSON
@@ -519,7 +519,7 @@ class InvitarJugadorView(View):
         Invitacion.objects.create(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False)
         return JsonResponse({'success': f"Invitación enviada a {jugador_invitado.nombre} {jugador_invitado.apellido}."}, status=200)
     
-class ListarInvitacionesView(ListView):
+class ListarInvitacionesView(LoginRequiredMixin, ListView):
     template_name = 'player_home.html'
     context_object_name = 'invitaciones'
 
@@ -532,7 +532,7 @@ class ListarInvitacionesView(ListView):
         context['equipo'] = self.request.user.jugador.equipos_creados.first()
         return context
 
-class AceptarInvitacionView(View):
+class AceptarInvitacionView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         invitacion_id = self.kwargs.get('invitacion_id')
         invitacion = get_object_or_404(Invitacion, id=invitacion_id)
@@ -558,7 +558,7 @@ class AceptarInvitacionView(View):
         messages.success(request, f"Has aceptado la invitación para unirte a {invitacion.equipo.nombre}.")
         return redirect('player_home')
     
-class RechazarInvitacionView(View):
+class RechazarInvitacionView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         invitacion_id = self.kwargs.get('invitacion_id')
         invitacion = get_object_or_404(Invitacion, id=invitacion_id)
@@ -575,7 +575,7 @@ class RechazarInvitacionView(View):
     
 
 
-class EliminarJugadorView(View):
+class EliminarJugadorView(LoginRequiredMixin,View):
     def post(self, request, jugador_id):
         # Obtengo el jugador y el equipo actual
         jugador = get_object_or_404(Jugador, id=jugador_id)
