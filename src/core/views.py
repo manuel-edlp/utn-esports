@@ -496,12 +496,11 @@ class PagarInscripcionView(LoginRequiredMixin, TemplateView):
         except ValidationError as e:
             messages.error(request, str(e), extra_tags='error-tipo-archivo')
             return render(request, self.template_name, {'equipo': equipo, 'messages': messages.get_messages(request)})
-
 class InvitarJugadorView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
-            data = json.loads(request.body)  # Decodifica el JSON
-            email = data.get('email', '').strip().lower()  # Normaliza el correo
+            data = json.loads(request.body)
+            email = data.get('email', '').strip().lower()
         except json.JSONDecodeError:
             return JsonResponse({'error': "Formato de datos inválido."}, status=400)
 
@@ -512,6 +511,10 @@ class InvitarJugadorView(LoginRequiredMixin, View):
             jugador_invitado = Jugador.objects.get(email=email)
         except Jugador.DoesNotExist:
             return JsonResponse({'error': "No se encontró un jugador con ese correo electrónico."}, status=400)
+
+        # Validacion para evitar autoinvitaciones
+        if request.user.jugador == jugador_invitado:
+            return JsonResponse({'error': "No puedes invitarte a ti mismo."}, status=400)
 
         if Invitacion.objects.filter(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False).exists():
             return JsonResponse({'warning': "El jugador ya ha recibido una invitación para este equipo."}, status=200)
