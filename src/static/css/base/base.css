@@ -1,6 +1,15 @@
 html {
     scroll-padding-top: 100px;
   }
+
+  #iniciar-sesion-btn {
+    border: 1px solid transparent;
+    border-color: #ffffff;
+    transition: border-color 0.3s ease-in-out;
+  }
+  #iniciar-sesion-btn:hover {
+    border-color: rgb(0, 255, 213);
+  }
   .glitch-button {
     padding: 10px 8px;
     font-size: 16px;
