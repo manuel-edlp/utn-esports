@@ -16,53 +16,59 @@
         <form class="register-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             
-            <!-- Campo: Nombre del equipo -->
-            <div class="form-group">
-                <label for="nombre">Nombre del equipo:</label>
-                <input type="text" id="nombre" name="nombre" required placeholder="Ingresa el nombre del equipo">
-            </div>
+        <!-- Campo: Nombre del equipo -->
+        <div class="form-group">
+            <label for="nombre">Nombre del equipo:</label>
+            <input type="text" id="nombre" name="nombre" required placeholder="Ingresa el nombre del equipo"
+                value="{{ request.POST.nombre }}">
+        </div>
 
-            <!-- Campo: Abreviatura -->
-            <div class="form-group">
-                <label for="abreviatura">Abreviatura:</label>
-                <input type="text" id="abreviatura" name="abreviatura" required placeholder="Ingresa la abreviatura">
-            </div>
+        <!-- Campo: Abreviatura -->
+        <div class="form-group">
+            <label for="abreviatura">Abreviatura:</label>
+            <input type="text" id="abreviatura" name="abreviatura" required placeholder="Ingresa la abreviatura"
+                value="{{ request.POST.abreviatura }}">
+        </div>
 
-            <!-- Campo: Logo del equipo -->
-            <div class="form-group">
-                <label for="logo">Logo del equipo:</label>
-                <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/jpg">
-            </div>
+        <!-- Campo: Logo del equipo -->
+        <div class="form-group">
+            <label for="logo">Logo del equipo:</label>
+            <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/jpg" required>
+        </div>
 
-            <!-- Campo: Comprobante de pago -->
-            <div class="form-group">
-                <label for="comprobante_pago">Comprobante de pago:</label>
-                <p id="info-pago">Para que tu equipo sea aprobado y puedas participar de la liga el equipo debe realizar el pago de la inscripción de cada integrante.  Hay dos opciones de hacerlo (no se admitirán ambas al mismo tiempo).
-
-                    1. Un integrante paga la sumatoria de todas las inscripciones mediante una sola transferencia y adjunta foto del comprobante. 
-                        
-                    2. Cada integrante realiza una transferencia con el monto de su inscripcion y cada uno adjunta una foto de su comprobante. 
-                        
-                    <strong>Monto de la inscripción por persona:</strong>
-                    Jugadores Argentinos: $20.000 (ARS)
-                    Jugadores Argentinos que pertenecen a la UTN FRLP: $10.000 (ARS)
-                    Jugadores de otros países: $19 (USD)
-                
-                    <strong>Alias:</strong> leyendas.del.sur
-                    <strong>CBU:</strong> 0000003100065678901234
-                </p>
-                <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/png, image/jpeg, image/jpg, application/zip, .rar">
-            </div>
-
+            <!-- Mensajes de error -->
             {% if messages %}
                 {% for message in messages %}
                     {% if "error-tipo-archivo" in message.tags %}
                         <div class="alert-error-formato">
-                            <p>Error: {{ message }}</p>
+                            <p>{{ message }}</p>
                         </div>
                     {% endif %}
                 {% endfor %}
             {% endif %}
+
+
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "error-nombre-equipo" in message.tags %}
+                        <div class="alert-error-formato">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "error-abreviatura-equipo" in message.tags %}
+                        <div class="alert-error-formato">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            
             <!-- Botones de enviar y cancelar -->
             <div class="form-buttons">
                 <button type="button" class="cancel-button" onclick="window.location.href='/player/home/'">Cancelar</button>
