@@ -13,6 +13,12 @@
     <h2>Bienvenido, {{ jugador.nombre }} {{ jugador.apellido }}</h2>
     <p>Esta es tu área personal. Aquí podrás adminitstrar tu equipo para la liga Leyendas del Sur</p>
 
+    {% if not jugador.equipo %}
+    <p class="consejo">Para participar en el torneo, uno de los integrantes deberá registrar el equipo e invitar a sus compañeros. Quien realice esta acción será designado como capitán y asumirá las responsabilidades establecidas en el reglamento oficial del torneo. Si has recibido una invitación, revisa la sección 'Invitaciones Pendientes' y acéptala para unirte.</p>
+    {% else %}
+    <p class="consejo">Recuerda que para poder participar en el torneo, tu equipo debe ser aprobado por los administradores. Para esto, deberás realizar el pago correspondiente y enviar el comprobante de pago desde la seccion 'Editar'. Una vez enviado podrás hacer el seguimiento del estado de tu equipo en 'Estado de aprobación'.</p>
+    {% endif %}
+
     <!-- Muestra el equipo creado -->
     {% if jugador.equipo %}
     <!-- Muestra el equipo al que pertenece el jugador -->
@@ -24,7 +30,7 @@
                 <h5 class="card-title">{{ equipo.nombre }} ({{ equipo.abreviatura }})</h5>
                 <p class="card-text">
                     Estado de aprobación:
-                    {{ equipo.aprobado|yesno:"Aprobado,Pendiente" }}
+                    {{ equipo.estadoAprobacion }}
                     <span class="help-icon"
                         title="El estado de aprobación indica si tu equipo ha sido revisado y aprobado por los administradores de la liga.">?</span>
                 </p>

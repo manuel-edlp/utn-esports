@@ -590,3 +590,14 @@ body::before {
     border: 1px solid #e6b800;
     text-align: center;
 }
+
+.consejo{
+    background-color: #474747a8;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px solid #ffffff;
+    text-align: center;
+}
