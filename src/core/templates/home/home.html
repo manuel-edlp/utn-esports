@@ -8,8 +8,13 @@
 
 {% block main %}
 <section id="inicio" class="section-style text-center my-5">
-    <h1 id="titulo">¡Bienvenidos a la Liga Leyendas del Sur!</h1>
-    <p id="subtitulo">Prepárate para un evento épico de League of Legends organizado por la UTN FRLP</p>
+    <div class="column-left">
+        <div class="text-container">
+            <h1 id="titulo">¡Bienvenidos a la Liga Leyendas del Sur!</h1>
+            <p id="subtitulo">Prepárate para un evento épico de League of Legends organizado por la UTN FRLP</p>
+        </div>
+    </div>
+    <div class="column-right"></div>
 </section>
 
 <div id="video-banner" class="my-4">
@@ -53,13 +58,90 @@
 </section>
 
 <section id="twitch" class="section-style text-center my-5">
-    <h2>Disfruta de nuestro último clip en Twitch:</h2>
-    <br>
-    <div class="iframe-container">
-        <iframe src="https://clips.twitch.tv/embed?clip=ObservantTenaciousKaleCorgiDerp-H9d9rJ5iiOc6Tc04&parent=127.0.0.1"
-            height="360" width="640" allowfullscreen>
-        </iframe>
+    <h2>Disfruta de nuestros clips en Twitch:</h2>
+    <div class="carousel">
+        <div class="carousel-container">
+            <div class="carousel-item active">
+                <div class="iframe-container">
+                    <iframe src="https://clips.twitch.tv/embed?clip=ObservantTenaciousKaleCorgiDerp-H9d9rJ5iiOc6Tc04&parent=127.0.0.1" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="iframe-container">
+                    <iframe src="https://clips.twitch.tv/embed?clip=HandsomeMotionlessMangoHeyGirl-q22ILkA-zLnEycY2&parent=127.0.0.1" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="iframe-container">
+                    <iframe src="https://clips.twitch.tv/embed?clip=AffluentEphemeralIguanaAliens-eDaYoSPM0_Xu2rlh&parent=127.0.0.1" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-button prev" onclick="prevSlide()">❮</button>
+        <button class="carousel-button next" onclick="nextSlide()">❯</button>
     </div>
 </section>
+
+
+
+<script>
+let currentSlide = 0;
+
+function showSlide(index) {
+    const items = document.querySelectorAll('.carousel-item');
+    const iframes = document.querySelectorAll('.iframe-container iframe');
+
+    if (index >= items.length) {
+        currentSlide = 0;
+    } else if (index < 0) {
+        currentSlide = items.length - 1;
+    } else {
+        currentSlide = index;
+    }
+
+    items.forEach((item, i) => {
+        item.classList.remove('active');
+        if (i === currentSlide) {
+            item.classList.add('active');
+        }
+    });
+
+    iframes.forEach((iframe, i) => {
+        if (i === currentSlide) {
+            iframe.style.display = 'block';
+        } else {
+            iframe.style.display = 'none';
+        }
+    });
+
+    adjustCarouselHeight();
+}
+
+function adjustCarouselHeight() {
+    const activeIframe = document.querySelector('.carousel-item.active iframe');
+    if (activeIframe) {
+        const carousel = document.querySelector('.carousel');
+        const aspectRatio = 9 / 16; // Relación de aspecto 16:9
+        const width = carousel.offsetWidth;
+        const height = width * aspectRatio;
+        carousel.style.height = `${height}px`;
+    }
+}
+
+function nextSlide() {
+    showSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+    showSlide(currentSlide - 1);
+}
+
+window.addEventListener('resize', adjustCarouselHeight);
+
+showSlide(currentSlide); // Inicializa el primer slide
+adjustCarouselHeight(); // Ajusta la altura inicial del carrusel
+
+
+</script>
 
 {% endblock %}

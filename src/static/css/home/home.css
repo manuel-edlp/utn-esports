@@ -27,31 +27,7 @@ body::before {
     scroll-margin-top: 70px;
 }
 
-.iframe-container {
-    position: relative;
-    width: 80%;
-    padding-top: 56.25%; /* Relación de aspecto 16:9 (altura automática) */
-    height: 0;
-    overflow: hidden;
-    margin: 0 auto;
-}
 
-.iframe-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-/* Estilo para las secciones con fondo, bordes redondeados y opacidad */
-.section-style {
-    background-color: rgba(0, 0, 0, 0.35);
-    border-radius: 10px;
-    padding: 40px;
-    color: rgb(255, 255, 255);
-}
 
 #titulo {
     font-size: 50px;
@@ -79,20 +55,30 @@ body::before {
     2px 0px 0 black
 }
 
-#inicio{
-
+#inicio {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
     margin-top: 20px !important;
     margin-bottom: 0px !important;
-    background-image: url("../../images/banner-fondo-liso.jpg");
-    background-size: 100% 100%; /* Estira la imagen tanto en ancho como en alto */
+    background-image: url("../../images/banner-lol.webp");
+    background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
-    height: 50vh; /* Asegura que el contenedor tenga al menos el 50% de la altura de la ventana */
+    height: 50vh;
+}
+
+.column-left, .column-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.column-left {
+    justify-content: flex-end;
+    padding-right: 20px;
+}
+
+.column-right {
+    justify-content: flex-start;
 }
 
 #video-banner{
@@ -279,16 +265,165 @@ button:hover #clip {
 
 
 
-@media screen and (max-width: 700px) {
-#inicio {
-    height: auto;
-    padding: 15px;
+.section-style {
+    background-color: rgba(0, 0, 0, 0.35);
+    border-radius: 10px;
+    padding: 40px;
+    color: rgb(255, 255, 255);
 }
 
-#titulo {
-    font-size: 30px;
-    margin-top: 20px;
+
+
+#twitch h2 {
+    position: relative;
+    color: white;
+    z-index: 10;
+    font-size: calc(1.325rem + .9vw);
+    text-align: center;
+    margin-bottom: 0px;
 }
+
+#twitch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px 0;
+    overflow: hidden;
+    position: relative;
+    min-height: auto;
+}
+
+.carousel {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    margin: 0px 20px 20px 20px auto;
+    overflow: hidden;
+}
+
+.carousel-container {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    position: relative;
+    height: 100%;
+}
+
+.carousel-item {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.6;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    z-index: 1;
+    width: 100%;
+}
+
+.carousel-item.active {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1);
+    z-index: 2;
+}
+
+.carousel-item:nth-child(1) {
+    transform: translateX(-50%) scale(0.8);
+    z-index: 0;
+}
+
+.carousel-item:nth-child(2) {
+    transform: translateX(-50%) scale(0.9);
+    z-index: 1;
+}
+
+.carousel-item:nth-child(3) {
+    transform: translateX(-50%) scale(0.9);
+    z-index: 1;
+}
+
+.iframe-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio (9 / 16 * 100) */
+    overflow: hidden;
+    background: #000;
+    border-radius: 10px;
+}
+
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.carousel-button.prev {
+    left: 10px;
+}
+
+.carousel-button.next {
+    right: 10px;
+}
+
+
+
+
+
+@media screen and (max-width: 700px) {
+    #inicio {
+        flex-direction: column;
+        background-size: cover;
+        height: 28vh;
+    }
+
+    .column-right {
+        display: none;
+    }
+
+    .column-left {
+        justify-content: center;
+        padding-right: 0;
+        width: 100%;
+    }
+
+    .text-container {
+        max-width: 90%;
+        text-align: center;
+    }
+
+    #titulo {
+        font-size: 2rem;
+    }
+
+    #subtitulo {
+        font-size: 1rem;
+    }
 
 #video-banner {
     max-height: 300px;
