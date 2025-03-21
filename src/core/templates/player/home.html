@@ -4,7 +4,6 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/player/home.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block main %}
@@ -46,27 +45,38 @@
 
 
                 </div>
-                <!-- Sección de Miembros -->
-                <div class="team-members">
-                    <h4>Miembros</h4>
-                    {% if equipo.miembros.all %}
-                    <ul class="members-list">
-                        {% for jugador in equipo.miembros.all %}
-                        <li>
-                            {{ jugador.nombre }} {{ jugador.apellido }}
-                            {% if jugador == equipo.capitan %}
-                                <span>(capitán)</span>
-                            {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p class="no-members">Aún no hay miembros, invita a alguien.</p>
-                    {% endif %}
-                    <button class="btn-invite" onclick="mostrarModalInvitacion()">
-                        <i class="fas fa-user-plus"></i> Invitar
-                    </button>
-                </div>
+            <!-- Sección de Miembros -->
+            <div class="team-members">
+                <h4>Miembros</h4>
+                {% if equipo.miembros.all %}
+                <ul class="members-list">
+                    {% for jugador in equipo.miembros.all %}
+                    <li>
+                        {{ jugador.nombre }} {{ jugador.apellido }}
+                        {% if jugador == equipo.capitan %}
+                            <span>(capitán)</span>
+                        {% endif %}
+                        {% if request.user.jugador == equipo.capitan and jugador != equipo.capitan %}
+                        <button class="btn-remove" 
+                            data-jugador-id="{{ jugador.id }}" 
+                            data-jugador-nombre="{{ jugador.nombre }}" 
+                            onclick="mostrarModalEliminarJugador(this)">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-members">Aún no hay miembros, invita a alguien.</p>
+                {% endif %}
+                <button class="btn-invite" onclick="mostrarModalInvitacion()">
+                    <i class="fas fa-user-plus"></i> Invitar
+
+                </button>
+            </div>
+
             </div>
         </div>
         {% else %}
@@ -130,6 +140,56 @@
 <!-- Seccion de Modales: -->
 
 
+<!-- Modal de Confirmación -->
+<div id="modalConfirmacionEliminarJugador" class="modal">
+    <div class="modal-content">
+        <p id="mensajeConfirmacionEliminarJugador"></p>
+        <form id="form-eliminar-jugador" method="post" action="">
+            {% csrf_token %}
+            <div class="modal-buttons">
+                <button type="submit" class="btn btn-delete">Confirmar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalEliminarJugador()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+   function mostrarModalEliminarJugador(button) {
+    const modal = document.getElementById('modalConfirmacionEliminarJugador');
+    const jugadorId = button.dataset.jugadorId;
+    const jugadorNombre = button.dataset.jugadorNombre;
+
+    // Actualizar el mensaje de confirmación
+    const mensaje = document.getElementById("mensajeConfirmacionEliminarJugador");
+    mensaje.innerText = `¿Estás seguro de que quieres eliminar a ${jugadorNombre} del equipo?`;
+
+    // Establecer la acción del formulario para la eliminación
+    const form = document.getElementById("form-eliminar-jugador");
+    form.action = `/player/eliminar_jugador/${jugadorId}/`;
+
+    // Mostrar el modal
+    modal.style.display = 'flex';
+}
+
+function cerrarModalEliminarJugador() {
+    const modal = document.getElementById('modalConfirmacionEliminarJugador');
+    modal.style.display = 'none';
+}
+
+window.onclick = function (event) {
+    const modal = document.getElementById('modalConfirmacionEliminarJugador');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+};
+</script>
+
 <!-- Modal de invitación -->
 <div id="modal-invitacion" class="modal">
     <div class="modal-content">
@@ -154,7 +214,7 @@
 </div>
 
 
-<!-- Modal de confirmación de eliminación -->
+<!-- Modal de confirmación de eliminar equipo -->
 <div id="modal-eliminar" class="modal">
     <div class="modal-content">
         <p>¿Estas seguro que deseas eliminar este equipo?</p>
@@ -315,4 +375,4 @@
 </script>
 
 
-    {% endblock %}
+{% endblock %}

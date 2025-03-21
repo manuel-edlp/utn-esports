@@ -572,3 +572,21 @@ class RechazarInvitacionView(View):
 
         messages.success(request, "Has rechazado la invitación.")
         return redirect('player_home')
+    
+
+
+class EliminarJugadorView(View):
+    def post(self, request, jugador_id):
+        # Obtengo el jugador y el equipo actual
+        jugador = get_object_or_404(Jugador, id=jugador_id)
+        equipo = request.user.jugador.equipo
+
+        # Verifico que el jugador pertenezca al equipo y que sea el capitán
+        if jugador in equipo.miembros.all() and request.user.jugador == equipo.capitan:
+            # Elimino al jugador del equipo
+            equipo.miembros.remove(jugador)
+            messages.success(request, f'{jugador.nombre} ha sido eliminado del equipo.')
+        else:
+            messages.error(request, 'No tienes permiso para eliminar a este jugador.')
+
+        return redirect('player_home') 
