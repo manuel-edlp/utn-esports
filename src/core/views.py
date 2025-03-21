@@ -313,7 +313,8 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
                 abreviatura=abreviatura,
                 logo=logo,
                 creado_por=request.user.jugador,
-                estadoAprobacion=estadoAprobacion
+                estadoAprobacion=estadoAprobacion,
+                capitan=request.user.jugador
             )
             equipo.save()
 
@@ -401,7 +402,22 @@ class AbandonarEquipoView(LoginRequiredMixin, View):
 
         # Verifica si el jugador es miembro del equipo
         if jugador in equipo.miembros.all():
-            # Remueve al jugador del equipo
+
+            # Si el jugador es el capitán, transfiero la capitanía
+            if equipo.capitan == jugador:
+
+                # Obtengor otro miembro para transfiero la capitanía
+                nuevo_capitan = equipo.miembros.exclude(id=jugador.id).first()  # Excluyo al jugador actual
+
+                if nuevo_capitan:
+                    # Transfiero la capitanía al nuevo miembro
+                    equipo.capitan = nuevo_capitan
+                    equipo.save()
+                    messages.success(request, f"La capitanía ha sido transferida a {nuevo_capitan.nombre}.")
+                else:
+                    equipo.capitan = None
+
+            # Remuevo al jugador del equipo
             equipo.miembros.remove(jugador)
 
             # Verifica si el equipo quedó sin miembros
