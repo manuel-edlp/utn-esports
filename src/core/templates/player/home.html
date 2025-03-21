@@ -46,14 +46,18 @@
 
 
                 </div>
-
                 <!-- Sección de Miembros -->
                 <div class="team-members">
                     <h4>Miembros</h4>
                     {% if equipo.miembros.all %}
                     <ul class="members-list">
                         {% for jugador in equipo.miembros.all %}
-                        <li>{{ jugador.nombre }} {{ jugador.apellido }}</li>
+                        <li>
+                            {{ jugador.nombre }} {{ jugador.apellido }}
+                            {% if jugador == equipo.capitan %}
+                                <span>(capitán)</span>
+                            {% endif %}
+                        </li>
                         {% endfor %}
                     </ul>
                     {% else %}
