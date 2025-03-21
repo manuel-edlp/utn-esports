@@ -445,7 +445,7 @@ class PagarInscripcionView(LoginRequiredMixin, TemplateView):
         equipo_id = self.kwargs.get('equipo_id')
         try:
             equipo = Equipo.objects.get(id=equipo_id)
-            if equipo.creado_por != request.user.jugador and equipo.jugadores.filter(id=request.user.jugador.id).count() == 0:
+            if equipo.creado_por != request.user.jugador and equipo.miembros.filter(id=request.user.jugador.id).count() == 0:
                 messages.error(request, "Solo los miembros de este equipo pueden realizar pagos.")
                 return redirect('player_home')
         except Equipo.DoesNotExist:
@@ -464,7 +464,7 @@ class PagarInscripcionView(LoginRequiredMixin, TemplateView):
         equipo_id = self.kwargs.get('equipo_id')
         try:
             equipo = Equipo.objects.get(id=equipo_id)
-            if equipo.creado_por != request.user.jugador and equipo.jugadores.filter(id=request.user.jugador.id).count() == 0:
+            if equipo.creado_por != request.user.jugador and equipo.miembros.filter(id=request.user.jugador.id).count() == 0:
                 messages.error(request, "Solo los miembros de este equipo pueden realizar pagos.")
                 return redirect('player_home')
         except Equipo.DoesNotExist:
