@@ -43,9 +43,9 @@
           <!-- Verifica si el usuario está autenticado -->
           {% if request.user.is_authenticated %}
           <div class="dropdown">
-            <button class="btn btn-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown"
+            <button class="btn btn-light dropdown-toggle glitch-button" type="button" id="userDropdown" data-bs-toggle="dropdown"
               aria-expanded="false">
-              {{ request.user.jugador.nombre }}
+              <span>{{ request.user.jugador.nombre }}</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li>
