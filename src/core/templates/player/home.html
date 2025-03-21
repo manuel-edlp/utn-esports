@@ -16,7 +16,7 @@
     {% if not jugador.equipo %}
     <p class="consejo">Para participar en el torneo, uno de los integrantes deberá registrar el equipo e invitar a sus compañeros. Quien realice esta acción será designado como capitán y asumirá las responsabilidades establecidas en el reglamento oficial del torneo. Si has recibido una invitación, revisa la sección 'Invitaciones Pendientes' y acéptala para unirte.</p>
     {% else %}
-    <p class="consejo">Recuerda que para poder participar en el torneo, tu equipo debe ser aprobado por los administradores. Para esto, deberás realizar el pago correspondiente y enviar el comprobante de pago desde la seccion 'Editar'. Una vez enviado podrás hacer el seguimiento del estado de tu equipo en 'Estado de aprobación'.</p>
+    <p class="consejo">Recuerda que para poder participar en el torneo, tu equipo debe ser aprobado por los administradores. Para esto, deberás realizar el pago correspondiente y enviar el comprobante de pago desde la seccion 'Editar'. Una vez enviado podrás hacer el seguimiento del estado de tu equipo viendo el 'Estado de aprobación'.</p>
     {% endif %}
 
     <!-- Muestra el equipo creado -->
@@ -31,10 +31,13 @@
                 <p class="card-text">
                     Estado de aprobación:
                     {{ equipo.estadoAprobacion }}
-                    <span class="help-icon"
-                        title="El estado de aprobación indica si tu equipo ha sido revisado y aprobado por los administradores de la liga.">?</span>
-                </p>
+                    <span class="help-icon" 
+                        title="{% if equipo.estadoAprobacion == 'Pago pendiente' %}Debes realizar el pago y adjuntar el comprobante.{% elif equipo.estadoAprobacion == 'En revisión' %}Tu equipo está siendo revisado por los administradores del torneo.{% elif equipo.estadoAprobacion == 'Aprobado' %}Tu equipo ya fue aprobado para poder participar en el torneo.{% elif equipo.estadoAprobacion == 'Rechazado' %}Tu equipo fue rechazado. Contacta a los administradores para más información.{% endif %}">
+                        ?
+                    </span>
+                </p>                
                 <div class="card-actions">
+                    <a href="{% url 'pagar_inscripcion' equipo.id %}" class="btn btn-pay"><i class="fas fa-credit-card"></i> Pagar</a>
                     <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Editar</a>
                     <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
                         data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModalAbandonar(this)"><i class="fas fa-sign-out-alt"></i> Abandonar</button>

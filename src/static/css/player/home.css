@@ -70,6 +70,7 @@ body::before {
 
 .btn-edit,
 .btn-delete,
+.btn-pay,
 #btn-abandonar {
     width: 100%;
     padding: 15px 20px;
@@ -83,6 +84,15 @@ body::before {
     align-items: center;
     justify-content: center;
     gap: 8px;
+}
+
+.btn-invite{
+    transition: background-color 0.3s ease;
+}
+
+.btn-pay{
+    background-color: #28a745;
+    color: #fff;
 }
 
 .btn-edit {
@@ -99,6 +109,11 @@ body::before {
     background-color: #dc5635 !important;
 }
 
+.btn-pay:hover{
+    background-color: #23943e;
+}
+
+
 .btn-edit:hover {
     background-color: #0056b3;
 }
@@ -109,6 +124,10 @@ body::before {
 
 #btn-abandonar:hover {
     background-color: #da4520 !important;
+}
+
+.btn-invite:hover{
+    color: black;
 }
 
 /* Estilos para la sección de miembros */
