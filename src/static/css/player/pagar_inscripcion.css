@@ -1,0 +1,154 @@
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../images/pyke.png");
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+}
+
+
+.register-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.register-container {
+    background-color: #000000b8;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+.register-container h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #ffffff;
+}
+
+.register-container p {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+#info-pago {
+    white-space: pre-line;
+    font-size: 13px;
+}
+
+.register-form {
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #fff;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #000000b3;
+    color: #fff;
+    font-size: 14px;
+}
+
+.form-group input::placeholder {
+    color: #888;
+}
+
+.form-group input:focus {
+    border-color: #2781c3;
+    outline: none;
+}
+
+.form-group input[type="file"] {
+    padding: 5px;
+}
+
+.comprobante-previo p {
+    margin-bottom: 0;
+}
+
+
+/* Estilos para los botones del formulario */
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.register-button {
+    background-color: #2781c3;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 150px;
+}
+
+.register-button:hover {
+    background-color: #1e76b4;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 150px;
+}
+
+.cancel-button:hover {
+    background-color: #e53935;
+}
+
+.cancel-button:focus,
+.register-button:focus {
+    outline: none;
+}
+
+.alert-error-formato {
+    background-color: #ffcc00;
+    padding: 4px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px solid #e6b800;
+    text-align: center;
+    align-items: center;
+    height: 30px;
+}
+
+.alert-error-formato p {
+    color: black;
+}
