@@ -1,6 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+class EstadoAprobacion(models.TextChoices):
+    APROBADO = "Aprobado", "Aprobado"
+    RECHAZADO = "Rechazado", "Rechazado"
+    EN_REVISION = "En revisión", "En revisión"
+    PAGO_PENDIENTE = "Pago pendiente", "Pago de inscripción pendiente"
+
+    
 class Usuario(models.Model):
     # Roles
     ES_JUGADOR = 'jugador'
@@ -71,11 +79,15 @@ class Equipo(models.Model):
     abreviatura = models.CharField(max_length=10)
     logo = models.ImageField(upload_to='logos/')
     comprobante_pago = models.ImageField(upload_to='comprobantes/')
-    aprobado = models.BooleanField(default=False)
+    estadoAprobacion = models.CharField(
+        max_length=20,
+        choices=EstadoAprobacion.choices,
+        default=EstadoAprobacion.PAGO_PENDIENTE
+    )
     creado_por = models.ForeignKey(Jugador, on_delete=models.CASCADE, related_name='equipos_creados')
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} - {self.get_estadoAprobacion_display()}"
 
 
 class Invitacion(models.Model):

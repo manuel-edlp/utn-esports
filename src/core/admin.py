@@ -15,8 +15,8 @@ class StaffAdmin(admin.ModelAdmin):
 
 @admin.register(Equipo)
 class EquipoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'abreviatura', 'creado_por', 'aprobado')
-    list_filter = ('aprobado',)
+    list_display = ('nombre', 'abreviatura', 'creado_por', 'estadoAprobacion')
+    list_filter = ('estadoAprobacion',)
     search_fields = ('nombre', 'creado_por__nombre')
 
 @admin.register(Invitacion)

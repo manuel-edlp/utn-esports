@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
-from .models import Equipo, Invitacion, Jugador
+from .models import Equipo, EstadoAprobacion, Invitacion, Jugador
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -303,19 +303,25 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
                 kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
                 if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
                     raise ValidationError("Tipo de archivo no permitido para el comprobante de pago.")
+        
+            # Si cargaron comprobante de pago, el estado es EN_REVISIÓN, sino es PAGO_PENDIENTE
+            if comprobante_pago:
+                estado = EstadoAprobacion.EN_REVISION
+            else:
+                estado = EstadoAprobacion.PAGO_PENDIENTE
 
-
-            # Crear el equipo
+            # Creo el equipo
             equipo = Equipo(
                 nombre=nombre,
                 abreviatura=abreviatura,
                 logo=logo,
                 comprobante_pago=comprobante_pago,
-                creado_por=request.user.jugador
+                creado_por=request.user.jugador,
+                estado=estado
             )
             equipo.save()
 
-            # Asocia el equipo al jugador que lo creó
+            # Asocio el equipo al jugador que lo creó
             jugador = request.user.jugador
             jugador.equipo = equipo
             jugador.save()
@@ -361,18 +367,31 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
                 logo.seek(0)
                 equipo.logo = logo
 
-            if 'comprobante_pago' in request.FILES:
-                comprobante_pago = request.FILES['comprobante_pago']
-                kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
+            # Si el equipo no está aprobado, se puede cambiar el comprobante de pago y cambio estado de aprobación. Caso contrario, no se puede cambiar el comprobante de pago y el estado no cambia.
+            if equipo.estado != EstadoAprobacion.APROBADO:
+                
+                if 'comprobante_pago' in request.FILES:
+                    comprobante_pago = request.FILES['comprobante_pago']
+                    kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
 
-                if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
-                    raise ValidationError("Tipo de archivo no permitido.")
-                comprobante_pago.seek(0)
-                equipo.comprobante_pago = comprobante_pago
+                    if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
+                        raise ValidationError("Tipo de archivo no permitido.")
+                    comprobante_pago.seek(0)
+                    equipo.comprobante_pago = comprobante_pago
+
+                # Si cargaron comprobante de pago, el estado es EN_REVISIÓN, sino es PAGO_PENDIENTE
+                if comprobante_pago:
+                    estado = EstadoAprobacion.EN_REVISION
+                else:
+                    estado = EstadoAprobacion.PAGO_PENDIENTE
+
+                equipo.estado = estado
+
 
             equipo.save()
             messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
             return redirect('player_home')
+            
 
         except ValidationError as e:
             messages.error(request, "Tipo de archivo no permitido.", extra_tags='error-tipo-archivo')
