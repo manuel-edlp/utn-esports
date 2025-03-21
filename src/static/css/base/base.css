@@ -242,6 +242,9 @@ html {
       width: 100%;
       text-align: center;
     }
+    #userDropdown {
+      margin-left: 0px;
+    }
   }
 
 
