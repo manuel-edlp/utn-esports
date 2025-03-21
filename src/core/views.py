@@ -282,12 +282,22 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
         nombre = request.POST.get('nombre')
         abreviatura = request.POST.get('abreviatura')
         logo = request.FILES.get('logo')
-        comprobante_pago = request.FILES.get('comprobante_pago')
+        estadoAprobacion = EstadoAprobacion.PAGO_PENDIENTE
 
         # Valida los datos
-        if not nombre or not abreviatura or not logo or not comprobante_pago:
+        if not nombre or not abreviatura or not logo:
             messages.error(request, "Todos los campos son obligatorios.")
-            return render(request, self.template_name)
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
+
+        # Verifica si el nombre del equipo ya existe en la base de datos
+        if Equipo.objects.filter(nombre=nombre).exists():
+            messages.error(request, "El nombre del equipo ya está en uso. Elige otro.", extra_tags='error-nombre-equipo')
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
+        
+        # Verifica si la abreviatura del equipo ya existe en la base de datos
+        if Equipo.objects.filter(abreviatura=abreviatura).exists():
+            messages.error(request, "La abreviatura del equipo ya está en uso. Elige otra.", extra_tags='error-abreviatura-equipo')
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
 
         # Validación del tipo de archivo
         try:
@@ -297,27 +307,13 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
                 if kind is None or kind.mime not in ['image/jpeg', 'image/png', 'image/jpg']:
                     raise ValidationError("Tipo de archivo no permitido para el logo.")
 
-
-            if 'comprobante_pago' in request.FILES:
-                comprobante_pago = request.FILES['comprobante_pago']
-                kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
-                if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
-                    raise ValidationError("Tipo de archivo no permitido para el comprobante de pago.")
-        
-            # Si cargaron comprobante de pago, el estado es EN_REVISIÓN, sino es PAGO_PENDIENTE
-            if comprobante_pago:
-                estado = EstadoAprobacion.EN_REVISION
-            else:
-                estado = EstadoAprobacion.PAGO_PENDIENTE
-
             # Creo el equipo
             equipo = Equipo(
                 nombre=nombre,
                 abreviatura=abreviatura,
                 logo=logo,
-                comprobante_pago=comprobante_pago,
                 creado_por=request.user.jugador,
-                estado=estado
+                estadoAprobacion=estadoAprobacion
             )
             equipo.save()
 
@@ -330,9 +326,10 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
             messages.success(request, f"Equipo '{equipo.nombre}' creado exitosamente.")
             return redirect('player_home')
 
-        except Exception as e:
-            messages.error(request, "Tipo de archivo no permitido.", extra_tags='error-tipo-archivo')
-            return render(request, 'player/crear_equipo.html', { 'messages': messages.get_messages(request)})
+        except ValidationError as e:
+            messages.error(request, str(e), extra_tags='error-tipo-archivo')
+            return render(request, 'player/crear_equipo.html', {'nombre': nombre, 'abreviatura': abreviatura, 'messages': messages.get_messages(request)})
+
 
 
 class EditarEquipoView(LoginRequiredMixin, TemplateView):
@@ -349,12 +346,25 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, equipo_id, *args, **kwargs):
         equipo = get_object_or_404(Equipo, id=equipo_id)
+        nombre = request.POST.get('nombre')
+        abreviatura = request.POST.get('abreviatura')
 
         if request.user.jugador not in equipo.miembros.all():
             messages.error(request, "No tienes permisos para editar este equipo.")
 
-        equipo.nombre = request.POST.get('nombre')
-        equipo.abreviatura = request.POST.get('abreviatura')
+         # Verifica si el nombre del equipo ya existe en la base de datos
+        if Equipo.objects.filter(nombre=nombre).exists():
+            messages.error(request, "El nombre del equipo ya está en uso. Elige otro.", extra_tags='error-nombre-equipo')
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
+        
+        # Verifica si la abreviatura del equipo ya existe en la base de datos
+        if Equipo.objects.filter(abreviatura=abreviatura).exists():
+            messages.error(request, "La abreviatura del equipo ya está en uso. Elige otra.", extra_tags='error-abreviatura-equipo')
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
+        
+
+        equipo.nombre = nombre
+        equipo.abreviatura = abreviatura
 
 
         try:
@@ -367,35 +377,14 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
                 logo.seek(0)
                 equipo.logo = logo
 
-            # Si el equipo no está aprobado, se puede cambiar el comprobante de pago y cambio estado de aprobación. Caso contrario, no se puede cambiar el comprobante de pago y el estado no cambia.
-            if equipo.estado != EstadoAprobacion.APROBADO:
-                
-                if 'comprobante_pago' in request.FILES:
-                    comprobante_pago = request.FILES['comprobante_pago']
-                    kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
-
-                    if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
-                        raise ValidationError("Tipo de archivo no permitido.")
-                    comprobante_pago.seek(0)
-                    equipo.comprobante_pago = comprobante_pago
-
-                # Si cargaron comprobante de pago, el estado es EN_REVISIÓN, sino es PAGO_PENDIENTE
-                if comprobante_pago:
-                    estado = EstadoAprobacion.EN_REVISION
-                else:
-                    estado = EstadoAprobacion.PAGO_PENDIENTE
-
-                equipo.estado = estado
-
-
             equipo.save()
             messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
             return redirect('player_home')
             
 
         except ValidationError as e:
-            messages.error(request, "Tipo de archivo no permitido.", extra_tags='error-tipo-archivo')
-            return render(request, 'player/editar_equipo.html', {'equipo': equipo, 'messages': messages.get_messages(request)})
+            messages.error(request, str(e), extra_tags='error-tipo-archivo')
+            return render(request, 'player/editar_equipo.html', {'nombre': nombre, 'abreviatura': abreviatura, 'equipo': equipo, 'messages': messages.get_messages(request)})
     
 class EliminarEquipoView(LoginRequiredMixin, View):
     def post(self, request, equipo_id, *args, **kwargs):
@@ -404,11 +393,6 @@ class EliminarEquipoView(LoginRequiredMixin, View):
         messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
         return redirect('player_home')
 
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Equipo
 
 class AbandonarEquipoView(LoginRequiredMixin, View):
     def post(self, request, equipo_id, *args, **kwargs):
@@ -431,6 +415,71 @@ class AbandonarEquipoView(LoginRequiredMixin, View):
         else:
             messages.error(request, "Error. No eres miembro de este equipo.")
             return redirect('player_home')
+
+class PagarInscripcionView(LoginRequiredMixin, TemplateView):
+    template_name = 'player/pagar_inscripcion.html'
+
+    def get(self, request, *args, **kwargs):
+        # Verifica si el usuario es un jugador
+        if not hasattr(request.user, 'jugador'):
+            messages.error(request, "Solo los jugadores pueden realizar pagos.")
+            return redirect('player_home')
+
+        # Verifica si el equipo existe y si el jugador pertenece a ese equipo
+        equipo_id = self.kwargs.get('equipo_id')
+        try:
+            equipo = Equipo.objects.get(id=equipo_id)
+            if equipo.creado_por != request.user.jugador and equipo.jugadores.filter(id=request.user.jugador.id).count() == 0:
+                messages.error(request, "Solo los miembros de este equipo pueden realizar pagos.")
+                return redirect('player_home')
+        except Equipo.DoesNotExist:
+            messages.error(request, "No se encontró el equipo.")
+            return redirect('player_home')
+
+        return render(request, self.template_name, {'equipo': equipo})
+
+    def post(self, request, *args, **kwargs):
+        # Verifica si el usuario es un jugador
+        if not hasattr(request.user, 'jugador'):
+            messages.error(request, "Solo los jugadores pueden realizar pagos.")
+            return redirect('player_home')
+
+        # Obtiene el ID del equipo
+        equipo_id = self.kwargs.get('equipo_id')
+        try:
+            equipo = Equipo.objects.get(id=equipo_id)
+            if equipo.creado_por != request.user.jugador and equipo.jugadores.filter(id=request.user.jugador.id).count() == 0:
+                messages.error(request, "Solo los miembros de este equipo pueden realizar pagos.")
+                return redirect('player_home')
+        except Equipo.DoesNotExist:
+            messages.error(request, "No se encontró el equipo.")
+            return redirect('player_home')
+
+        # Obtiene el archivo de comprobante de pago (único archivo)
+        comprobante_pago = request.FILES.get('comprobante_pago')
+
+        if not comprobante_pago:
+            messages.error(request, "Debes adjuntar un comprobante de pago.")
+            return render(request, self.template_name, {'equipo': equipo})
+
+        # Validación del tipo de archivo
+        try:
+            kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
+            if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
+                raise ValidationError("Tipo de archivo no permitido para el comprobante de pago.")
+            
+            # Guarda el comprobante de pago
+            equipo.comprobante_pago = comprobante_pago
+            equipo.estadoAprobacion = EstadoAprobacion.EN_REVISION
+            equipo.save()
+
+            # Mensaje de éxito
+            messages.success(request, "Comprobante de pago subido exitosamente. Tu equipo está en revisión.")
+            return redirect('player_home')
+
+        except ValidationError as e:
+            messages.error(request, str(e), extra_tags='error-tipo-archivo')
+            return render(request, self.template_name, {'equipo': equipo, 'messages': messages.get_messages(request)})
 
 class InvitarJugadorView(View):
     def post(self, request, *args, **kwargs):
