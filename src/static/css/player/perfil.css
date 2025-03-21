@@ -170,41 +170,32 @@ body::before {
     color: #357abd;
 }
 
-/* Botones de acción */
-.form-actions {
+.form-buttons {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
 
-.btn-save {
-    padding: 10px 20px;
-    background-color: #28a745;
+.btn-secondary {
+    background-color: #00000096 !important;
     color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-save:hover {
-    background-color: #218838;
-}
-
-.btn-cancel {
     padding: 10px 20px;
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
     border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    flex-grow: 1;
+    max-width: 200px;
+    text-align: center;
 }
 
-.btn-cancel:hover {
-    background-color: #c82333;
+.btn-secondary:hover {
+    background-color: #272727 !important;
 }
+
+
 
 /* Estilos de pantalla pequeña */
 @media (max-width: 768px) {
