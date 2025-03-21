@@ -87,9 +87,9 @@ body::before {
 .form-buttons {
     display: flex;
     justify-content: center;
-    gap: 10px; /* Espacio entre los botones */
+    gap: 10px;
     margin-top: 20px;
-    flex-wrap: wrap; /* Para que los botones se apilen en pantallas pequeñas */
+    flex-wrap: wrap;
 }
 
 .btn-secondary {
@@ -100,9 +100,9 @@ body::before {
     text-decoration: none;
     display: inline-block;
     margin-top: 10px;
-    flex-grow: 1; /* Para que los botones se expandan y ocupen el mismo espacio en pantallas más grandes */
-    max-width: 200px; /* Máximo tamaño en pantallas grandes */
-    text-align: center; /* Centrar el texto dentro del botón */
+    flex-grow: 1;
+    max-width: 200px;
+    text-align: center;
 }
 
 .btn-secondary:hover {
