@@ -8,13 +8,9 @@ Este proyecto, desarrollado con Django, es una plataforma web diseñada para ges
 
 * **Framework:** Django 5.1.2
 * **Librerías:**
-  * django-bootstrap5: Para integrar el framework Bootstrap 5 y mejorar la apariencia visual.
-  * django-bootstrap-icons: Para utilizar los iconos de Bootstrap.
   * django-environ: Para gestionar las variables de entorno.
-  * django-import-export: Para importar y exportar datos.
-  * django-phonenumber-field: Para manejar números de teléfono.
-  * phonenumbers: Librería de Python para la validación y manipulación de números de teléfono.
   * pillow: Para el procesamiento de imágenes.
+  * filetype: Para analizar las imagenes y archivos comprimidos subidos
 
 ### Requisitos Previos
 
