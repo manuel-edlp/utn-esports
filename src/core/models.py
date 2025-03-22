@@ -88,7 +88,7 @@ class Equipo(models.Model):
     capitan = models.ForeignKey(Jugador, on_delete=models.SET_NULL, null=True, blank=True, related_name='equipo_capitan')
 
     def __str__(self):
-        return f"{self.nombre} - {self.get_estadoAprobacion_display()}"
+        return f"{self.nombre}"
 
 
 class Invitacion(models.Model):

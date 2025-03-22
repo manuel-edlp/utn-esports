@@ -389,9 +389,13 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
     
 class EliminarEquipoView(LoginRequiredMixin, View):
     def post(self, request, equipo_id, *args, **kwargs):
-        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
-        equipo.delete()
-        messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+        # Verifica si el usuario es el capitán del equipo
+        if equipo.capitan == request.user.jugador:
+            equipo.delete()
+            messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
+        else:
+            messages.error(request, "Solo el capitán puede eliminar este equipo.")
         return redirect('player_home')
 
 
