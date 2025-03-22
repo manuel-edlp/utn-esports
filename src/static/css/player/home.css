@@ -620,7 +620,14 @@ body::before {
     border: 1px solid #ffffff;
     text-align: center;
 }
-
+.capitan-badge {
+    background-color: #4CAF50;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 10px;
+}
 
 .btn-remove {
     background: none;

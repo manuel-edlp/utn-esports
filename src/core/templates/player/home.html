@@ -55,7 +55,7 @@
                     <li>
                         {{ jugador.nombre }} {{ jugador.apellido }}
                         {% if jugador == equipo.capitan %}
-                            <span>(capitán)</span>
+                            <span class="capitan-badge">capitán</span>
                         {% endif %}
                         {% if request.user.jugador == equipo.capitan and jugador != equipo.capitan %}
                         <button class="btn-remove" 
