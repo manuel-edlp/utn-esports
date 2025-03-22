@@ -631,6 +631,9 @@ class StaffHomeView(LoginRequiredMixin,ListView):
         nuevo_estado = request.POST.get('nuevo_estado')
         equipo = get_object_or_404(Equipo, id=equipo_id)
 
+        # Guarda el estado original
+        equipo._original_estadoAprobacion = equipo.estadoAprobacion
+
         equipo.estadoAprobacion = nuevo_estado
         equipo.save()
 
