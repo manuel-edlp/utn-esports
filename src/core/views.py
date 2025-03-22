@@ -1,7 +1,7 @@
 import json
 from django.forms import ValidationError
 from django.http import JsonResponse
-from django.views.generic import TemplateView, RedirectView, ListView
+from django.views.generic import TemplateView, RedirectView, ListView,DetailView 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
@@ -178,7 +178,15 @@ class LoginView(TemplateView):
         if user is not None:
             # Inicia sesión
             login(request, user)
-            return redirect('player_home')
+
+            # Verifica si el usuario es staff o jugador
+            if hasattr(user, 'staff'):  # Si el usuario es staff
+                return redirect('staff_home')
+            elif hasattr(user, 'jugador'):  # Si el usuario es jugador
+                return redirect('player_home')
+            else:
+                # Si no es ni staff ni jugador, redirige a una página por defecto
+                return redirect('home')
         else:
             # Muestra mensaje de error si las credenciales son incorrectas
             messages.error(request, 'Correo electrónico o contraseña incorrectos.', extra_tags='login_error')
@@ -597,3 +605,49 @@ class EliminarJugadorView(LoginRequiredMixin,View):
             messages.error(request, 'No tienes permiso para eliminar a este jugador.')
 
         return redirect('player_home') 
+    
+
+
+class StaffHomeView(LoginRequiredMixin,ListView):
+    model = Equipo
+    template_name = 'staff/home.html'
+    context_object_name = 'equipos'
+    paginate_by = 4  # Paginación para mostrar 10 equipos por página
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('search', '')
+        estado_filter = self.request.GET.get('estado', '')
+
+        if search_query:
+            queryset = queryset.filter(nombre__icontains=search_query)
+        if estado_filter:
+            queryset = queryset.filter(estadoAprobacion=estado_filter)
+
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        equipo_id = request.POST.get('equipo_id')
+        nuevo_estado = request.POST.get('nuevo_estado')
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+
+        equipo.estadoAprobacion = nuevo_estado
+        equipo.save()
+
+        return JsonResponse({'status': 'success', 'nuevo_estado': nuevo_estado})
+    
+class ObtenerIntegrantesView(DetailView):
+    model = Equipo
+    pk_url_kwarg = 'equipo_id'  # Nombre del parámetro en la URL
+
+    def get(self, request, *args, **kwargs):
+        equipo = self.get_object()  # Obtiene el equipo basado en el ID
+        integrantes = equipo.miembros.all()
+        data = [
+            {
+                "nombre": f"{jugador.nombre} {jugador.apellido}",
+                "esCapitan": jugador == equipo.capitan
+            }
+            for jugador in integrantes
+        ]
+        return JsonResponse(data, safe=False)
