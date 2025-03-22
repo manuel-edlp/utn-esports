@@ -636,7 +636,7 @@ class StaffHomeView(LoginRequiredMixin,ListView):
 
         return JsonResponse({'status': 'success', 'nuevo_estado': nuevo_estado})
     
-class ObtenerIntegrantesView(DetailView):
+class ObtenerIntegrantesView(LoginRequiredMixin, DetailView):
     model = Equipo
     pk_url_kwarg = 'equipo_id'  # Nombre del parámetro en la URL
 
