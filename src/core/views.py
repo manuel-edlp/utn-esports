@@ -34,6 +34,10 @@ def validar_formulario(form_data):
     if form_data["password"] != form_data["confirm_password"]:
         errors["password"] = "Las contraseñas no coinciden."
 
+    # Validar longitud de la contraseña
+    if len(form_data["password"]) < 8:
+        errors["password"] = "La contraseña debe tener al menos 8 caracteres."
+
     # Validar email único
     if User.objects.filter(email=form_data["email"]).exists():
         errors["email"] = "El correo electrónico ya está registrado."
