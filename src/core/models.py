@@ -53,7 +53,7 @@ class Jugador(Usuario):
     telegram = models.CharField(max_length=40)
     pais = models.CharField(max_length=40)
     foto = models.ImageField(upload_to='fotos/', null=True)
-    legajo = models.CharField(max_length=40)
+    legajo = models.CharField(max_length=40, null=True)
 
     # Datos de Riot
     riot_id = models.CharField(max_length=40, unique=True)
