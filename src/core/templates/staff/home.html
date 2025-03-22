@@ -42,13 +42,20 @@
                 </div>
             </div>
             <div class="equipo-acciones">
-                <!-- Fila superior: Aprobar y Rechazar -->
                 <div class="botones-fila-superior">
-                    <button onclick="cambiarEstado('{{ equipo.id }}', 'Aprobado')" class="btn-aprobar">Aprobar</button>
-                    <button onclick="cambiarEstado('{{ equipo.id }}', 'En revisión')" class="btn-revision">En revisión</button>
-                    <button onclick="cambiarEstado('{{ equipo.id }}', 'Rechazado')" class="btn-rechazar">Rechazar</button>
+                    <button onclick="cambiarEstado('{{ equipo.id }}', 'Aprobado', this)" class="btn-aprobar">
+                        <span class="btn-text">Aprobar</span>
+                        <span class="spinner" style="display: none;">Cargando...</span>
+                    </button>
+                    <button onclick="cambiarEstado('{{ equipo.id }}', 'En revisión', this)" class="btn-revision">
+                        <span class="btn-text">En revisión</span>
+                        <span class="spinner" style="display: none;">Cargando...</span>
+                    </button>
+                    <button onclick="cambiarEstado('{{ equipo.id }}', 'Rechazado', this)" class="btn-rechazar">
+                        <span class="btn-text">Rechazar</span>
+                        <span class="spinner" style="display: none;">Cargando...</span>
+                    </button>
                 </div>
-                <!-- Fila inferior: Ver Integrantes -->
                 <button onclick="mostrarIntegrantes('{{ equipo.id }}')" class="btn-integrantes">
                     <i class="fas fa-user-group"></i>
                 </button>
@@ -99,7 +106,21 @@
 
 
 <script>
-function cambiarEstado(equipoId, nuevoEstado) {
+function cambiarEstado(equipoId, nuevoEstado, boton) {
+    // Deshabilita el boton y muestra el indicador de carga
+    boton.disabled = true;
+    const btnText = boton.querySelector('.btn-text');
+    const spinner = boton.querySelector('.spinner');
+    btnText.style.display = 'none';
+    spinner.style.display = 'inline-block';
+
+    // Actualiza el estado visualmente en la UI
+    const estadoElement = document.querySelector(`.equipo-card[data-equipo-id="${equipoId}"] .estado-${nuevoEstado.toLowerCase().replace(/ /g, '-')}`);
+    if (estadoElement) {
+        estadoElement.textContent = nuevoEstado;
+    }
+
+    // Envia la solicitud al servidor
     fetch("{% url 'staff_home' %}", {
         method: 'POST',
         headers: {
@@ -111,8 +132,22 @@ function cambiarEstado(equipoId, nuevoEstado) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            // Recarga la página para asegurar que los datos estén actualizados
             location.reload();
+        } else {
+            // Muestra un mensaje de error si la solicitud falla
+            alert('Error al cambiar el estado.');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cambiar el estado.');
+    })
+    .finally(() => {
+        // Habilita el boton y oculta el indicador de carga
+        boton.disabled = false;
+        btnText.style.display = 'inline-block';
+        spinner.style.display = 'none';
     });
 }
 </script>
