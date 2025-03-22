@@ -3,7 +3,19 @@ from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Equipo, Invitacion, Jugador
+import asyncio
 
+async def enviar_correo_asincrono(subject, body, recipient_list):
+    """
+    Envía un correo electrónico de manera asíncrona.
+    """
+    send_mail(
+        subject=subject,
+        message=body,
+        html_message=body,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=recipient_list,
+    )
 
 @receiver(post_save, sender=Jugador)
 def enviar_correo_bienvenida(sender, instance, created, **kwargs):
@@ -30,14 +42,7 @@ def enviar_correo_bienvenida(sender, instance, created, **kwargs):
             Saludos, el<strong> Equipo del Torneo Liga Leyendas del Sur</strong>
         </p>
         """
-        send_mail(
-            subject=subject,
-            message=body,
-            html_message=body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[instance.email],
-        )
-
+        asyncio.run(enviar_correo_asincrono(subject, body, [instance.email]))
 
 @receiver(post_save, sender=Invitacion)
 def enviar_correo_invitacion(sender, instance, created, **kwargs):
@@ -64,13 +69,7 @@ def enviar_correo_invitacion(sender, instance, created, **kwargs):
             Saludos, el<strong> Equipo del Torneo Liga Leyendas del Sur</strong>
         </p>
         """
-        send_mail(
-            subject=subject,
-            message=body,
-            html_message=body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[jugador_invitado.email],
-        )
+        asyncio.run(enviar_correo_asincrono(subject, body, [jugador_invitado.email]))
 
 @receiver(pre_save, sender=Equipo)
 def capturar_estado_original(sender, instance, **kwargs):
@@ -89,11 +88,11 @@ def enviar_correo_cambio_estado(sender, instance, **kwargs):
     Envía un correo a todos los integrantes del equipo cuando el estado de aprobación cambia.
     """
     if hasattr(instance, '_original_estadoAprobacion') and instance._original_estadoAprobacion is not None:
-        if instance.estadoAprobacion != instance._original_estadoAprobacion:  # Verifica si el estado cambio
+        if instance.estadoAprobacion != instance._original_estadoAprobacion:  # Verifica si el estado cambió
             # Obtiene la lista de integrantes del equipo
             integrantes = Jugador.objects.filter(equipo=instance)  # Filtra los jugadores del equipo
 
-            # Envia el correo a cada integrante
+            # Envía el correo a cada integrante
             for jugador in integrantes:
                 subject = f"Estado de aprobación actualizado: {instance.estadoAprobacion}"
                 body = f"""
@@ -123,10 +122,4 @@ def enviar_correo_cambio_estado(sender, instance, **kwargs):
                     Saludos, el<strong> Equipo del Torneo Liga Leyendas del Sur</strong>
                 </p>
                 """
-                send_mail(
-                    subject=subject,
-                    message=body,
-                    html_message=body,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[jugador.email],
-                )
+                asyncio.run(enviar_correo_asincrono(subject, body, [jugador.email]))
