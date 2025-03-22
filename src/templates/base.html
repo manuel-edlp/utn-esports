@@ -45,7 +45,15 @@
           <div class="dropdown">
             <button class="btn btn-light dropdown-toggle glitch-button" type="button" id="userDropdown" data-bs-toggle="dropdown"
               aria-expanded="false">
-              <span>{{ request.user.jugador.nombre }}</span>
+              <span>
+                  {% if request.user.staff %}
+                  {{ request.user.staff.nombre }}  <!-- nombre del staff -->
+                  {% elif request.user.jugador %}
+                  {{ request.user.jugador.nombre }}  <!-- nombre del jugador -->
+                  {% else %}
+                  No identificado  <!-- Mensaje por defecto -->
+                  {% endif %}
+              </span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li>
