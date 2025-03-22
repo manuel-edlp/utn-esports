@@ -27,6 +27,11 @@ urlpatterns = [
     path('player/invitar/<int:equipo_id>/', views.InvitarJugadorView.as_view(), name='invitar_jugador'),
     path('player/invitaciones/<int:invitacion_id>/aceptar/', views.AceptarInvitacionView.as_view(), name='aceptar_invitacion'),
     path('player/invitaciones/<int:invitacion_id>/rechazar/', views.RechazarInvitacionView.as_view(), name='rechazar_invitacion'),
+
+    # Staff
+    path('staff/home/', views.StaffHomeView.as_view(), name='staff_home'),
+    path('staff/obtener_integrantes/<int:equipo_id>/', views.ObtenerIntegrantesView.as_view(), name='obtener_integrantes'),
+
 ]
 
 
