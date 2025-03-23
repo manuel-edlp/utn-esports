@@ -719,7 +719,7 @@ class StaffHomeView(LoginRequiredMixin, ListView):
     model = Equipo
     template_name = 'staff/home.html'
     context_object_name = 'equipos'
-    paginate_by = 4  # Paginación para mostrar 4 equipos por página
+    paginate_by = 10  # Paginación para mostrar 10 equipos por página
 
     def get_queryset(self):
         queryset = super().get_queryset()
