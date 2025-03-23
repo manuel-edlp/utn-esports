@@ -239,6 +239,61 @@ class PlayerHomeView(LoginRequiredMixin, TemplateView):
         return context
 
 
+
+def validar_edicion_perfil(form_data, jugador_actual):
+    errors = {}
+
+    # Validar email único (excepto para el propio usuario)
+    if form_data["email"] != jugador_actual.email and User.objects.filter(email=form_data["email"]).exists():
+        errors["email"] = "El correo electrónico ya está registrado."
+
+    # Validar DNI único (excepto para el propio usuario)
+    if form_data["dni"] != jugador_actual.dni and Jugador.objects.filter(dni=form_data["dni"]).exists():
+        errors["dni"] = "El DNI ya está registrado."
+
+    # Validar Riot ID único (excepto para el propio usuario)
+    if form_data["riot_id"] != jugador_actual.riot_id and Jugador.objects.filter(riot_id=form_data["riot_id"]).exists():
+        errors["riot_id"] = "El Riot ID ya está registrado."
+
+    # Validar formato de Riot ID
+    if form_data["riot_id"] and "#" not in form_data["riot_id"]:
+        errors["riot_id"] = "El Riot ID debe contener el símbolo '#'."
+
+    # Validar legajo único (si pertenece a la UTN y el legajo ha cambiado)
+    if form_data.get("pertenece_utn") == "si" and form_data["legajo"] != jugador_actual.legajo:
+        if Jugador.objects.filter(legajo=form_data["legajo"]).exists():
+            errors["legajo"] = "El legajo ya está registrado."
+
+    # Validar campos obligatorios
+    required_fields = ["nombre", "apellido", "dni", "telefono", "telegram", "pais", "riot_id", "email"]
+    if form_data.get("pertenece_utn") == "si":
+        required_fields.append("legajo")
+
+    for field in required_fields:
+        if not form_data[field]:
+            errors[field] = "Este campo es obligatorio."
+
+    # Validar tipo de texto en los campos (solo si el campo no está vacío)
+    if form_data["nombre"] and not re.match(r"^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ\s]+$", form_data["nombre"]):
+        errors["nombre"] = "El nombre solo puede contener letras y espacios."
+
+    if form_data["apellido"] and not re.match(r"^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ\s]+$", form_data["apellido"]):
+        errors["apellido"] = "El apellido solo puede contener letras y espacios."
+
+    if form_data["legajo"] and not re.match(r"^\d+$", form_data["legajo"]):
+        errors["legajo"] = "El legajo solo puede contener números."
+
+    if form_data["telefono"] and not re.match(r"^[0-9+\-\s]+$", form_data["telefono"]):
+        errors["telefono"] = "El teléfono solo puede contener números, espacios, guiones y el símbolo +."
+
+    if form_data["pais"] and re.search(r"\d", form_data["pais"]):
+        errors["pais"] = "El país no puede contener números."
+
+    if form_data["email"] and not re.match(r"^[^@]+@[^@]+\.[^@]+$", form_data["email"]):
+        errors["email"] = "El correo electrónico no es válido."
+
+    return errors
+
 class PerfilView(LoginRequiredMixin, TemplateView):
     template_name = 'player/perfil.html'
     success_url = reverse_lazy("perfil")
@@ -264,16 +319,39 @@ class PerfilView(LoginRequiredMixin, TemplateView):
             messages.error(request, "La edición de perfiles está deshabilitada.")
             return redirect(self.success_url)
 
+        # Prepara los datos del formulario
+        form_data = {
+            "nombre": request.POST.get("nombre", ""),
+            "apellido": request.POST.get("apellido", ""),
+            "dni": request.POST.get("dni", ""),
+            "telefono": request.POST.get("telefono", ""),
+            "telegram": request.POST.get("telegram", ""),
+            "pais": request.POST.get("pais", ""),
+            "legajo": request.POST.get("legajo", ""),
+            "riot_id": request.POST.get("riot_id", ""),
+            "email": request.POST.get("email", ""),
+            "pertenece_utn": request.POST.get("pertenece_utn", ""),
+        }
+
+        # Valida el formulario
+        errors = validar_edicion_perfil(form_data, jugador)
+
+        # Si hay errores, muestra los mensajes y redirige
+        if errors:
+            for field, error_message in errors.items():
+                messages.error(request, f"{field.capitalize()}: {error_message}")
+            return redirect(self.success_url)
+
         # Actualiza los campos del jugador
-        jugador.nombre = request.POST.get("nombre", jugador.nombre)
-        jugador.apellido = request.POST.get("apellido", jugador.apellido)
-        jugador.dni = request.POST.get("dni", jugador.dni)
-        jugador.telefono = request.POST.get("telefono", jugador.telefono)
-        jugador.telegram = request.POST.get("telegram", jugador.telegram)
-        jugador.pais = request.POST.get("pais", jugador.pais)
-        jugador.legajo = request.POST.get("legajo", jugador.legajo)
-        jugador.riot_id = request.POST.get("riot_id", jugador.riot_id)
-        jugador.email = request.POST.get("email", jugador.email)
+        jugador.nombre = form_data["nombre"]
+        jugador.apellido = form_data["apellido"]
+        jugador.dni = form_data["dni"]
+        jugador.telefono = form_data["telefono"]
+        jugador.telegram = form_data["telegram"]
+        jugador.pais = form_data["pais"]
+        jugador.legajo = form_data["legajo"]
+        jugador.riot_id = form_data["riot_id"]
+        jugador.email = form_data["email"]
 
         # Manejo la foto de perfil (si se sube una nueva)
         if "foto" in request.FILES:

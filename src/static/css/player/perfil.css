@@ -196,6 +196,17 @@ body::before {
 }
 
 
+.alert-error{
+    background-color: rgb(211, 67, 67);
+    color: #ffffff;
+}
+
+
+.alert-success{
+    background-color: rgb(67, 211, 67);
+    color: #ffffff;
+}
+
 
 /* Estilos de pantalla pequeña */
 @media (max-width: 768px) {
