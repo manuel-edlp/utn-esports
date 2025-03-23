@@ -57,13 +57,22 @@ body::before {
 
 #inicio {
     display: flex;
-    margin-top: 20px !important;
-    margin-bottom: 0px !important;
+    justify-content: center;
+    align-items: center;
     background-image: url("../../images/banner-lol.webp");
-    background-size: 100% 100%;
+    background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-    height: 50vh;
+    min-height: 40vh !important;
+    padding: 20px;
+    text-align: center !important;
+    margin-top:0px !important;
+    margin-bottom: 0px !important;
+}
+
+.text-container {
+    max-width: 90%;
+    margin: 0 auto;
+    margin-top: 20px;
 }
 
 .column-left, .column-right {
@@ -73,8 +82,17 @@ body::before {
 }
 
 .column-left {
-    justify-content: flex-end;
-    padding-right: 20px;
+    width: 100%;
+    max-width: 800px;
+}
+
+#titulo {
+    font-size: 3.2rem;
+    margin-bottom: 10px;
+}
+
+#subtitulo {
+    font-size: 1rem;
 }
 
 .column-right {
@@ -396,11 +414,6 @@ button:hover #clip {
 
 
 @media screen and (max-width: 700px) {
-    #inicio {
-        flex-direction: column;
-        background-size: cover;
-        height: 28vh;
-    }
 
     .column-right {
         display: none;
@@ -417,12 +430,14 @@ button:hover #clip {
         text-align: center;
     }
 
+
+
     #titulo {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 
     #subtitulo {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
 #video-banner {
@@ -434,3 +449,25 @@ button:hover #clip {
     margin-top: 15px !important;
 }
 }
+
+
+
+@media screen and (max-height: 600px) {
+    #inicio {
+        min-height: 60vh !important;
+    }
+}
+
+@media (min-width: 321px) and (max-height: 950px) {
+    #inicio {
+        min-height: 24vh !important;
+    }   
+}
+
+
+@media screen and (max-width: 991px) {
+    #iniciar-sesion-btn {
+        margin-left: 0px !important;
+    }
+}
+

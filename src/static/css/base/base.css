@@ -155,7 +155,22 @@ html {
   }
 
   .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: black;
+  }
+
+  .navbar-toggler {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+
+  .navbar-brand img {
+    max-width: 100%;
+    height: auto;
+    flex-shrink: 1;
   }
 
   .navbar .nav-link {
@@ -262,4 +277,17 @@ html {
     #burguer-btn{
       width: 40%;
     }
-}
+  }
+
+  @media (max-width: 300px) {
+    .navbar-brand img {
+      width: 100px;
+      height: auto;
+    }
+  }
+
+  @media (max-width: 700px) {
+    #burguer-btn{
+      padding-left: 25%;
+    }
+  }
