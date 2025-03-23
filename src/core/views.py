@@ -360,50 +360,57 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
         # Verifica si el jugador es miembro del equipo
         if request.user.jugador not in equipo.miembros.all():
             messages.error(request, "No tienes permisos para editar este equipo.")
+            return redirect('player_home')
 
         return render(request, self.template_name, {'equipo': equipo})
 
     def post(self, request, equipo_id, *args, **kwargs):
         equipo = get_object_or_404(Equipo, id=equipo_id)
-        nombre = request.POST.get('nombre')
-        abreviatura = request.POST.get('abreviatura')
 
+        # Verifica si el jugador es miembro del equipo
         if request.user.jugador not in equipo.miembros.all():
             messages.error(request, "No tienes permisos para editar este equipo.")
+            return redirect('player_home')
 
-         # Verifica si el nombre del equipo ya existe en la base de datos
-        if Equipo.objects.filter(nombre=nombre).exists():
-            messages.error(request, "El nombre del equipo ya está en uso. Elige otro.", extra_tags='error-nombre-equipo')
-            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
-        
-        # Verifica si la abreviatura del equipo ya existe en la base de datos
-        if Equipo.objects.filter(abreviatura=abreviatura).exists():
-            messages.error(request, "La abreviatura del equipo ya está en uso. Elige otra.", extra_tags='error-abreviatura-equipo')
-            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
-        
+        nombre = request.POST.get('nombre')
+        abreviatura = request.POST.get('abreviatura')
+        logo = request.FILES.get('logo')
 
-        equipo.nombre = nombre
-        equipo.abreviatura = abreviatura
+        # Verifica si el nombre ha cambiado
+        if nombre and nombre != equipo.nombre:
+            if Equipo.objects.filter(nombre=nombre).exists():
+                messages.error(request, "El nombre del equipo ya está en uso. Elige otro.", extra_tags='error-nombre-equipo')
+                return render(request, self.template_name, {'equipo': equipo})
 
+        # Verifica si la abreviatura ha cambiado
+        if abreviatura and abreviatura != equipo.abreviatura:
+            if Equipo.objects.filter(abreviatura=abreviatura).exists():
+                messages.error(request, "La abreviatura del equipo ya está en uso. Elige otra.", extra_tags='error-abreviatura-equipo')
+                return render(request, self.template_name, {'equipo': equipo})
 
-        try:
+        # Actualiza solo los campos que han cambiado
+        if nombre and nombre != equipo.nombre:
+            equipo.nombre = nombre
 
-            if 'logo' in request.FILES:
-                logo = request.FILES['logo']
+        if abreviatura and abreviatura != equipo.abreviatura:
+            equipo.abreviatura = abreviatura
+
+        # Valida y actualiza el logo si se ha enviado
+        if logo:
+            try:
                 kind = filetype.guess(logo.read(1024))  # Analiza los primeros bytes
                 if kind is None or kind.mime not in ['image/jpeg', 'image/png', 'image/jpg']:
                     raise ValidationError("Tipo de archivo no permitido.")
                 logo.seek(0)
                 equipo.logo = logo
+            except ValidationError as e:
+                messages.error(request, str(e), extra_tags='error-tipo-archivo')
+                return render(request, self.template_name, {'equipo': equipo})
 
-            equipo.save()
-            messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
-            return redirect('player_home')
-            
-
-        except ValidationError as e:
-            messages.error(request, str(e), extra_tags='error-tipo-archivo')
-            return render(request, 'player/editar_equipo.html', {'nombre': nombre, 'abreviatura': abreviatura, 'equipo': equipo, 'messages': messages.get_messages(request)})
+        # Guarda los cambios
+        equipo.save()
+        messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
+        return redirect('player_home')
     
 class EliminarEquipoView(LoginRequiredMixin, View):
     def post(self, request, equipo_id, *args, **kwargs):
