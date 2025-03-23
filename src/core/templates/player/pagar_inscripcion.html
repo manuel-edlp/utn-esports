@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load filters %}
+
 {% load static %}
 
 {% block extra_css %}
@@ -38,7 +40,7 @@
                 {% if equipo.comprobante_pago %}
                     <div class="comprobante-previo">
                         <p style="margin-bottom: 0;"><strong>Comprobante cargado:</strong></p>
-                        <a href="{{ equipo.comprobante_pago.url }}" target="_blank">{{ equipo.comprobante_pago.name }}</a>
+                        <a href="{{ equipo.comprobante_pago.url }}" target="_blank"> {{ equipo.comprobante_pago.name|basename }}</a>
                     </div>
                 {% endif %}
             </div>
