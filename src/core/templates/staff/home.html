@@ -10,6 +10,18 @@
 <div class="staff-home-container">
     <h1>Panel de Staff</h1>
     <hr>
+    <h2>Gestion de permisos</h2>
+    <form action="{% url 'cambiar_permiso_edicion_perfil' %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">
+            {% if edicion_habilitada %}
+                Deshabilitar edición de perfiles
+            {% else %}
+                Habilitar edición de perfiles
+            {% endif %}
+        </button>
+    </form>
+    <hr>
     <h2>Gestion de Clips</h2>
     <!-- Botón para gestionar clips -->
     <div class="gestionar-clips">

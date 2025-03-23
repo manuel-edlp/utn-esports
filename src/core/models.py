@@ -53,13 +53,17 @@ class Jugador(Usuario):
     telegram = models.CharField(max_length=40)
     pais = models.CharField(max_length=40)
     foto = models.ImageField(upload_to='fotos/', null=True)
-    legajo = models.CharField(max_length=40, null=True)
+    legajo = models.CharField(max_length=40, blank=True ,null=True)
 
     # Datos de Riot
     riot_id = models.CharField(max_length=40, unique=True)
 
     # Relación ForeignKey con Equipo
-    equipo = models.ForeignKey('Equipo', on_delete=models.SET_NULL, null=True, related_name='miembros')
+    equipo = models.ForeignKey('Equipo', on_delete=models.SET_NULL, null=True, related_name='miembros', blank=True)
+
+    # Campo para controlar la edición del perfil
+    edicion_habilitada = models.BooleanField(default=True)
+
 
     
     def __str__(self):

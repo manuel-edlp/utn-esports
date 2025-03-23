@@ -1,4 +1,5 @@
 import json
+from django.db import DatabaseError
 from django.forms import ValidationError
 from django.http import JsonResponse
 from django.views.generic import TemplateView, RedirectView, ListView,DetailView 
@@ -12,6 +13,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 import filetype
 import re
+from django.utils.decorators import method_decorator
+from .mixins import StaffRequiredMixin
 
 class Home(TemplateView):
     template_name = 'home/home.html'
@@ -249,7 +252,12 @@ class PerfilView(LoginRequiredMixin, TemplateView):
         # Obtengo el jugador actual
         jugador = get_object_or_404(Jugador, user=request.user)
 
-        # Actualio los campos del jugador
+        # Verifica si la edición del perfil está habilitada
+        if not jugador.edicion_habilitada:
+            messages.error(request, "La edición de perfiles está deshabilitada.")
+            return redirect(self.success_url)
+
+        # Actualiza los campos del jugador
         jugador.nombre = request.POST.get("nombre", jugador.nombre)
         jugador.apellido = request.POST.get("apellido", jugador.apellido)
         jugador.dni = request.POST.get("dni", jugador.dni)
@@ -270,14 +278,11 @@ class PerfilView(LoginRequiredMixin, TemplateView):
             if jugador.email != request.user.email:
                 request.user.email = jugador.email
                 request.user.save()
+            messages.success(request, "Perfil actualizado correctamente.")
         except Exception as e:
-            context = self.get_context_data()
-            context["error"] = f"Error al actualizar el perfil: {e}"
-            return render(request, self.template_name, context)
+            messages.error(request, f"Error al actualizar el perfil: {e}")
 
         return redirect(self.success_url)
-    
-
 
 class CrearEquipoView(LoginRequiredMixin, TemplateView):
     template_name = 'player/crear_equipo.html'
@@ -625,11 +630,11 @@ class EliminarJugadorView(LoginRequiredMixin,View):
     
 
 
-class StaffHomeView(LoginRequiredMixin,ListView):
+class StaffHomeView(LoginRequiredMixin, ListView):
     model = Equipo
     template_name = 'staff/home.html'
     context_object_name = 'equipos'
-    paginate_by = 4  # Paginación para mostrar 10 equipos por página
+    paginate_by = 4  # Paginación para mostrar 4 equipos por página
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -642,6 +647,16 @@ class StaffHomeView(LoginRequiredMixin,ListView):
             queryset = queryset.filter(estadoAprobacion=estado_filter)
 
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        if Jugador.objects.exists():
+            context['edicion_habilitada'] = Jugador.objects.first().edicion_habilitada
+        else:
+            context['edicion_habilitada'] = False  # Valor por defecto si no hay jugadores
+        
+        return context
 
     def post(self, request, *args, **kwargs):
         equipo_id = request.POST.get('equipo_id')
@@ -706,3 +721,29 @@ class EliminarClipView(LoginRequiredMixin, View):
         clip.delete()  # Eliminar el clip de la base de datos
         messages.success(request, 'Clip eliminado correctamente.')
         return redirect('gestionar_clips')
+    
+
+class CambiarPermisoEdicionPerfilView(LoginRequiredMixin, StaffRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+            # Verifica si hay jugadores en la base de datos
+            if not Jugador.objects.exists():
+                messages.error(request, "No hay jugadores registrados.")
+                return redirect('staff_home')
+
+            # Obtén el estado actual del primer jugador
+            estado_actual = Jugador.objects.first().edicion_habilitada
+
+            # Cambia el estado de edicion_habilitada para todos los jugadores
+            Jugador.objects.update(edicion_habilitada=not estado_actual)
+            
+            # Mensaje de retroalimentación
+            if estado_actual:
+                messages.success(request, "La edición de perfiles ha sido deshabilitada para todos los jugadores.")
+            else:
+                messages.success(request, "La edición de perfiles ha sido habilitada para todos los jugadores.")
+        
+        except DatabaseError as e:
+            messages.error(request, f"Error de base de datos: {e}")
+        
+        return redirect('staff_home')  # Redirige a la vista del staff
