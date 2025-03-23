@@ -620,6 +620,9 @@ body::before {
     border: 1px solid #ffffff;
     text-align: center;
 }
+#link-reglamento{
+    color: white;
+}
 .capitan-badge {
     background-color: #4CAF50;
     color: white;
