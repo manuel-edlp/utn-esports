@@ -206,7 +206,9 @@ window.onclick = function (event) {
             <div id="mensaje-exito" style="color: green; display: none;"></div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="cerrarModalInvitacion()">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Enviar Invitación</button>
+                <button type="submit" class="btn btn-primary" id="btn-enviar-invitacion">
+                    <span id="texto-boton">Enviar Invitación</span>
+                </button>
             </div>
         </form>
         {% else %}
@@ -378,6 +380,63 @@ window.onclick = function (event) {
     });
 });
 
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formInvitacion = document.getElementById('form-invitacion');
+    const btnEnviarInvitacion = document.getElementById('btn-enviar-invitacion');
+    const textoBoton = document.getElementById('texto-boton');
+    const mensajeError = document.getElementById('mensaje-error');
+    const mensajeExito = document.getElementById('mensaje-exito');
+
+    formInvitacion.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Cambia el texto del botón y lo deshabilita
+        textoBoton.textContent = 'Enviando...';
+        btnEnviarInvitacion.disabled = true;
+
+        // Obtiene el valor del campo de correo electrónico
+        const email = document.getElementById('email-invitacion').value;
+
+        // Envía el formulario usando AJAX con JSON
+        fetch(formInvitacion.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': formInvitacion.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Muestra un mensaje de éxito
+                mensajeExito.textContent = data.message || 'Invitación enviada correctamente.';
+                mensajeExito.style.display = 'block';
+                mensajeError.style.display = 'none';
+            } else {
+                // Muestra un mensaje de error
+                mensajeError.textContent = data.message || 'Hubo un error al enviar la invitación.';
+                mensajeError.style.display = 'block';
+                mensajeExito.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            // Muestra un mensaje de error en caso de fallo en la solicitud
+            mensajeError.textContent = 'Hubo un error al enviar la invitación.';
+            mensajeError.style.display = 'block';
+            mensajeExito.style.display = 'none';
+        })
+        .finally(() => {
+            // Restaura el texto del botón y lo habilita de nuevo
+            textoBoton.textContent = 'Enviar Invitación';
+            btnEnviarInvitacion.disabled = false;
+        });
+    });
+});
+    
 </script>
 
 

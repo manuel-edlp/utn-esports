@@ -644,3 +644,8 @@ body::before {
 .btn-remove:hover {
     color: #c82333;
 }
+
+#btn-enviar-invitacion:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
