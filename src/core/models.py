@@ -98,3 +98,18 @@ class Invitacion(models.Model):
 
     def __str__(self):
         return f"Invitación a {self.jugador_invitado} para unirse a {self.equipo}"
+    
+class TwitchClip(models.Model):
+    nombre = models.CharField(max_length=100, help_text="Nombre descriptivo del clip")
+    url = models.URLField(help_text="URL completa del clip de Twitch")
+    activo = models.BooleanField(default=True, help_text="¿Este clip está activo y debe mostrarse en el carrusel?")
+
+    def __str__(self):
+        return self.nombre
+
+    def get_embed_url(self):
+        """
+        Convierte la URL del clip en un formato compatible con el iframe de Twitch.
+        """
+        clip_id = self.url.split('/')[-1]  # Extrae el ID del clip de la URL
+        return f"https://clips.twitch.tv/embed?clip={clip_id}&parent=127.0.0.1"
