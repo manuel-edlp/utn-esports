@@ -59,9 +59,9 @@
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li>
                 {% if request.user.staff %}
-                <a class="dropdown-item" href="{% url 'staff_home' %}">Home</a>  <!-- home del staff -->
+                <a class="dropdown-item" href="{% url 'staff_home' %}">Panel de Gestión</a>  <!-- home del staff -->
                   {% elif request.user.jugador %}
-                  <a class="dropdown-item" href="{% url 'player_home' %}">Home</a>  <!-- home del jugador -->
+                  <a class="dropdown-item" href="{% url 'player_home' %}">Mi Equipo</a>  <!-- home del jugador -->
                   {% endif %}        
               </li>
               {% if request.user.jugador %}
