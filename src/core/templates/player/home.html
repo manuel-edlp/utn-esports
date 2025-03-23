@@ -333,53 +333,6 @@ window.onclick = function (event) {
         modal.style.display = 'none';
         borrarMensajes();
     }
-
-
-
-
-
-    document.getElementById('form-invitacion').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const email = document.getElementById('email-invitacion').value;
-    const form = this;
-    
-    const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
-
-    fetch(form.action, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-        },
-        body: JSON.stringify({
-            'email': email
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            // Muestra el mensaje de error
-            document.getElementById('mensaje-error').textContent = data.error;
-            document.getElementById('mensaje-error').style.display = 'block';
-            document.getElementById('mensaje-exito').style.display = 'none';
-        } else if (data.warning) {
-            // Muestra el mensaje de advertencia
-            document.getElementById('mensaje-error').textContent = data.warning;
-            document.getElementById('mensaje-error').style.display = 'block';
-            document.getElementById('mensaje-exito').style.display = 'none';
-        } else if (data.success) {
-            // Muestra el mensaje de éxito
-            document.getElementById('mensaje-exito').textContent = data.success;
-            document.getElementById('mensaje-exito').style.display = 'block';
-            document.getElementById('mensaje-error').style.display = 'none';
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-});
-
 </script>
 
 <script>
