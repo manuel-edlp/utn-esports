@@ -21,6 +21,16 @@
             {% endif %}
         </button>
     </form>
+    <form action="{% url 'cambiar_estado_inscripciones' %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">
+            {% if request.user.staff.inscripciones_habilitadas %}
+                Deshabilitar inscripciones
+            {% else %}
+                Habilitar inscripciones
+            {% endif %}
+        </button>
+    </form>
     <hr>
     <h2>Gestion de Clips</h2>
     <!-- Botón para gestionar clips -->

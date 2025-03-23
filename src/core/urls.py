@@ -22,6 +22,7 @@ urlpatterns = [
     path('player/abandonar_equipo/<int:equipo_id>/', views.AbandonarEquipoView.as_view(), name='abandonar_equipo'),
     path('player/pagar_inscripcion/<int:equipo_id>/', views.PagarInscripcionView.as_view(), name='pagar_inscripcion'),
     path('player/eliminar_jugador/<int:jugador_id>/', views.EliminarJugadorView.as_view(), name='eliminar_jugador'),
+    path('player/inscripcion_deshabilitada/', views.InscripcionDeshabilitadaView.as_view(), name='inscripcion_deshabilitada'),
 
     # Invitaciones
     path('player/invitar/<int:equipo_id>/', views.InvitarJugadorView.as_view(), name='invitar_jugador'),
@@ -32,7 +33,7 @@ urlpatterns = [
     path('staff/home/', views.StaffHomeView.as_view(), name='staff_home'),
     path('staff/obtener_integrantes/<int:equipo_id>/', views.ObtenerIntegrantesView.as_view(), name='obtener_integrantes'),
     path('staff/cambiar_permiso_edicion_perfil/', views.CambiarPermisoEdicionPerfilView.as_view(), name='cambiar_permiso_edicion_perfil'),
-
+     path('staff/cambiar_estado_inscripciones/', views.CambiarEstadoInscripcionesView.as_view(), name='cambiar_estado_inscripciones'),
     # Clips Twitch
     path('staff/gestionar_clips/', views.GestionarClipsView.as_view(), name='gestionar_clips'),
     path('staff/cambiar_estado_clip/<int:clip_id>/', views.CambiarEstadoClipView.as_view(), name='cambiar_estado_clip'),

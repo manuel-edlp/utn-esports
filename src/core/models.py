@@ -73,6 +73,7 @@ class Jugador(Usuario):
 class Staff(Usuario):
     # Relacion con el modelo User de Django
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='staff')
+    inscripciones_habilitadas = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"

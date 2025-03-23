@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
-from .models import Equipo, EstadoAprobacion, Invitacion, Jugador, TwitchClip
+from .models import Equipo, EstadoAprobacion, Invitacion, Jugador, Staff, TwitchClip
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -34,6 +34,8 @@ class Reglamento(TemplateView):
 class Sponsors(TemplateView):
     template_name = 'sponsors/sponsors.html'
 
+class InscripcionDeshabilitadaView(TemplateView):
+    template_name = 'inscripcion/inscripcion_deshabilitada.html'
 
 # Función para validar el formulario de registro
 def validar_formulario(form_data):
@@ -111,7 +113,12 @@ class RegistroView(View):
     success_url = reverse_lazy("login")
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        # Verifica si las inscripciones están habilitadas
+        if not Staff.objects.filter(inscripciones_habilitadas=True).exists():
+            messages.error(request, "Las inscripciones están deshabilitadas en este momento.")
+            return redirect('inscripcion_deshabilitada')
+        else:
+            return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
         # Recuperar los datos del formulario
@@ -747,3 +754,23 @@ class CambiarPermisoEdicionPerfilView(LoginRequiredMixin, StaffRequiredMixin, Vi
             messages.error(request, f"Error de base de datos: {e}")
         
         return redirect('staff_home')  # Redirige a la vista del staff
+    
+
+class CambiarEstadoInscripcionesView(LoginRequiredMixin, StaffRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        try:
+
+            staff = request.user.staff
+
+            staff.inscripciones_habilitadas = not staff.inscripciones_habilitadas
+            staff.save()
+
+            if staff.inscripciones_habilitadas:
+                messages.success(request, "Las inscripciones han sido habilitadas.")
+            else:
+                messages.success(request, "Las inscripciones han sido deshabilitadas.")
+        
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+        
+        return redirect('staff_home')
