@@ -1,23 +1,229 @@
-.profile-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    margin-top: 30px;
-    background-color: #2a2a2a;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    color: #fff;
+/* Estilos generales del contenedor del perfil */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../../images/pyke.png");
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
 }
 
-.profile-info {
-    margin-top: 20px;
+.profile-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #252525c7;
+    border-radius: 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    color: #f5f5f5;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Estilos para los encabezados */
+.profile-container h2 {
+    text-align: center;
+    font-size: 32px;
+    color: #fff;
+    margin-bottom: 30px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.profile-info h3 {
+    font-size: 26px;
+    color: #4a90e2;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Sección de la foto de perfil */
+.profile-photo-section {
+    text-align: center;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-content: space-around;
+    flex-wrap: wrap;
+}
+
+.profile-photo {
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #4a90e2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.no-photo {
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #3a3a3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border: 4px dashed #4a90e2;
+}
+
+.no-photo .icon {
+    font-size: 40px;
+    color: #4a90e2;
+}
+
+.no-photo p {
+    margin-top: 10px;
+    color: #ccc;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.btn-edit-photo {
+    display: block;
+    margin: 10px auto;
+    padding: 8px 16px;
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-edit-photo:hover {
+    background-color: #357abd;
+}
+
+/* Sección de los detalles del perfil */
+.profile-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 }
 
 .profile-field {
-    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    background-color: #3d3d3dd1;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.field-label {
+    font-size: 16px;
+    color: #4a90e2;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.field-value-container {
+    position: relative;
+}
+
+.field-value {
+    font-size: 18px;
+    color: #fff;
+    padding: 8px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #444;
+    transition: border-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.field-value:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+/* Estilos para los campos de entrada en modo de solo lectura */
+.field-value[readonly] {
+    cursor: default;
+}
+
+/* Estilos para los campos de entrada cuando están editables */
+.field-value:not([readonly]) {
+    cursor: text;
+}
+
+.edit-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4a90e2;
+    cursor: pointer;
     font-size: 16px;
 }
 
-.profile-field strong {
-    color: #2781c3;
+.edit-icon:hover {
+    color: #357abd;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    background-color: #00000096 !important;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    flex-grow: 1;
+    max-width: 200px;
+    text-align: center;
+}
+
+.btn-secondary:hover {
+    background-color: #272727 !important;
+}
+
+
+
+/* Estilos de pantalla pequeña */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 20px;
+    }
+
+    .profile-container h2 {
+        font-size: 28px;
+    }
+
+    .profile-info h3 {
+        font-size: 22px;
+    }
+
+    .profile-details {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-field {
+        padding: 12px;
+    }
+
+    .field-label {
+        font-size: 14px;
+    }
+
+    .field-value {
+        font-size: 16px;
+    }
 }

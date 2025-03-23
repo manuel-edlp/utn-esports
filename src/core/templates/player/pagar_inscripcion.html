@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/player/pagar_inscripcion.css' %}">
+{% endblock %}
+
+{% block main %}
+<section class="register-section">
+    <div class="register-container">
+        <h2>Realizar Pago</h2>
+        <p>Adjunta el/los comprobantes de pago correspondientes para completar el proceso.</p>
+
+        <!-- Formulario para subir el comprobante de pago -->
+        <form class="register-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Campo: Comprobante de pago -->
+            <div class="form-group">
+                <p id="info-pago">Para que tu equipo sea aprobado y puedas participar de la liga, el equipo debe realizar el pago de la inscripción de cada integrante.  Hay dos maneras de hacerlo (no se admitirán ambas al mismo tiempo). 
+
+                    1. Un integrante paga la sumatoria de todas las inscripciones mediante una sola transferencia y adjunta foto del comprobante.
+                    
+                    2. Cada integrante realiza una transferencia con el monto de su inscripción y un solo miembro del equipo sube un archivo, zip o rar, que contenga las fotos de todos los comprobantes.
+                    
+                    <strong>Monto de la inscripción por persona:</strong>
+                    Jugadores Argentinos: $20.000 (ARS)
+                    Jugadores Argentinos que pertenecen a la UTN FRLP: $10.000 (ARS)
+                    Jugadores de otros países: $19 (USD)
+                
+                    <strong>Alias:</strong> leyendas.del.sur
+                    <strong>CBU:</strong> 0000003100065678901234
+                </p>
+                
+                <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/jpeg, image/jpg, image/png, application/zip, .rar">
+                
+                {% if equipo.comprobante_pago %}
+                    <div class="comprobante-previo">
+                        <p style="margin-bottom: 0;"><strong>Comprobante cargado:</strong></p>
+                        <a href="{{ equipo.comprobante_pago.url }}" target="_blank">{{ equipo.comprobante_pago.name }}</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "error-tipo-archivo" in message.tags %}
+                        <div class="alert-error-formato">
+                            <p>Error: {{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Botones de enviar y cancelar -->
+            <div class="form-buttons">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='/player/home/'">Cancelar</button>
+                <button type="submit" class="btn btn-secondary">Subir Comprobante</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock %}

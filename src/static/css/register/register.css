@@ -179,7 +179,20 @@ h3 {
     background-color: #2781c3;
 }
 
-
+.error {
+    margin-top: 5px;
+    display: block;
+    color: white;
+    background-color: #c72727f5;
+    padding: 4px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px solid #ffffff;
+    text-align: center;
+    align-items: center;
+    height: 30px;
+}
 /* Botones */
 .next-button,
 .prev-button,

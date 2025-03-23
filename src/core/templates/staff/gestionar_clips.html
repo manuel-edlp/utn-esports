@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/staff/gestionar_clips.css' %}">
+{% endblock %}
+
+{% block main %}
+<div class="clips-management-container">
+     <div class="btn-volver-container">
+        <a href="{% url 'staff_home' %}" class="btn-volver">Volver atrás</a>
+    </div>
+    <h1>Panel de Clips de Twitch</h1>
+
+    <form method="post" action="{% url 'gestionar_clips' %}">
+        {% csrf_token %}
+        <div>
+            <label for="clip-name">Nombre del clip:</label>
+            <input type="text" id="clip-name" name="nombre" required>
+        </div>
+        <div>
+            <label for="clip-url">URL del clip:</label>
+            <input type="url" id="clip-url" name="url" required>
+        </div>
+        <div>
+            <label for="clip-activo">Activo:</label>
+            <input type="checkbox" id="clip-activo" name="activo" checked>
+        </div>
+        <button id="guardar-btn" type="submit">Guardar Clip</button>
+    </form>
+
+    <div class="clips-search-filter-container">
+        <input type="text" id="clip-search" placeholder="Buscar clip...">
+    </div>
+    <!-- Sección de Clips Activos -->
+    <h2>Activos</h2>
+    <ul id="clip-list-active" class="clip-list">
+        {% for clip in clips %}
+            {% if clip.activo %}
+                <li class="clip-item">
+                    <div class="clip-info">
+                        <span class="clip-name">{{ clip.nombre }}</span>
+                        <span class="clip-status clip-active">Activo</span>
+                    </div>
+
+                    <div class="clip-url-container">
+                        <a href="{{ clip.url }}" class="clip-url" target="_blank">{{ clip.url }}</a>
+                    </div>
+                    <div class="clip-button-container">
+                        <form method="post" action="{% url 'cambiar_estado_clip' clip.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="clip-toggle-btn">Desactivar</button>
+                        </form>
+                        <form method="post" action="{% url 'eliminar_clip' clip.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="clip-delete-btn">Eliminar</button>
+                        </form>
+                    </div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <!-- Sección de Clips Inactivos -->
+    <h2>Inactivos</h2>
+    <ul id="clip-list-inactive" class="clip-list">
+        {% for clip in clips %}
+            {% if not clip.activo %}
+                <li class="clip-item">
+                    <div class="clip-info">
+                        <span class="clip-name">{{ clip.nombre }}</span>
+                        <span class="clip-status clip-inactive">Inactivo</span>
+                    </div>
+
+                    <div class="clip-url-container">
+                        <a href="{{ clip.url }}" class="clip-url" target="_blank">{{ clip.url }}</a>
+                    </div>
+                    <div class="clip-button-container">
+                        <form method="post" action="{% url 'cambiar_estado_clip' clip.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="clip-toggle-btn">Activar</button>
+                        </form>
+                        <form method="post" action="{% url 'eliminar_clip' clip.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="clip-delete-btn">Eliminar</button>
+                        </form>
+                    </div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("clip-search");
+    const clipListActive = document.getElementById("clip-list-active");
+    const clipListInactive = document.getElementById("clip-list-inactive");
+    const clipsActive = clipListActive.getElementsByTagName("li");
+    const clipsInactive = clipListInactive.getElementsByTagName("li");
+
+    function filterClips() {
+        const searchText = searchInput.value.toLowerCase();
+
+        // Filtrar clips activos
+        for (let clip of clipsActive) {
+            const clipName = clip.querySelector(".clip-info .clip-name").textContent.toLowerCase();
+            clip.style.display = clipName.includes(searchText) ? "flex" : "none";
+        }
+
+        // Filtrar clips inactivos
+        for (let clip of clipsInactive) {
+            const clipName = clip.querySelector(".clip-info .clip-name").textContent.toLowerCase();
+            clip.style.display = clipName.includes(searchText) ? "flex" : "none";
+        }
+    }
+
+    searchInput.addEventListener("input", filterClips);
+});
+</script>
+
+{% endblock %}

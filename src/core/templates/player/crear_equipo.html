@@ -16,45 +16,65 @@
         <form class="register-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             
-            <!-- Campo: Nombre del equipo -->
-            <div class="form-group">
-                <label for="nombre">Nombre del equipo:</label>
-                <input type="text" id="nombre" name="nombre" required placeholder="Ingresa el nombre del equipo">
-            </div>
+        <!-- Campo: Nombre del equipo -->
+        <div class="form-group">
+            <label for="nombre">Nombre del equipo:</label>
+            <input type="text" id="nombre" name="nombre" required placeholder="Ingresa el nombre del equipo"
+                value="{{ request.POST.nombre }}">
+        </div>
 
-            <!-- Campo: Abreviatura -->
-            <div class="form-group">
-                <label for="abreviatura">Abreviatura:</label>
-                <input type="text" id="abreviatura" name="abreviatura" required placeholder="Ingresa la abreviatura">
-            </div>
+        <!-- Campo: Abreviatura -->
+        <div class="form-group">
+            <label for="abreviatura">Abreviatura:</label>
+            <input type="text" id="abreviatura" name="abreviatura" required placeholder="Ingresa la abreviatura"
+                value="{{ request.POST.abreviatura }}">
+        </div>
 
-            <!-- Campo: Logo del equipo -->
-            <div class="form-group">
-                <label for="logo">Logo del equipo:</label>
-                <input type="file" id="logo" name="logo" accept="image/*" required>
-            </div>
+        <!-- Campo: Logo del equipo -->
+        <div class="form-group">
+            <label for="logo">Logo del equipo:</label>
+            <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/jpg" required>
+        </div>
 
-            <!-- Campo: Comprobante de pago -->
-            <div class="form-group">
-                <label for="comprobante_pago">Comprobante de pago:</label>
-                <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/*">
-                <p>Recuerda que para que tu equipo sea aprobado y puedas participar en la liga, debes realizar el pago correspondiente al alias: <strong>leyendas.del.sur</strong> y adjuntar el comprobante.</p>
-            </div>
-
-            <!-- Botón de enviar -->
-            <button type="submit" class="register-button">Crear Equipo</button>
-        </form>
-
-        <!-- Mensajes de éxito o error -->
-        {% if messages %}
-            <div class="messages">
+            <!-- Mensajes de error -->
+            {% if messages %}
                 {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </div>
+                    {% if "error-tipo-archivo" in message.tags %}
+                        <div class="alert-error-formato">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endif %}
                 {% endfor %}
+            {% endif %}
+
+
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "error-nombre-equipo" in message.tags %}
+                        <div class="alert-error-formato">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+
+            {% if messages %}
+                {% for message in messages %}
+                    {% if "error-abreviatura-equipo" in message.tags %}
+                        <div class="alert-error-formato">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Botones de enviar y cancelar -->
+            <div class="form-buttons">
+                <button type="button" class="cancel-button" onclick="window.location.href='/player/home/'">Cancelar</button>
+                <button type="submit" class="register-button">Crear Equipo</button>
             </div>
-        {% endif %}
+        </form>
     </div>
 </section>
 

@@ -18,3 +18,16 @@ body::before {
     padding: 40px;
     color: rgb(255, 255, 255);
 }
+
+#sponsors{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+}
+
+#sponsors img {
+    width: 250px;
+    height: auto; 
+    object-fit: contain;
+}

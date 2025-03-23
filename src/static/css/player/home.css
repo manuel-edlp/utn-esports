@@ -1,3 +1,4 @@
+/* Estilos generales */
 body::before {
     content: "";
     position: fixed;
@@ -11,96 +12,29 @@ body::before {
     z-index: -1;
 }
 
-/* Estilos para el modal */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #0000004d;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: #2a2a2a;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px #0000004d;
-    max-width: 400px;
-    width: 100%;
-    text-align: center;
-}
-
-.modal h3 {
-    margin-bottom: 10px;
-    font-size: 24px;
-    color: #fff;
-}
-
-.modal p {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #ccc;
-}
-
-.modal .btn-delete {
-    background-color: #dc3545;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 10px;
-}
-
-.modal .btn-secondary {
-    background-color: #444;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.modal .btn-delete:hover {
-    background-color: #c82333;
-}
-
-.modal .btn-secondary:hover {
-    background-color: #555;
-}
-
 /* Estilos para la sección de perfil */
 .profile-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     margin-top: 30px;
+    margin-bottom: 15px;
     background-color: #2a2a2ac7;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     color: #fff;
 }
 
-.team-card {
-    margin-top: 20px;
-}
-
+/* Estilos para la tarjeta del equipo */
 #tarjeta {
     background-color: #202020c7 !important;
-}
-
-.card {
     border-radius: 10px;
-    border: none;
-    color: #fff;
     padding: 15px;
     margin-bottom: 20px;
     overflow: hidden;
+    max-width: 100%;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.33);
+    border: none;
 }
 
 .card-img-top {
@@ -116,37 +50,69 @@ body::before {
     font-size: 24px;
     margin-bottom: 10px;
     text-align: center;
+    color: #fff;
 }
 
 .card-text {
     font-size: 16px;
     margin-bottom: 5px;
     text-align: center;
+    color: #ffffff;
 }
 
 .card-actions {
     text-align: center;
     margin-top: 15px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.btn-edit,
+.btn-delete,
+.btn-pay,
+#btn-abandonar {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-invite{
+    transition: background-color 0.3s ease;
+}
+
+.btn-pay{
+    background-color: #28a745;
+    color: #fff;
 }
 
 .btn-edit {
     background-color: #007bff;
     color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    margin-right: 10px;
 }
 
 .btn-delete {
     background-color: #dc3545;
     color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
 }
+
+#btn-abandonar {
+    background-color: #dc5635 !important;
+}
+
+.btn-pay:hover{
+    background-color: #23943e;
+}
+
 
 .btn-edit:hover {
     background-color: #0056b3;
@@ -156,6 +122,113 @@ body::before {
     background-color: #c82333;
 }
 
+#btn-abandonar:hover {
+    background-color: #da4520 !important;
+}
+
+.btn-invite:hover{
+    color: black;
+}
+
+/* Estilos para la sección de miembros */
+.team-members {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
+}
+
+.team-members h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #fff;
+    text-align: center;
+}
+
+.members-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+    .members-list {
+        grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
+        text-align: center;
+    }
+}
+
+
+.members-list li {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+
+.no-members {
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.btn-invite {
+    background-color: #28a745;
+    color: #fff;
+    margin-top: 15px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.btn-invite:hover {
+    background-color: #218838;
+}
+
+.btn-invite .icon {
+    font-size: 16px;
+}
+
+/* Media queries para pantallas pequeñas */
+@media (max-width: 768px) {
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .card-title {
+        font-size: 20px;
+    }
+
+    .card-text {
+        font-size: 14px;
+    }
+
+    .team-members h4 {
+        font-size: 16px;
+    }
+
+    .members-list li {
+        font-size: 12px;
+    }
+
+    .btn-invite {
+        font-size: 12px;
+    }
+}
+
+/* Estilos para la sección de crear equipo */
 .create-team-section {
     text-align: center;
     margin-top: 30px;
@@ -219,64 +292,177 @@ body::before {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-
-/* Estilos para la sección de miembros */
-.team-members {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #444;
+/* Estilos para el contenedor de invitaciones */
+.invitaciones-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #202020c7;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.team-members h4 {
-    font-size: 18px;
-    margin-bottom: 10px;
+.invitaciones-container h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
     color: #fff;
+    text-align: center;
 }
 
-.members-list {
+.invitaciones-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.members-list li {
+.invitacion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #3a3a3a;
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+}
+
+.invitacion-info p {
+    margin: 0;
     font-size: 14px;
     color: #ccc;
-    margin-bottom: 5px;
 }
 
-.no-members {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 10px;
+.invitacion-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-.btn-invite {
-    background-color: #28a745;
-    color: #fff;
+.btn-aceptar,
+.btn-rechazar {
     padding: 8px 15px;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
     font-size: 14px;
+    cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.btn-invite:hover {
+.btn-aceptar {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.btn-rechazar {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-aceptar:hover {
     background-color: #218838;
 }
 
-.btn-invite .icon {
-    font-size: 16px;
+.btn-rechazar:hover {
+    background-color: #c82333;
+}
+
+/* Media queries para pantallas pequeñas */
+@media (max-width: 768px) {
+    .invitacion-item {
+        padding: 10px; 
+    }
+
+    .invitacion-info p {
+        font-size: 12px;
+    }
+
+    .btn-aceptar,
+    .btn-rechazar {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .invitacion-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+
+/* Estilos para los modales */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0000004d;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px #0000004d;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.modal h3 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #fff;
+}
+
+.modal p {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+/* Contenedor de botones */
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal .btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal .btn-secondary {
+    background-color: #444;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal .btn-delete:hover {
+    background-color: #c82333;
+}
+
+.modal .btn-secondary:hover {
+    background-color: #555;
 }
 
 /* Estilos para el modal de invitación */
 #modal-invitacion {
     display: none;
-    /* Oculto por defecto */
     position: fixed;
     top: 0;
     left: 0;
@@ -343,7 +529,6 @@ body::before {
     display: none;
 }
 
-/* Mensaje de éxito */
 #mensaje-exito {
     background-color: #4CAF50;
     color: #fff !important;
@@ -382,84 +567,7 @@ body::before {
     background-color: #555;
 }
 
-
-
-
-/* Estilos para el contenedor de invitaciones */
-.invitaciones-container {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: #202020c7;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.invitaciones-container h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-    color: #fff;
-}
-
-.invitaciones-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.invitacion-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: #3a3a3a;
-    border-radius: 10px;
-    color: #fff;
-}
-
-.invitacion-info p {
-    margin: 0;
-    font-size: 14px;
-    color: #ccc;
-}
-
-.invitacion-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.btn-aceptar {
-    background-color: #28a745;
-    color: #fff;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.btn-rechazar {
-    background-color: #dc3545;
-    color: #fff;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-#btn-abandonar {
-    background-color: #dc5635 !important;
-}
-
-.btn-aceptar:hover {
-    background-color: #218838;
-}
-
-.btn-rechazar:hover {
-    background-color: #c82333;
-}
-
+/* Mensajes y alertas */
 .no-invitaciones {
     font-size: 14px;
     color: #888;
@@ -500,4 +608,36 @@ body::before {
     font-size: 14px;
     border: 1px solid #e6b800;
     text-align: center;
+}
+
+.consejo{
+    background-color: #474747a8;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px solid #ffffff;
+    text-align: center;
+}
+.capitan-badge {
+    background-color: #4CAF50;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.btn-remove {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.btn-remove:hover {
+    color: #c82333;
 }

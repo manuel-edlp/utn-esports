@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/staff/home.css' %}">
+{% endblock %}
+
+{% block main %}
+<div class="staff-home-container">
+    <h1>Panel de Staff</h1>
+    <hr>
+    <h2>Gestion de Clips</h2>
+    <!-- Botón para gestionar clips -->
+    <div class="gestionar-clips">
+        <a href="{% url 'gestionar_clips' %}" class="btn-gestionar-clips">Gestionar Clips</a>
+    </div>
+    <hr>
+    <h2>Gestion de Equipos</h2>
+    <!-- Barra de busqueda y filtros -->
+    <div class="filtros-busqueda">
+        <form method="get" action="{% url 'staff_home' %}">
+            <input type="text" name="search" placeholder="Buscar equipo..." value="{{ request.GET.search }}">
+            <select name="estado">
+                <option value="">Todos los estados</option>
+                <option value="Aprobado" {% if request.GET.estado == "Aprobado" %}selected{% endif %}>Aprobado</option>
+                <option value="Rechazado" {% if request.GET.estado == "Rechazado" %}selected{% endif %}>Rechazado</option>
+                <option value="En revisión" {% if request.GET.estado == "En revisión" %}selected{% endif %}>En revisión</option>
+                <option value="Pago pendiente" {% if request.GET.estado == "Pago pendiente" %}selected{% endif %}>Pago pendiente</option>
+            </select>
+            <button type="submit">Filtrar</button>
+        </form>
+    </div>
+
+    <!-- Listado de equipos -->
+    <div class="equipos-list">
+        {% for equipo in equipos %}
+        <div class="equipo-card">
+            <div class="equipo-info">
+                <img src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="equipo-logo">
+                <div class="equipo-details">
+                    <h3>{{ equipo.nombre }} ({{ equipo.abreviatura }})</h3>
+                    <p>Estado: <span class="estado-{{ equipo.estadoAprobacion|slugify }}">{{ equipo.estadoAprobacion }}</span></p>
+                    {% if equipo.comprobante_pago %}
+                        <a href="{{ equipo.comprobante_pago.url }}" target="_blank" class="btn-descargar">Descargar Comprobante</a>
+                    {% else %}
+                        <span class="btn-descargar disabled">Comprobante no disponible</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="equipo-acciones">
+                <div class="botones-fila-superior">
+                    <button onclick="cambiarEstado('{{ equipo.id }}', 'Aprobado', this)" class="btn-aprobar">
+                        <span class="btn-text">Aprobar</span>
+                        <span class="spinner" style="display: none;">Cargando...</span>
+                    </button>
+                    <button onclick="cambiarEstado('{{ equipo.id }}', 'En revisión', this)" class="btn-revision">
+                        <span class="btn-text">En revisión</span>
+                        <span class="spinner" style="display: none;">Cargando...</span>
+                    </button>
+                    <button onclick="cambiarEstado('{{ equipo.id }}', 'Rechazado', this)" class="btn-rechazar">
+                        <span class="btn-text">Rechazar</span>
+                        <span class="spinner" style="display: none;">Cargando...</span>
+                    </button>
+                </div>
+                <button onclick="mostrarIntegrantes('{{ equipo.id }}')" class="btn-integrantes">
+                    <i class="fas fa-user-group"></i>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+<!-- Paginación -->
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1" class="page-btn first" title="Primera página">
+            &#171; <!-- Doble flecha izquierda -->
+        </a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-btn prev" title="Página anterior">
+            &#8249; <!-- Flecha izquierda -->
+        </a>
+    {% endif %}
+
+    <span class="current">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="page-btn next" title="Página siguiente">
+            &#8250; <!-- Flecha derecha -->
+        </a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="page-btn last" title="Última página">
+            &#187; <!-- Doble flecha derecha -->
+        </a>
+    {% endif %}
+</div>
+
+</div>
+
+
+
+<!-- Modal para mostrar los integrantes -->
+<div id="modal-integrantes" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="cerrarModal()">
+            <i class="fa-solid fa-xmark"></i>
+        </span>
+        <h3>Integrantes del Equipo</h3>
+        <ul id="lista-integrantes">
+            <!-- Lista de integrantes -->
+        </ul>
+    </div>
+</div>
+
+
+<script>
+function cambiarEstado(equipoId, nuevoEstado, boton) {
+    // Deshabilita el boton y muestra el indicador de carga
+    boton.disabled = true;
+    const btnText = boton.querySelector('.btn-text');
+    const spinner = boton.querySelector('.spinner');
+    btnText.style.display = 'none';
+    spinner.style.display = 'inline-block';
+
+    // Actualiza el estado visualmente en la UI
+    const estadoElement = document.querySelector(`.equipo-card[data-equipo-id="${equipoId}"] .estado-${nuevoEstado.toLowerCase().replace(/ /g, '-')}`);
+    if (estadoElement) {
+        estadoElement.textContent = nuevoEstado;
+    }
+
+    // Envia la solicitud al servidor
+    fetch("{% url 'staff_home' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: `equipo_id=${equipoId}&nuevo_estado=${nuevoEstado}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Recarga la página para asegurar que los datos estén actualizados
+            location.reload();
+        } else {
+            // Muestra un mensaje de error si la solicitud falla
+            alert('Error al cambiar el estado.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cambiar el estado.');
+    })
+    .finally(() => {
+        // Habilita el boton y oculta el indicador de carga
+        boton.disabled = false;
+        btnText.style.display = 'inline-block';
+        spinner.style.display = 'none';
+    });
+}
+</script>
+
+<script>
+function mostrarIntegrantes(equipoId) {
+    fetch(`/staff/obtener_integrantes/${equipoId}/`)
+        .then(response => response.json())
+        .then(integrantes => {
+            const listaIntegrantes = document.getElementById("lista-integrantes");
+            listaIntegrantes.innerHTML = ""; // Limpia la lista antes de agregar nuevos elementos
+
+            integrantes.forEach(integrante => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <div class="integrante-header">
+                        <hr>
+                            <strong>${integrante.nombre}</strong>
+                            ${integrante.esCapitan ? '<span class="capitan-badge">Capitán</span>' : ''}    
+                    </div>
+                    <div class="integrante-info">
+                        <span>Riot ID: ${integrante.riot_id || 'No disponible'}</span>
+                        <span>Correo: ${integrante.email || 'No disponible'}</span>
+                        <span>Telegram: ${integrante.telegram || 'No disponible'}</span>
+                    </div>
+                `;
+                listaIntegrantes.appendChild(li);
+            });
+
+            const modal = document.getElementById("modal-integrantes");
+            modal.style.display = "block"; // Muestra el modal
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function cerrarModal() {
+    const modal = document.getElementById("modal-integrantes");
+    modal.style.display = "none";
+}
+
+// Cierra el modal si se hace click fuera del contenido
+window.onclick = function(event) {
+    const modal = document.getElementById("modal-integrantes");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+};
+    </script>
+
+
+{% endblock %}

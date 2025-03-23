@@ -12,48 +12,72 @@
     <h2>Bienvenido, {{ jugador.nombre }} {{ jugador.apellido }}</h2>
     <p>Esta es tu área personal. Aquí podrás adminitstrar tu equipo para la liga Leyendas del Sur</p>
 
+    {% if not jugador.equipo %}
+    <p class="consejo">Para participar en el torneo, uno de los integrantes deberá registrar el equipo e invitar a sus compañeros. Quien realice esta acción será designado como capitán y asumirá las responsabilidades establecidas en el reglamento oficial del torneo. Si has recibido una invitación, revisa la sección 'Invitaciones Pendientes' y acéptala para unirte.</p>
+    {% else %}
+    <p class="consejo">Recuerda que para poder participar en el torneo, tu equipo debe ser aprobado por los administradores. Para esto, deberás realizar el pago correspondiente y enviar el comprobante de pago tocando el boton 'Pagar'. Una vez enviado podrás hacer el seguimiento del estado de tu equipo viendo el 'Estado de aprobación'.</p>
+    {% endif %}
+
     <!-- Muestra el equipo creado -->
     {% if jugador.equipo %}
     <!-- Muestra el equipo al que pertenece el jugador -->
     <div class="team-card">
-        <h3>Tu Equipo</h3>
         {% if equipo %}
         <div id="tarjeta" class="card">
-            <img src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
+            <img id="img-equipo" src="{{ equipo.logo.url }}" alt="{{ equipo.nombre }}" class="card-img-top">
             <div class="card-body">
                 <h5 class="card-title">{{ equipo.nombre }} ({{ equipo.abreviatura }})</h5>
                 <p class="card-text">
                     Estado de aprobación:
-                    {{ equipo.aprobado|yesno:"Aprobado,Pendiente" }}
-                    <span class="help-icon"
-                        title="El estado de aprobación indica si tu equipo ha sido revisado y aprobado por los administradores de la liga.">?</span>
-                </p>
+                    {{ equipo.estadoAprobacion }}
+                    <span class="help-icon" 
+                        title="{% if equipo.estadoAprobacion == 'Pago pendiente' %}Debes realizar el pago y adjuntar el comprobante.{% elif equipo.estadoAprobacion == 'En revisión' %}Tu equipo está siendo revisado por los administradores del torneo.{% elif equipo.estadoAprobacion == 'Aprobado' %}Tu equipo ya fue aprobado para poder participar en el torneo.{% elif equipo.estadoAprobacion == 'Rechazado' %}Tu equipo fue rechazado. Contacta a los administradores para más información.{% endif %}">
+                        ?
+                    </span>
+                </p>                
                 <div class="card-actions">
-                    <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit">Editar</a>
-                    <button class="btn btn-delete" data-equipo-id="{{ equipo.id }}"
-                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)">Eliminar</button>
-
+                    <a href="{% url 'pagar_inscripcion' equipo.id %}" class="btn btn-pay"><i class="fas fa-credit-card"></i> Pagar</a>
+                    <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Editar</a>
                     <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
-                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModal(this)">Abandonar Equipo</button>
-
-                </div>
-
-                <!-- Sección de Miembros -->
-                <div class="team-members">
-                    <h4>Miembros</h4>
-                    {% if equipo.miembros.all %}
-                    <ul class="members-list">
-                        {% for jugador in equipo.miembros.all %}
-                        <li>{{ jugador.nombre }} {{ jugador.apellido }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% else %}
-                    <p class="no-members">Aún no hay miembros, invita a alguien.</p>
+                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModalAbandonar(this)"><i class="fas fa-sign-out-alt"></i> Abandonar</button>
+                    {% if request.user.jugador == equipo.capitan %}
+                    <button class="btn btn-delete" data-equipo-id="{{ equipo.id }}"
+                        data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModalEliminar(this)"><i class="fas fa-trash-alt"></i> Eliminar</button>
                     {% endif %}
-                    <button class="btn-invite" onclick="mostrarModalInvitacion()">
-                        <span class="icon">+</span> Invitar
-                    </button>
+
                 </div>
+            <!-- Sección de Miembros -->
+            <div class="team-members">
+                <h4>Miembros</h4>
+                {% if equipo.miembros.all %}
+                <ul class="members-list">
+                    {% for jugador in equipo.miembros.all %}
+                    <li>
+                        {{ jugador.nombre }} {{ jugador.apellido }}
+                        {% if jugador == equipo.capitan %}
+                            <span class="capitan-badge">capitán</span>
+                        {% endif %}
+                        {% if request.user.jugador == equipo.capitan and jugador != equipo.capitan %}
+                        <button class="btn-remove" 
+                            data-jugador-id="{{ jugador.id }}" 
+                            data-jugador-nombre="{{ jugador.nombre }}" 
+                            onclick="mostrarModalEliminarJugador(this)">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-members">Aún no hay miembros, invita a alguien.</p>
+                {% endif %}
+                <button class="btn-invite" onclick="mostrarModalInvitacion()">
+                    <i class="fas fa-user-plus"></i> Invitar
+
+                </button>
+            </div>
+
             </div>
         </div>
         {% else %}
@@ -69,7 +93,9 @@
         </a>
     </div>
     {% endif %}
-    <!-- Muestra invitaciones pendientes -->
+
+
+    <!-- Seccion de invitaciones pendientes -->
     <div class="invitaciones-container">
         <h3>Invitaciones Pendientes</h3>
         {% if invitaciones %}
@@ -110,6 +136,61 @@
         {% endif %}
     </div>
 
+
+
+<!-- Seccion de Modales: -->
+
+
+<!-- Modal de Confirmación -->
+<div id="modalConfirmacionEliminarJugador" class="modal">
+    <div class="modal-content">
+        <p id="mensajeConfirmacionEliminarJugador"></p>
+        <form id="form-eliminar-jugador" method="post" action="">
+            {% csrf_token %}
+            <div class="modal-buttons">
+                <button type="submit" class="btn btn-delete">Confirmar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalEliminarJugador()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+   function mostrarModalEliminarJugador(button) {
+    const modal = document.getElementById('modalConfirmacionEliminarJugador');
+    const jugadorId = button.dataset.jugadorId;
+    const jugadorNombre = button.dataset.jugadorNombre;
+
+    // Actualizar el mensaje de confirmación
+    const mensaje = document.getElementById("mensajeConfirmacionEliminarJugador");
+    mensaje.innerText = `¿Estás seguro de que quieres eliminar a ${jugadorNombre} del equipo?`;
+
+    // Establecer la acción del formulario para la eliminación
+    const form = document.getElementById("form-eliminar-jugador");
+    form.action = `/player/eliminar_jugador/${jugadorId}/`;
+
+    // Mostrar el modal
+    modal.style.display = 'flex';
+}
+
+function cerrarModalEliminarJugador() {
+    const modal = document.getElementById('modalConfirmacionEliminarJugador');
+    modal.style.display = 'none';
+}
+
+window.onclick = function (event) {
+    const modal = document.getElementById('modalConfirmacionEliminarJugador');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+};
+</script>
+
 <!-- Modal de invitación -->
 <div id="modal-invitacion" class="modal">
     <div class="modal-content">
@@ -133,167 +214,170 @@
     </div>
 </div>
 
-    <!-- Modal de confirmación de eliminación -->
-    <div id="modal-eliminar" class="modal">
-        <div class="modal-content">
-            <h3 id="modal-titulo"></h3>
-            <p>¿Estas seguro que deseas eliminar este equipo?</p>
-            <form id="form-eliminar" method="post" action="">
-                {% csrf_token %}
+
+<!-- Modal de confirmación de eliminar equipo -->
+<div id="modal-eliminar" class="modal">
+    <div class="modal-content">
+        <p>¿Estas seguro que deseas eliminar este equipo?</p>
+        <form id="form-eliminar" method="post" action="">
+            {% csrf_token %}
+            <div class="modal-buttons">
                 <button type="submit" class="btn btn-delete">Eliminar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-            </form>
-        </div>
-    </div>
-
-        <!-- Modal de confirmación de abandonar equipo -->
-        <div id="modal-abandonar" class="modal">
-            <div class="modal-content">
-                <h3 id="modal-titulo"></h3>
-                <p>¿Estas seguro que deseas abandonar este equipo?</p>
-                <form id="form-abandonar" method="post" action="">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-delete">Abandonar</button>
-                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                </form>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalEliminar()">Cancelar</button>
             </div>
-        </div>
+        </form>
+    </div>
+</div>
 
-    <script>
-        // Función para borrar los mensajes de error y éxito
-        function borrarMensajes() {
-            // Borra el texto de los mensajes de error y éxito
-            document.getElementById('mensaje-error').textContent = '';
-            document.getElementById('mensaje-exito').textContent = '';
-        }
+<!-- Modal de confirmación de abandonar equipo -->
+<div id="modal-abandonar" class="modal">
+    <div class="modal-content">
+        <p>¿Estas seguro que deseas abandonar este equipo?</p>
+        <form id="form-abandonar" method="post" action="">
+            {% csrf_token %}
+            <div class="modal-buttons">
+                <button type="submit" class="btn btn-delete">Abandonar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalAbandonar()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
-        // Función para mostrar el modal eliminar
-        function mostrarModal(button) {
-            const modal = document.getElementById('modal-eliminar');
-            const form = document.getElementById('form-eliminar');
-            const modalTitulo = document.getElementById('modal-titulo');
-            const equipoId = button.dataset.equipoId;
-            const equipoNombre = button.dataset.equipoNombre;
 
-            // título del modal
-            modalTitulo.textContent = `¿Estás seguro de eliminar el equipo "${equipoNombre}"?`;
 
-            // acción del formulario para eliminar el equipo específico
-            form.action = `/player/eliminar_equipo/${equipoId}/`;
+<script>
+    // Función para borrar los mensajes de error y éxito
+    function borrarMensajes() {
+        // Borra el texto de los mensajes de error y éxito
+        document.getElementById('mensaje-error').textContent = '';
+        document.getElementById('mensaje-exito').textContent = '';
 
-            // Mostrar el modal
-            modal.style.display = 'flex';
-        }
+        // Oculta los mensajes de error y éxito
+        document.getElementById('mensaje-error').style.display = 'none';
+        document.getElementById('mensaje-exito').style.display = 'none';
+    }
 
-        // Función para cerrar el modal de eliminar
-        function cerrarModal() {
-            const modal = document.getElementById('modal-eliminar');
+
+    // Función para mostrar el modal eliminar
+    function mostrarModalEliminar(button) {
+        const modal = document.getElementById('modal-eliminar');
+        const form = document.getElementById('form-eliminar');
+        const equipoId = button.dataset.equipoId;
+        const equipoNombre = button.dataset.equipoNombre;
+
+        // acción del formulario para eliminar el equipo específico
+        form.action = `/player/eliminar_equipo/${equipoId}/`;
+
+        // Mostrar el modal
+        modal.style.display = 'flex';
+    }
+
+    // Función para cerrar el modal de eliminar
+    function cerrarModalEliminar() {
+        const modal = document.getElementById('modal-eliminar');
+        modal.style.display = 'none';
+    }
+
+    // Cierra el modal eliminar si se hace clic fuera del contenido
+    window.onclick = function (event) {
+        const modal = document.getElementById('modal-eliminar');
+        if (event.target === modal) {
             modal.style.display = 'none';
         }
-
-        // Cierra el modal eliminar si se hace clic fuera del contenido
-        window.onclick = function (event) {
-            const modal = document.getElementById('modal-eliminar');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
+    };
 
 
-        // Función para mostrar el modal abandonar
-        function mostrarModal(button) {
-            const modal = document.getElementById('modal-abandonar');
-            const form = document.getElementById('form-abandonar');
-            const modalTitulo = document.getElementById('modal-titulo');
-            const equipoId = button.dataset.equipoId;
-            const equipoNombre = button.dataset.equipoNombre;
+    // Función para mostrar el modal abandonar
+    function mostrarModalAbandonar(button) {
+        const modal = document.getElementById('modal-abandonar');
+        const form = document.getElementById('form-abandonar');
+        const equipoId = button.dataset.equipoId;
+        const equipoNombre = button.dataset.equipoNombre;
 
-            // título del modal
-            modalTitulo.textContent = `¿Estás seguro de abandonar el equipo "${equipoNombre}"?`;
 
-            // acción del formulario para abandonar el equipo específico
-            form.action = `/player/abandonar_equipo/${equipoId}/`;
+        // acción del formulario para abandonar el equipo específico
+        form.action = `/player/abandonar_equipo/${equipoId}/`;
 
-            // Mostrar el modal
-            modal.style.display = 'flex';
-        }
+        // Mostrar el modal
+        modal.style.display = 'flex';
+    }
 
-        // Función para cerrar el modal de abandonar
-        function cerrarModal() {
-            const modal = document.getElementById('modal-abandonar');
+    // Función para cerrar el modal de abandonar
+    function cerrarModalAbandonar() {
+        const modal = document.getElementById('modal-abandonar');
+        modal.style.display = 'none';
+    }
+
+    // Cierra el modal abandonar si se hace clic fuera del contenido
+    window.onclick = function (event) {
+        const modal = document.getElementById('modal-abandonar');
+        if (event.target === modal) {
             modal.style.display = 'none';
         }
-
-        // Cierra el modal abandonar si se hace clic fuera del contenido
-        window.onclick = function (event) {
-            const modal = document.getElementById('modal-abandonar');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
+    };
 
 
-        // Función para mostrar el modal de invitación
-        function mostrarModalInvitacion() {
-            const modal = document.getElementById('modal-invitacion');
-            modal.style.display = 'flex';
-        }
+    // Función para mostrar el modal de invitación
+    function mostrarModalInvitacion() {
+        const modal = document.getElementById('modal-invitacion');
+        modal.style.display = 'flex';
+    }
 
-        // Función para cerrar el modal de invitación
-        function cerrarModalInvitacion() {
-            const modal = document.getElementById('modal-invitacion');
-            modal.style.display = 'none';
-            borrarMensajes();
-        }
+    // Función para cerrar el modal de invitación
+    function cerrarModalInvitacion() {
+        const modal = document.getElementById('modal-invitacion');
+        modal.style.display = 'none';
+        borrarMensajes();
+    }
 
 
 
 
 
-        document.getElementById('form-invitacion').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('email-invitacion').value;
-        const form = this;
-        
-        const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+    document.getElementById('form-invitacion').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email-invitacion').value;
+    const form = this;
+    
+    const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
 
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken,
-            },
-            body: JSON.stringify({
-                'email': email
-            })
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({
+            'email': email
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                // Muestra el mensaje de error
-                document.getElementById('mensaje-error').textContent = data.error;
-                document.getElementById('mensaje-error').style.display = 'block';
-                document.getElementById('mensaje-exito').style.display = 'none';
-            } else if (data.warning) {
-                // Muestra el mensaje de advertencia
-                document.getElementById('mensaje-error').textContent = data.warning;
-                document.getElementById('mensaje-error').style.display = 'block';
-                document.getElementById('mensaje-exito').style.display = 'none';
-            } else if (data.success) {
-                // Muestra el mensaje de éxito
-                document.getElementById('mensaje-exito').textContent = data.success;
-                document.getElementById('mensaje-exito').style.display = 'block';
-                document.getElementById('mensaje-error').style.display = 'none';
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            // Muestra el mensaje de error
+            document.getElementById('mensaje-error').textContent = data.error;
+            document.getElementById('mensaje-error').style.display = 'block';
+            document.getElementById('mensaje-exito').style.display = 'none';
+        } else if (data.warning) {
+            // Muestra el mensaje de advertencia
+            document.getElementById('mensaje-error').textContent = data.warning;
+            document.getElementById('mensaje-error').style.display = 'block';
+            document.getElementById('mensaje-exito').style.display = 'none';
+        } else if (data.success) {
+            // Muestra el mensaje de éxito
+            document.getElementById('mensaje-exito').textContent = data.success;
+            document.getElementById('mensaje-exito').style.display = 'block';
+            document.getElementById('mensaje-error').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
+});
 
-    </script>
+</script>
 
 
-    {% endblock %}
+{% endblock %}

@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/player/perfil.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block main %}
@@ -13,31 +14,176 @@
 
     <div class="profile-info">
         <h3>Datos de tu perfil</h3>
-        <div class="profile-field">
-            <strong>Nombre:</strong> {{ jugador.nombre }}
+
+        <!-- Sección de la foto de perfil -->
+        <div class="profile-photo-section">
+            {% if jugador.foto %}
+                <img src="{{ jugador.foto.url }}" alt="Foto de {{ jugador.nombre }}" class="profile-photo">
+            {% else %}
+                <div class="no-photo">
+                    <span class="icon">📷</span>
+                    <p>No has subido una foto</p>
+                </div>
+            {% endif %}
+            <button class="btn-edit-photo" onclick="editarFoto()">Cambiar foto</button>
         </div>
-        <div class="profile-field">
-            <strong>Apellido:</strong> {{ jugador.apellido }}
-        </div>
-        <div class="profile-field">
-            <strong>DNI:</strong> {{ jugador.dni }}
-        </div>
-        <div class="profile-field">
-            <strong>Teléfono:</strong> {{ jugador.telefono }}
-        </div>
-        <div class="profile-field">
-            <strong>País:</strong> {{ jugador.pais }}
-        </div>
-        <div class="profile-field">
-            <strong>Legajo:</strong> {{ jugador.leagajo }}
-        </div>
-        <div class="profile-field">
-            <strong>Riot ID:</strong> {{ jugador.riot_id }}
-        </div>
-        <div class="profile-field">
-            <strong>Correo electrónico:</strong> {{ jugador.email }}
-        </div>
+
+        <!-- Formulario de edición de perfil -->
+        <form class="profile-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="foto-input" name="foto" style="display: none;" accept="image/*" onchange="actualizarVistaPrevia()">
+            <div class="profile-details">
+                <!-- Campo: Nombre -->
+                <div class="profile-field">
+                    <label class="field-label" for="nombre">Nombre:</label>
+                    <div class="field-value-container">
+                        <input type="text" id="nombre" name="nombre" class="field-value" value="{{ jugador.nombre }}" readonly>
+                        <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('nombre')"></i>
+                    </div>
+                </div>
+
+                <!-- Campo: Apellido -->
+                <div class="profile-field">
+                    <label class="field-label" for="apellido">Apellido:</label>
+                    <div class="field-value-container">
+                        <input type="text" id="apellido" name="apellido" class="field-value" value="{{ jugador.apellido }}" readonly>
+                        <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('apellido')"></i>
+                    </div>
+                </div>
+
+                <!-- Campo: DNI -->
+                <div class="profile-field">
+                    <label class="field-label" for="dni">DNI:</label>
+                    <div class="field-value-container">
+                        <input type="text" id="dni" name="dni" class="field-value" value="{{ jugador.dni }}" readonly>
+                        <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('dni')"></i>
+                    </div>
+                </div>
+
+                <!-- Campo: Teléfono -->
+                <div class="profile-field">
+                    <label class="field-label" for="telefono">Teléfono:</label>
+                    <div class="field-value-container">
+                        <input type="text" id="telefono" name="telefono" class="field-value" value="{{ jugador.telefono }}" readonly>
+                        <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('telefono')"></i>
+                    </div>
+                </div>
+
+                <!-- Campo: Telegram -->
+                <div class="profile-field">
+                    <label class="field-label" for="telegram">Telegram:</label>
+                    <div class="field-value-container">
+                        <input type="text" id="telegram" name="telegram" class="field-value" value="{{ jugador.telegram }}" readonly>
+                        <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('telegram')"></i>
+                    </div>
+                </div>
+
+                <!-- Campo: País -->
+                <div class="profile-field">
+                    <label class="field-label" for="pais">País:</label>
+                    <div class="field-value-container">
+                        <input type="text" id="pais" name="pais" class="field-value" value="{{ jugador.pais }}" readonly>
+                        <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('pais')"></i>
+                    </div>
+                </div>
+
+                <!-- Campo: Legajo -->
+                {% if jugador.leagajo %}
+                    <div class="profile-field">
+                        <label class="field-label" for="legajo">Legajo:</label>
+                        <div class="field-value-container">
+                            <input type="text" id="legajo" name="legajo" class="field-value" value="{{ jugador.legajo }}" readonly>
+                            <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('legajo')"></i>
+                        </div>
+                    </div>
+                {% endif %}
+                <!-- Campo: Riot ID -->
+                <div class="profile-field">
+                    <label class="field-label" for="riot_id">Riot ID:</label>
+                    <div class="field-value-container">
+                        <input type="text" id="riot_id" name="riot_id" class="field-value" value="{{ jugador.riot_id }}" readonly>
+                        <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('riot_id')"></i>
+                    </div>
+                </div>
+
+                <!-- Campo: Correo electrónico -->
+                <div class="profile-field">
+                    <label class="field-label" for="email">Correo electrónico:</label>
+                    <div class="field-value-container">
+                        <input type="email" id="email" name="email" class="field-value" value="{{ jugador.email }}" readonly>
+                        <i class="fas fa-edit edit-icon" onclick="habilitarEdicion('email')"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="form-buttons">
+                <button type="button" class="btn btn-secondary" onclick="volver()">Cancelar</button>
+                <button type="submit" class="btn btn-secondary">Guardar cambios</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+let inputEnEdicion = null; // Variable global para rastrear el input en edición
+
+function habilitarEdicion(id) {
+    const input = document.getElementById(id);
+
+    // Si hay otro input en edición, se deshabilita
+    if (inputEnEdicion && inputEnEdicion !== input) {
+        inputEnEdicion.setAttribute("readonly", true);
+    }
+
+    // Habilita el input actual y lo enfoca
+    input.removeAttribute("readonly");
+    input.focus();
+    inputEnEdicion = input;
+}
+
+// Evento para detectar clics fuera del input en edición y deshabilitarlo
+document.addEventListener("click", function(event) {
+    if (inputEnEdicion && !event.target.closest(".field-value-container")) {
+        inputEnEdicion.setAttribute("readonly", true);
+        inputEnEdicion = null;
+    }
+});
+
+    function volver() {
+        window.location.href = "/player/home/";
+    }
+
+    function editarFoto() {
+    // Simula un clic en el input de tipo archivo
+    document.getElementById("foto-input").click();
+}
+
+function actualizarVistaPrevia() {
+    const input = document.getElementById("foto-input");
+    const profilePhoto = document.querySelector(".profile-photo");
+    const noPhoto = document.querySelector(".no-photo");
+
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            if (profilePhoto) {
+                profilePhoto.src = e.target.result;
+            } else {
+                const newPhoto = document.createElement("img");
+                newPhoto.src = e.target.result;
+                newPhoto.alt = "Foto de perfil";
+                newPhoto.classList.add("profile-photo");
+
+                noPhoto.innerHTML = "";
+                noPhoto.appendChild(newPhoto);
+            }
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 
 {% endblock %}

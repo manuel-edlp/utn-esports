@@ -1,17 +1,26 @@
 import json
+from django.forms import ValidationError
 from django.http import JsonResponse
-from django.views.generic import TemplateView, RedirectView, ListView
+from django.views.generic import TemplateView, RedirectView, ListView,DetailView 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
-from .models import Equipo, Invitacion, Jugador
+from .models import Equipo, EstadoAprobacion, Invitacion, Jugador, TwitchClip
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+import filetype
+import re
 
 class Home(TemplateView):
     template_name = 'home/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # clips activos de Twitch
+        context['twitch_clips'] = TwitchClip.objects.filter(activo=True)
+        return context
 
 class Faq(TemplateView):
     template_name = 'faq/faq.html'
@@ -22,6 +31,78 @@ class Reglamento(TemplateView):
 class Sponsors(TemplateView):
     template_name = 'sponsors/sponsors.html'
 
+
+# Función para validar el formulario de registro
+def validar_formulario(form_data):
+    errors = {}
+
+    # Validar contraseñas
+    if form_data["password"] != form_data["confirm_password"]:
+        errors["password"] = "Las contraseñas no coinciden."
+
+    # Validar longitud de la contraseña
+    if len(form_data["password"]) < 8:
+        errors["password"] = "La contraseña debe tener al menos 8 caracteres."
+
+    # Validar email único
+    if User.objects.filter(email=form_data["email"]).exists():
+        errors["email"] = "El correo electrónico ya está registrado."
+
+    # Validar DNI único
+    if Jugador.objects.filter(dni=form_data["dni"]).exists():
+        errors["dni"] = "El DNI ya está registrado."
+
+    # Validar Riot ID único
+    if Jugador.objects.filter(riot_id=form_data["riot_id"]).exists():
+        errors["riot_id"] = "El Riot ID ya está registrado."
+
+    # Validar formato de Riot ID
+    if form_data["riot_id"] and "#" not in form_data["riot_id"]:
+        errors["riot_id"] = "El Riot ID debe contener el símbolo '#'."
+
+    # Validar si se seleccionó una opción en "pertenece-utn"
+    if not form_data.get("pertenece_utn"):
+        errors["pertenece_utn"] = "Debes seleccionar una opción."
+
+    # Validar legajo único (si pertenece a la UTN)
+    if form_data.get("pertenece_utn") == "si":
+        if Jugador.objects.filter(legajo=form_data["legajo"]).exists():
+            errors["legajo"] = "El legajo ya está registrado."
+
+    # Validar campos obligatorios
+    required_fields = ["nombre", "apellido", "dni", "telefono", "telegram", "pais", "riot_id", "email", "password", "confirm_password"]
+    if form_data.get("pertenece_utn") == "si":
+        required_fields.append("legajo")
+
+    for field in required_fields:
+        if not form_data[field]:
+            errors[field] = "Este campo es obligatorio."
+
+    # Validar foto (si es necesario)
+    if not form_data["foto"]:
+        errors["foto"] = "Debes subir una foto."
+
+    # Validar tipo de texto en los campos (solo si el campo no está vacío)
+    if form_data["nombre"] and not re.match(r"^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ\s]+$", form_data["nombre"]):
+        errors["nombre"] = "El nombre solo puede contener letras y espacios."
+
+    if form_data["apellido"] and not re.match(r"^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ\s]+$", form_data["apellido"]):
+        errors["apellido"] = "El apellido solo puede contener letras y espacios."
+
+    if form_data["legajo"] and not re.match(r"^\d+$", form_data["legajo"]):
+        errors["legajo"] = "El legajo solo puede contener números."
+
+    if form_data["telefono"] and not re.match(r"^[0-9+\-\s]+$", form_data["telefono"]):
+        errors["telefono"] = "El teléfono solo puede contener números, espacios, guiones y el símbolo +."
+
+    if form_data["pais"] and re.search(r"\d", form_data["pais"]):
+        errors["pais"] = "El país no puede contener números."
+
+    if form_data["email"] and not re.match(r"^[^@]+@[^@]+\.[^@]+$", form_data["email"]):
+        errors["email"] = "El correo electrónico no es válido."
+
+    return errors
+
 class RegistroView(View):
     template_name = "register/register.html"
     success_url = reverse_lazy("login")
@@ -30,59 +111,62 @@ class RegistroView(View):
         return render(request, self.template_name)
 
     def post(self, request, *args, **kwargs):
-        # Paso 1: Datos personales
-        nombre = request.POST.get("nombre")
-        apellido = request.POST.get("apellido")
-        dni = request.POST.get("dni")
-        telefono = request.POST.get("telefono")
-        pais = request.POST.get("pais")
-        legajo = request.POST.get("legajo")
+        # Recuperar los datos del formulario
+        form_data = {
+            "nombre": request.POST.get("nombre"),
+            "apellido": request.POST.get("apellido"),
+            "dni": request.POST.get("dni"),
+            "telefono": request.POST.get("telefono"),
+            "telegram": request.POST.get("telegram"),
+            "pais": request.POST.get("pais"),
+            "legajo": request.POST.get("legajo"),
+            "foto": request.FILES.get("foto"),
+            "riot_id": request.POST.get("riot-tag"),
+            "email": request.POST.get("email"),
+            "password": request.POST.get("password"),
+            "confirm_password": request.POST.get("confirm-password"),
+            "pertenece_utn": request.POST.get("pertenece-utn"),
+        }
 
-        # Paso 2: Datos de Riot
-        riot_id = request.POST.get("riot-tag")
+        # Validar el formulario
+        errors = validar_formulario(form_data)
 
-        # Paso 3: Credenciales
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm-password")
+        # Si hay errores, renderizar el formulario con los errores y los datos ingresados
+        if errors:
+            return render(request, self.template_name, {"errors": errors, "form_data": form_data})
 
-        # Validaciones
-        if password != confirm_password:
-            return render(request, self.template_name, {"error": "Las contraseñas no coinciden."})
-
-        # Verifica si el usuario ya existe
-        if User.objects.filter(email=email).exists():
-            return render(request, self.template_name, {"error": "El correo electrónico ya está registrado."})
-
-        # Crea el usuario base (User de Django)
+        # Crear el usuario base (User de Django)
         try:
             user = User.objects.create_user(
-                username=email,  # Uso el email como nombre de usuario
-                email=email,
-                password=password,  # Django aplica el hash automáticamente
+                username=form_data["email"],  # Uso el email como nombre de usuario
+                email=form_data["email"],
+                password=form_data["password"],  # Django aplica el hash automáticamente
             )
         except Exception as e:
-            return render(request, self.template_name, {"error": f"Error al crear el usuario: {e}"})
+            errors["general"] = f"Error al crear el usuario: {e}"
+            return render(request, self.template_name, {"errors": errors, "form_data": form_data})
 
-        # Crea el jugador con la contraseña encriptada
+        # Crear el jugador
         try:
-
             jugador = Jugador.objects.create(
-                user=user,  # Relación uno a uno con User
-                nombre=nombre,
-                apellido=apellido,
-                dni=dni,
-                legajo=legajo,
-                email=email,
-                telefono=telefono,
-                pais=pais,
-                riot_id=riot_id
+                user=user,
+                nombre=form_data["nombre"],
+                apellido=form_data["apellido"],
+                dni=form_data["dni"],
+                foto=form_data["foto"],
+                legajo=form_data["legajo"] if form_data["pertenece_utn"] == "si" else None,
+                email=form_data["email"],
+                telefono=form_data["telefono"],
+                telegram=form_data["telegram"],
+                pais=form_data["pais"],
+                riot_id=form_data["riot_id"],
             )
         except Exception as e:
             user.delete()  # Si algo falla, eliminamos el usuario
-            return render(request, self.template_name, {"error": f"Error al crear el jugador: {e}"})
+            errors["general"] = f"Error al crear el jugador: {e}"
+            return render(request, self.template_name, {"errors": errors, "form_data": form_data})
 
-        # Redirige a la página de inicio
+        # Redirigir a la página de inicio
         return redirect(self.success_url)
     
 class LoginView(TemplateView):
@@ -104,10 +188,18 @@ class LoginView(TemplateView):
         if user is not None:
             # Inicia sesión
             login(request, user)
-            return redirect('player_home')
+
+            # Verifica si el usuario es staff o jugador
+            if hasattr(user, 'staff'):  # Si el usuario es staff
+                return redirect('staff_home')
+            elif hasattr(user, 'jugador'):  # Si el usuario es jugador
+                return redirect('player_home')
+            else:
+                # Si no es ni staff ni jugador, redirige a una página por defecto
+                return redirect('home')
         else:
             # Muestra mensaje de error si las credenciales son incorrectas
-            messages.error(request, 'Correo electrónico o contraseña incorrectos.')
+            messages.error(request, 'Correo electrónico o contraseña incorrectos.', extra_tags='login_error')
             return render(request, self.template_name)
         
 class PlayerHomeView(LoginRequiredMixin, TemplateView):
@@ -139,6 +231,7 @@ class PlayerHomeView(LoginRequiredMixin, TemplateView):
 
 class PerfilView(LoginRequiredMixin, TemplateView):
     template_name = 'player/perfil.html'
+    success_url = reverse_lazy("perfil")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -151,6 +244,38 @@ class PerfilView(LoginRequiredMixin, TemplateView):
             context['jugador'] = None  # Si no existe, pasa None
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        # Obtengo el jugador actual
+        jugador = get_object_or_404(Jugador, user=request.user)
+
+        # Actualio los campos del jugador
+        jugador.nombre = request.POST.get("nombre", jugador.nombre)
+        jugador.apellido = request.POST.get("apellido", jugador.apellido)
+        jugador.dni = request.POST.get("dni", jugador.dni)
+        jugador.telefono = request.POST.get("telefono", jugador.telefono)
+        jugador.telegram = request.POST.get("telegram", jugador.telegram)
+        jugador.pais = request.POST.get("pais", jugador.pais)
+        jugador.legajo = request.POST.get("legajo", jugador.legajo)
+        jugador.riot_id = request.POST.get("riot_id", jugador.riot_id)
+        jugador.email = request.POST.get("email", jugador.email)
+
+        # Manejo la foto de perfil (si se sube una nueva)
+        if "foto" in request.FILES:
+            jugador.foto = request.FILES["foto"]
+
+        try:
+            jugador.save()
+            # Actualizo el email del usuario de Django si cambia
+            if jugador.email != request.user.email:
+                request.user.email = jugador.email
+                request.user.save()
+        except Exception as e:
+            context = self.get_context_data()
+            context["error"] = f"Error al actualizar el perfil: {e}"
+            return render(request, self.template_name, context)
+
+        return redirect(self.success_url)
     
 
 
@@ -158,7 +283,7 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
     template_name = 'player/crear_equipo.html'
 
     def get(self, request, *args, **kwargs):
-        # Verificar si el usuario es un jugador
+        # Verifica si el usuario es un jugador
         if not hasattr(request.user, 'jugador'):
             messages.error(request, "Solo los jugadores pueden crear equipos.")
             return redirect('player_home')
@@ -171,29 +296,47 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
             messages.error(request, "Solo los jugadores pueden crear equipos.")
             return redirect('player_home')
 
-        # Obteniene los datos del formulario
+        # Obtiene los datos del formulario
         nombre = request.POST.get('nombre')
         abreviatura = request.POST.get('abreviatura')
         logo = request.FILES.get('logo')
-        comprobante_pago = request.FILES.get('comprobante_pago')
+        estadoAprobacion = EstadoAprobacion.PAGO_PENDIENTE
 
         # Valida los datos
-        if not nombre or not abreviatura or not logo or not comprobante_pago:
+        if not nombre or not abreviatura or not logo:
             messages.error(request, "Todos los campos son obligatorios.")
-            return render(request, self.template_name)
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
 
-        # Crear el equipo
+        # Verifica si el nombre del equipo ya existe en la base de datos
+        if Equipo.objects.filter(nombre=nombre).exists():
+            messages.error(request, "El nombre del equipo ya está en uso. Elige otro.", extra_tags='error-nombre-equipo')
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
+        
+        # Verifica si la abreviatura del equipo ya existe en la base de datos
+        if Equipo.objects.filter(abreviatura=abreviatura).exists():
+            messages.error(request, "La abreviatura del equipo ya está en uso. Elige otra.", extra_tags='error-abreviatura-equipo')
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
+
+        # Validación del tipo de archivo
         try:
+            if 'logo' in request.FILES:
+                logo = request.FILES['logo']
+                kind = filetype.guess(logo.read(1024))  # Analiza los primeros bytes
+                if kind is None or kind.mime not in ['image/jpeg', 'image/png', 'image/jpg']:
+                    raise ValidationError("Tipo de archivo no permitido para el logo.")
+
+            # Creo el equipo
             equipo = Equipo(
                 nombre=nombre,
                 abreviatura=abreviatura,
                 logo=logo,
-                comprobante_pago=comprobante_pago,
-                creado_por=request.user.jugador
+                creado_por=request.user.jugador,
+                estadoAprobacion=estadoAprobacion,
+                capitan=request.user.jugador
             )
             equipo.save()
 
-            # Asocia el equipo al jugador que lo creos
+            # Asocio el equipo al jugador que lo creó
             jugador = request.user.jugador
             jugador.equipo = equipo
             jugador.save()
@@ -202,9 +345,10 @@ class CrearEquipoView(LoginRequiredMixin, TemplateView):
             messages.success(request, f"Equipo '{equipo.nombre}' creado exitosamente.")
             return redirect('player_home')
 
-        except Exception as e:
-            messages.error(request, f"Error al crear el equipo: {str(e)}")
-            return render(request, self.template_name)
+        except ValidationError as e:
+            messages.error(request, str(e), extra_tags='error-tipo-archivo')
+            return render(request, 'player/crear_equipo.html', {'nombre': nombre, 'abreviatura': abreviatura, 'messages': messages.get_messages(request)})
+
 
 
 class EditarEquipoView(LoginRequiredMixin, TemplateView):
@@ -221,46 +365,164 @@ class EditarEquipoView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, equipo_id, *args, **kwargs):
         equipo = get_object_or_404(Equipo, id=equipo_id)
-        
-        # Verifica si el jugador es miembro del equipo
+        nombre = request.POST.get('nombre')
+        abreviatura = request.POST.get('abreviatura')
+
         if request.user.jugador not in equipo.miembros.all():
             messages.error(request, "No tienes permisos para editar este equipo.")
+
+         # Verifica si el nombre del equipo ya existe en la base de datos
+        if Equipo.objects.filter(nombre=nombre).exists():
+            messages.error(request, "El nombre del equipo ya está en uso. Elige otro.", extra_tags='error-nombre-equipo')
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
+        
+        # Verifica si la abreviatura del equipo ya existe en la base de datos
+        if Equipo.objects.filter(abreviatura=abreviatura).exists():
+            messages.error(request, "La abreviatura del equipo ya está en uso. Elige otra.", extra_tags='error-abreviatura-equipo')
+            return render(request, self.template_name, {'nombre': nombre, 'abreviatura': abreviatura})
         
 
-        # Continuar con la actualización del equipo
-        equipo.nombre = request.POST.get('nombre')
-        equipo.abreviatura = request.POST.get('abreviatura')
-        if 'logo' in request.FILES:
-            equipo.logo = request.FILES['logo']
-        if 'comprobante_pago' in request.FILES:
-            equipo.comprobante_pago = request.FILES['comprobante_pago']
-        equipo.save()
-        messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
-        return redirect('player_home')
+        equipo.nombre = nombre
+        equipo.abreviatura = abreviatura
+
+
+        try:
+
+            if 'logo' in request.FILES:
+                logo = request.FILES['logo']
+                kind = filetype.guess(logo.read(1024))  # Analiza los primeros bytes
+                if kind is None or kind.mime not in ['image/jpeg', 'image/png', 'image/jpg']:
+                    raise ValidationError("Tipo de archivo no permitido.")
+                logo.seek(0)
+                equipo.logo = logo
+
+            equipo.save()
+            messages.success(request, f"Equipo '{equipo.nombre}' actualizado exitosamente.")
+            return redirect('player_home')
+            
+
+        except ValidationError as e:
+            messages.error(request, str(e), extra_tags='error-tipo-archivo')
+            return render(request, 'player/editar_equipo.html', {'nombre': nombre, 'abreviatura': abreviatura, 'equipo': equipo, 'messages': messages.get_messages(request)})
     
 class EliminarEquipoView(LoginRequiredMixin, View):
     def post(self, request, equipo_id, *args, **kwargs):
-        equipo = get_object_or_404(Equipo, id=equipo_id, creado_por=request.user.jugador)
-        equipo.delete()
-        messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+        # Verifica si el usuario es el capitán del equipo
+        if equipo.capitan == request.user.jugador:
+            equipo.delete()
+            messages.success(request, f"Equipo '{equipo.nombre}' eliminado exitosamente.")
+        else:
+            messages.error(request, "Solo el capitán puede eliminar este equipo.")
         return redirect('player_home')
+
 
 class AbandonarEquipoView(LoginRequiredMixin, View):
     def post(self, request, equipo_id, *args, **kwargs):
         equipo = get_object_or_404(Equipo, id=equipo_id)
-        if request.user.jugador in equipo.miembros.all():
-            equipo.miembros.remove(request.user.jugador)
-            messages.success(request, f"Has abandonado el equipo '{equipo.nombre}' exitosamente.")
+        jugador = request.user.jugador
+
+        # Verifica si el jugador es miembro del equipo
+        if jugador in equipo.miembros.all():
+
+            # Si el jugador es el capitán, transfiero la capitanía
+            if equipo.capitan == jugador:
+
+                # Obtengor otro miembro para transfiero la capitanía
+                nuevo_capitan = equipo.miembros.exclude(id=jugador.id).first()  # Excluyo al jugador actual
+
+                if nuevo_capitan:
+                    # Transfiero la capitanía al nuevo miembro
+                    equipo.capitan = nuevo_capitan
+                    equipo.save()
+                    messages.success(request, f"La capitanía ha sido transferida a {nuevo_capitan.nombre}.")
+                else:
+                    equipo.capitan = None
+
+            # Remuevo al jugador del equipo
+            equipo.miembros.remove(jugador)
+
+            # Verifica si el equipo quedó sin miembros
+            if equipo.miembros.count() == 0:
+                equipo.delete()  # Elimino el equipo si no hay más miembros
+                messages.success(request, f"Has abandonado el equipo '{equipo.nombre}'. Como eras el último miembro, el equipo ha sido eliminado.")
+            else:
+                messages.success(request, f"Has abandonado el equipo '{equipo.nombre}' exitosamente.")
+
             return redirect('player_home')
         else:
             messages.error(request, "Error. No eres miembro de este equipo.")
             return redirect('player_home')
 
-class InvitarJugadorView(View):
+class PagarInscripcionView(LoginRequiredMixin, TemplateView):
+    template_name = 'player/pagar_inscripcion.html'
+
+    def get(self, request, *args, **kwargs):
+        # Verifica si el usuario es un jugador
+        if not hasattr(request.user, 'jugador'):
+            messages.error(request, "Solo los jugadores pueden realizar pagos.")
+            return redirect('player_home')
+
+        # Verifica si el equipo existe y si el jugador pertenece a ese equipo
+        equipo_id = self.kwargs.get('equipo_id')
+        try:
+            equipo = Equipo.objects.get(id=equipo_id)
+            if equipo.creado_por != request.user.jugador and equipo.miembros.filter(id=request.user.jugador.id).count() == 0:
+                messages.error(request, "Solo los miembros de este equipo pueden realizar pagos.")
+                return redirect('player_home')
+        except Equipo.DoesNotExist:
+            messages.error(request, "No se encontró el equipo.")
+            return redirect('player_home')
+
+        return render(request, self.template_name, {'equipo': equipo})
+
+    def post(self, request, *args, **kwargs):
+        # Verifica si el usuario es un jugador
+        if not hasattr(request.user, 'jugador'):
+            messages.error(request, "Solo los jugadores pueden realizar pagos.")
+            return redirect('player_home')
+
+        # Obtiene el ID del equipo
+        equipo_id = self.kwargs.get('equipo_id')
+        try:
+            equipo = Equipo.objects.get(id=equipo_id)
+            if equipo.creado_por != request.user.jugador and equipo.miembros.filter(id=request.user.jugador.id).count() == 0:
+                messages.error(request, "Solo los miembros de este equipo pueden realizar pagos.")
+                return redirect('player_home')
+        except Equipo.DoesNotExist:
+            messages.error(request, "No se encontró el equipo.")
+            return redirect('player_home')
+
+        # Obtiene el archivo de comprobante de pago (único archivo)
+        comprobante_pago = request.FILES.get('comprobante_pago')
+
+        if not comprobante_pago:
+            messages.error(request, "Debes adjuntar un comprobante de pago.")
+            return render(request, self.template_name, {'equipo': equipo})
+
+        # Validación del tipo de archivo
+        try:
+            kind = filetype.guess(comprobante_pago.read(1024))  # Analiza los primeros bytes
+            if kind is None or kind.mime not in ['image/jpeg', 'image/jpg', 'image/png', 'application/zip', 'application/x-rar-compressed']:
+                raise ValidationError("Tipo de archivo no permitido para el comprobante de pago.")
+            
+            # Guarda el comprobante de pago
+            equipo.comprobante_pago = comprobante_pago
+            equipo.estadoAprobacion = EstadoAprobacion.EN_REVISION
+            equipo.save()
+
+            # Mensaje de éxito
+            messages.success(request, "Comprobante de pago subido exitosamente. Tu equipo está en revisión.")
+            return redirect('player_home')
+
+        except ValidationError as e:
+            messages.error(request, str(e), extra_tags='error-tipo-archivo')
+            return render(request, self.template_name, {'equipo': equipo, 'messages': messages.get_messages(request)})
+class InvitarJugadorView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
-            data = json.loads(request.body)  # Decodifica el JSON
-            email = data.get('email', '').strip().lower()  # Normaliza el correo
+            data = json.loads(request.body)
+            email = data.get('email', '').strip().lower()
         except json.JSONDecodeError:
             return JsonResponse({'error': "Formato de datos inválido."}, status=400)
 
@@ -272,13 +534,17 @@ class InvitarJugadorView(View):
         except Jugador.DoesNotExist:
             return JsonResponse({'error': "No se encontró un jugador con ese correo electrónico."}, status=400)
 
+        # Validacion para evitar autoinvitaciones
+        if request.user.jugador == jugador_invitado:
+            return JsonResponse({'error': "No puedes invitarte a ti mismo."}, status=400)
+
         if Invitacion.objects.filter(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False).exists():
             return JsonResponse({'warning': "El jugador ya ha recibido una invitación para este equipo."}, status=200)
 
         Invitacion.objects.create(equipo=equipo, jugador_invitado=jugador_invitado, aceptada=False)
         return JsonResponse({'success': f"Invitación enviada a {jugador_invitado.nombre} {jugador_invitado.apellido}."}, status=200)
     
-class ListarInvitacionesView(ListView):
+class ListarInvitacionesView(LoginRequiredMixin, ListView):
     template_name = 'player_home.html'
     context_object_name = 'invitaciones'
 
@@ -291,7 +557,7 @@ class ListarInvitacionesView(ListView):
         context['equipo'] = self.request.user.jugador.equipos_creados.first()
         return context
 
-class AceptarInvitacionView(View):
+class AceptarInvitacionView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         invitacion_id = self.kwargs.get('invitacion_id')
         invitacion = get_object_or_404(Invitacion, id=invitacion_id)
@@ -317,7 +583,7 @@ class AceptarInvitacionView(View):
         messages.success(request, f"Has aceptado la invitación para unirte a {invitacion.equipo.nombre}.")
         return redirect('player_home')
     
-class RechazarInvitacionView(View):
+class RechazarInvitacionView(LoginRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         invitacion_id = self.kwargs.get('invitacion_id')
         invitacion = get_object_or_404(Invitacion, id=invitacion_id)
@@ -331,3 +597,105 @@ class RechazarInvitacionView(View):
 
         messages.success(request, "Has rechazado la invitación.")
         return redirect('player_home')
+    
+
+
+class EliminarJugadorView(LoginRequiredMixin,View):
+    def post(self, request, jugador_id):
+        # Obtengo el jugador y el equipo actual
+        jugador = get_object_or_404(Jugador, id=jugador_id)
+        equipo = request.user.jugador.equipo
+
+        # Verifico que el jugador pertenezca al equipo y que sea el capitán
+        if jugador in equipo.miembros.all() and request.user.jugador == equipo.capitan:
+            # Elimino al jugador del equipo
+            equipo.miembros.remove(jugador)
+            messages.success(request, f'{jugador.nombre} ha sido eliminado del equipo.')
+        else:
+            messages.error(request, 'No tienes permiso para eliminar a este jugador.')
+
+        return redirect('player_home') 
+    
+
+
+class StaffHomeView(LoginRequiredMixin,ListView):
+    model = Equipo
+    template_name = 'staff/home.html'
+    context_object_name = 'equipos'
+    paginate_by = 4  # Paginación para mostrar 10 equipos por página
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('search', '')
+        estado_filter = self.request.GET.get('estado', '')
+
+        if search_query:
+            queryset = queryset.filter(nombre__icontains=search_query)
+        if estado_filter:
+            queryset = queryset.filter(estadoAprobacion=estado_filter)
+
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        equipo_id = request.POST.get('equipo_id')
+        nuevo_estado = request.POST.get('nuevo_estado')
+        equipo = get_object_or_404(Equipo, id=equipo_id)
+
+        # Guarda el estado original
+        equipo._original_estadoAprobacion = equipo.estadoAprobacion
+
+        equipo.estadoAprobacion = nuevo_estado
+        equipo.save()
+
+        return JsonResponse({'status': 'success', 'nuevo_estado': nuevo_estado})
+    
+class ObtenerIntegrantesView(LoginRequiredMixin, DetailView):
+    model = Equipo
+    pk_url_kwarg = 'equipo_id'  # Nombre del parámetro en la URL
+
+    def get(self, request, *args, **kwargs):
+        equipo = self.get_object()  # Obtiene el equipo basado en el ID
+        integrantes = equipo.miembros.all()
+        data = [
+            {
+                "nombre": f"{jugador.nombre} {jugador.apellido}",
+                "esCapitan": jugador == equipo.capitan,
+                "riot_id": jugador.riot_id,
+                "email": jugador.email,
+                "telegram": jugador.telegram
+            }
+            for jugador in integrantes
+        ]
+        return JsonResponse(data, safe=False)
+
+
+
+class GestionarClipsView(LoginRequiredMixin, View):
+    def get(self, request):
+        clips = TwitchClip.objects.all()  # Obtener todos los clips
+        return render(request, 'staff/gestionar_clips.html', {'clips': clips})
+
+    def post(self, request):
+        nombre = request.POST.get('nombre')
+        url = request.POST.get('url')
+        activo = request.POST.get('activo') == 'on'  # Checkbox devuelve 'on' si está marcado
+
+        # Crear un nuevo clip
+        TwitchClip.objects.create(nombre=nombre, url=url, activo=activo)
+        messages.success(request, 'Clip guardado correctamente.')
+        return redirect('gestionar_clips')
+
+class CambiarEstadoClipView(LoginRequiredMixin, View):
+    def post(self, request, clip_id):
+        clip = get_object_or_404(TwitchClip, id=clip_id)
+        clip.activo = not clip.activo  # Cambiar el estado (activo/inactivo)
+        clip.save()
+        messages.success(request, f'Clip {"activado" if clip.activo else "desactivado"} correctamente.')
+        return redirect('gestionar_clips')
+
+class EliminarClipView(LoginRequiredMixin, View):
+    def post(self, request, clip_id):
+        clip = get_object_or_404(TwitchClip, id=clip_id)
+        clip.delete()  # Eliminar el clip de la base de datos
+        messages.success(request, 'Clip eliminado correctamente.')
+        return redirect('gestionar_clips')
