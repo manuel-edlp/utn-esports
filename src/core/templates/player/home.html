@@ -409,23 +409,31 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({ email: email })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                // Si la respuesta no es OK, lanza un error con el mensaje del servidor
+                return response.json().then(data => {
+                    throw new Error(data.error || data.warning || 'Hubo un error al enviar la invitación.');
+                });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 // Muestra un mensaje de éxito
-                mensajeExito.textContent = data.message || 'Invitación enviada correctamente.';
+                mensajeExito.textContent = data.success;
                 mensajeExito.style.display = 'block';
                 mensajeError.style.display = 'none';
             } else {
                 // Muestra un mensaje de error
-                mensajeError.textContent = data.message || 'Hubo un error al enviar la invitación.';
+                mensajeError.textContent = data.error || data.warning || 'Hubo un error al enviar la invitación.';
                 mensajeError.style.display = 'block';
                 mensajeExito.style.display = 'none';
             }
         })
         .catch(error => {
             // Muestra un mensaje de error en caso de fallo en la solicitud
-            mensajeError.textContent = 'Hubo un error al enviar la invitación.';
+            mensajeError.textContent = error.message;
             mensajeError.style.display = 'block';
             mensajeExito.style.display = 'none';
         })
