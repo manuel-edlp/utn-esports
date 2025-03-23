@@ -165,26 +165,31 @@ function mostrarIntegrantes(equipoId) {
         .then(response => response.json())
         .then(integrantes => {
             const listaIntegrantes = document.getElementById("lista-integrantes");
-            listaIntegrantes.innerHTML = "";
+            listaIntegrantes.innerHTML = ""; // Limpia la lista antes de agregar nuevos elementos
 
             integrantes.forEach(integrante => {
                 const li = document.createElement("li");
-                li.textContent = integrante.nombre;
-                if (integrante.esCapitan) {
-                    const badge = document.createElement("span");
-                    badge.className = "capitan-badge";
-                    badge.textContent = "Capitán";
-                    li.appendChild(badge);
-                }
+                li.innerHTML = `
+                    <div class="integrante-header">
+                        <hr>
+                            <strong>${integrante.nombre}</strong>
+                            ${integrante.esCapitan ? '<span class="capitan-badge">Capitán</span>' : ''}    
+                    </div>
+                    <div class="integrante-info">
+                        <span>Riot ID: ${integrante.riot_id || 'No disponible'}</span>
+                        <span>Correo: ${integrante.email || 'No disponible'}</span>
+                        <span>Telegram: ${integrante.telegram || 'No disponible'}</span>
+                    </div>
+                `;
                 listaIntegrantes.appendChild(li);
             });
 
             const modal = document.getElementById("modal-integrantes");
-            modal.style.display = "block";
+            modal.style.display = "block"; // Muestra el modal
         })
         .catch(error => console.error('Error:', error));
 }
-l
+
 function cerrarModal() {
     const modal = document.getElementById("modal-integrantes");
     modal.style.display = "none";

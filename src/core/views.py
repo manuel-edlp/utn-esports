@@ -659,7 +659,10 @@ class ObtenerIntegrantesView(LoginRequiredMixin, DetailView):
         data = [
             {
                 "nombre": f"{jugador.nombre} {jugador.apellido}",
-                "esCapitan": jugador == equipo.capitan
+                "esCapitan": jugador == equipo.capitan,
+                "riot_id": jugador.riot_id,
+                "email": jugador.email,
+                "telegram": jugador.telegram
             }
             for jugador in integrantes
         ]

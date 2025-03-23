@@ -261,10 +261,20 @@
 #lista-integrantes li {
     padding: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 }
+
+
+.integrante-header {
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.integrante-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
 
 #lista-integrantes li:last-child {
     border-bottom: none;
