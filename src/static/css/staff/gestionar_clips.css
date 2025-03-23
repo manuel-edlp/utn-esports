@@ -1,0 +1,281 @@
+body {
+    background-color: #121212;
+    color: #E0E0E0;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-volver-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.btn-volver {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2761c3;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-volver:hover {
+    background-color: #315594;
+}
+
+.clips-management-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #1E1E1E;
+    border-radius: 12px;
+}
+
+.clips-management-container h1, .clips-management-container h2 {
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 2rem;
+}
+
+.clips-search-filter-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+
+.clips-search-filter-container input,
+.clips-search-filter-container select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 2px solid #468aff;
+    background-color: #333;
+    color: white;
+    width: 80%;
+}
+
+.clips-management-container form {
+    background-color: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.clips-management-container form div {
+    margin-bottom: 15px;
+}
+
+.clips-management-container form label {
+    font-weight: bold;
+    color: #B0BEC5;
+}
+
+.clips-management-container form input[type="text"],
+.clips-management-container form input[type="url"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #468aff;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #333;
+    color: #E0E0E0;
+}
+
+#guardar-btn {
+    background-color: #30cf4b;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+#guardar-btn {
+    background-color: rgb(36, 163, 47);
+}
+
+.clip-item {
+    background-color: #252525;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.clip-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+
+.clip-name {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.clip-status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 80px;
+}
+
+.clip-status.clip-active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.clip-status.clip-inactive {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.clip-url-container {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.clip-url {
+    color: #468aff;
+    text-decoration: none;
+    margin-right: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}
+
+.clip-url:hover {
+    color: #80b3ff;
+}
+
+.clip-button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.clip-button-container .clip-toggle-btn {
+    background-color: #2761c3;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+}
+
+.clip-button-container .clip-toggle-btn:hover {
+    background-color: #315594;
+}
+
+.clip-button-container .clip-delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    font-size: 16px;
+}
+
+.clip-button-container .clip-delete-btn:hover {
+    background-color: #c0392b;
+}
+
+
+/* Estilos personalizados para el checkbox */
+input[type="checkbox"] {
+    appearance: none; /* Elimina el estilo por defecto */
+    width: 24px; /* Tamaño del checkbox */
+    height: 24px; /* Tamaño del checkbox */
+    border: 2px solid #468aff; /* Borde azul */
+    border-radius: 6px; /* Bordes redondeados */
+    background-color: #333; /* Fondo oscuro */
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+/* Estilo cuando el checkbox está marcado */
+input[type="checkbox"]:checked {
+    background-color: #468aff; /* Fondo azul cuando está marcado */
+    border-color: #468aff; /* Borde azul cuando está marcado */
+}
+
+/* Crear el "check" personalizado */
+input[type="checkbox"]::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    border-radius: 2px;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.2s ease;
+}
+
+input[type="checkbox"]:checked::before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+label[for="clip-activo"] {
+    font-weight: bold;
+    color: #B0BEC5;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+    .clips-search-filter-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .clip-item {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .clip-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .clip-url-container {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .clip-url {
+        display: inline-block;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .clip-button-container {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+}

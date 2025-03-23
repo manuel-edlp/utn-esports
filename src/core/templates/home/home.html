@@ -61,21 +61,13 @@
     <h2>Disfruta de nuestros clips en Twitch:</h2>
     <div class="carousel">
         <div class="carousel-container">
-            <div class="carousel-item active">
-                <div class="iframe-container">
-                    <iframe src="https://clips.twitch.tv/embed?clip=ObservantTenaciousKaleCorgiDerp-H9d9rJ5iiOc6Tc04&parent=127.0.0.1" allowfullscreen></iframe>
+            {% for clip in twitch_clips %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="iframe-container">
+                        <iframe src="{{ clip.get_embed_url }}" allowfullscreen></iframe>
+                    </div>
                 </div>
-            </div>
-            <div class="carousel-item">
-                <div class="iframe-container">
-                    <iframe src="https://clips.twitch.tv/embed?clip=HandsomeMotionlessMangoHeyGirl-q22ILkA-zLnEycY2&parent=127.0.0.1" allowfullscreen></iframe>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="iframe-container">
-                    <iframe src="https://clips.twitch.tv/embed?clip=AffluentEphemeralIguanaAliens-eDaYoSPM0_Xu2rlh&parent=127.0.0.1" allowfullscreen></iframe>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <button class="carousel-button prev" onclick="prevSlide()">❮</button>
         <button class="carousel-button next" onclick="nextSlide()">❯</button>

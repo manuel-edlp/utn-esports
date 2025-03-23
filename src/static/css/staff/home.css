@@ -8,6 +8,12 @@
     color: white;
 }
 
+.staff-home-container h1 {
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
 /* Barra de búsqueda y filtros */
 .filtros-busqueda {
     margin-bottom: 20px;
@@ -285,6 +291,23 @@ button:disabled {
     cursor: not-allowed;
 }
 
+
+.btn-gestionar-clips {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.btn-gestionar-clips:hover {
+    background-color: #45a049;
+}
+
 @media (max-width: 768px) {
     .staff-home-container {
         padding: 15px;
@@ -347,20 +370,23 @@ button:disabled {
 
     .botones-fila-superior {
         display: flex;
-        gap: 10px;
+        gap: 5px;
         width: 100%;
     }
 
     .btn-aprobar,
     .btn-revision,
     .btn-rechazar {
-        width: 48%;
-        margin-bottom: 0; 
+        flex: 1;
+        padding: 8px 10px;
+        font-size: 14px;
+        margin: 0;
         border-radius: 5px;
+        white-space: nowrap;
     }
 
     .btn-integrantes {
-        width: 100%;
+        width: auto;
         margin-bottom: 10px;
         border-radius: 5px;
     }

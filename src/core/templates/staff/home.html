@@ -8,8 +8,15 @@
 
 {% block main %}
 <div class="staff-home-container">
-    <h1>Panel de Staff - Gestión de Equipos</h1>
-
+    <h1>Panel de Staff</h1>
+    <hr>
+    <h2>Gestion de Clips</h2>
+    <!-- Botón para gestionar clips -->
+    <div class="gestionar-clips">
+        <a href="{% url 'gestionar_clips' %}" class="btn-gestionar-clips">Gestionar Clips</a>
+    </div>
+    <hr>
+    <h2>Gestion de Equipos</h2>
     <!-- Barra de busqueda y filtros -->
     <div class="filtros-busqueda">
         <form method="get" action="{% url 'staff_home' %}">
