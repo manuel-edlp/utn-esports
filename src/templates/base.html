@@ -33,12 +33,13 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <div class="navbar-nav ms-auto">
-          <a class="nav-link" href="/">Inicio</a>
-          <a class="nav-link" href="/#inscripcion">Inscripción</a>
-          <a class="nav-link" href="/#quienes-somos">¿Quiénes Somos?</a>
-          <a class="nav-link" href="{% url 'faq' %}">Preguntas Frecuentes</a>
-          <a class="nav-link" href="{% url 'sponsors' %}">Sponsors</a>
-          <a class="nav-link" href="#footer">Contacto</a>
+          <a class="nav-link" href="/" id="inicio-link">Inicio</a>
+          <a class="nav-link" href="/#inscripcion" id="inscripcion-link">Inscripción</a>
+          <a class="nav-link" href="/#quienes-somos" id="quienes-somos-link">¿Quiénes Somos?</a>
+          <a class="nav-link" href="{% url 'faq' %}" id="faq-link">Preguntas Frecuentes</a>
+          <a class="nav-link" href="{% url 'sponsors' %}" id="sponsors-link">Sponsors</a>
+          <a class="nav-link" href="#footer" id="contacto-link">Contacto</a>
+
 
           <!-- Verifica si el usuario está autenticado -->
           {% if request.user.is_authenticated %}
@@ -99,6 +100,59 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Función para aplicar la clase activa
+    function aplicarClaseActiva() {
+        const rutaActual = window.location.pathname;
+        const fragmentoActual = window.location.hash;
+
+        // Combina la ruta y el fragmento
+        const rutaCompleta = rutaActual + (fragmentoActual || '');
+
+        // Define un mapeo de rutas a IDs de enlaces
+        const rutas = {
+            '/': 'inicio-link',
+            '/#inscripcion': 'inscripcion-link',
+            '/#quienes-somos': 'quienes-somos-link',
+            '/faq/': 'faq-link',
+            '/sponsors/': 'sponsors-link',
+            '/#footer': 'contacto-link',
+            '#footer': 'contacto-link',
+        };
+
+        // Elimina la clase activa de todos los enlaces
+        document.querySelectorAll('.navbar .nav-link').forEach(function(enlace) {
+            enlace.classList.remove('active');
+        });
+
+        // Aplica la clase activa al enlace correspondiente
+        const enlaceActivoId = rutas[rutaCompleta] || rutas[fragmentoActual];
+        if (enlaceActivoId) {
+            const enlaceActivo = document.getElementById(enlaceActivoId);
+            enlaceActivo.classList.add('active');
+        }
+    }
+
+    // Ejecuta la función al cargar la página
+    aplicarClaseActiva();
+
+    // Ejecuta la función cuando cambia el fragmento
+    window.addEventListener('hashchange', aplicarClaseActiva);
+
+    document.querySelectorAll('.navbar .nav-link[href^="#"]').forEach(function(enlace) {
+        enlace.addEventListener('click', function(event) {
+            event.preventDefault();
+            const fragmento = this.getAttribute('href');
+            window.location.hash = fragmento;
+            aplicarClaseActiva();
+        });
+    });
+});
+  </script>
+
+
 </body>
 
 </html>

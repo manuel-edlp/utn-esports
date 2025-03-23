@@ -193,6 +193,14 @@ html {
     transition: width 0.3s ease-in-out;
   }
 
+  .navbar .nav-link.active {
+    color: white !important;
+    font-weight: bold;
+}
+  .navbar .nav-link.active:after {
+      width: 100%;
+  }
+
   .dropdown-menu {
     background-color: black !important;
     border: 1px solid #444;
@@ -256,6 +264,10 @@ html {
     .navbar-collapse.show {
       text-align: center;
     }
+
+    .navbar .nav-link.active:after {
+      width: 100%;
+  }
 
     .navbar-nav {
       display: flex;
