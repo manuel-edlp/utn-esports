@@ -16,6 +16,7 @@
 </section>
 
 <div id="video-banner" class="my-4">
+    <img src="{% static 'images/akali.png' %}" alt="Banner placeholder" class="banner-placeholder">
     <video autoplay loop muted playsinline class="w-100">
         <source src="{% static 'videos/akali-compres.mp4' %}" type="video/mp4">
         Tu navegador no soporta videos.
@@ -32,4 +33,33 @@
 </a>
 </section>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const videoBanner = document.getElementById('video-banner');
+      const bannerPlaceholder = videoBanner.querySelector('.banner-placeholder');
+      const bannerVideo = videoBanner.querySelector('video');
+  
+      // Cuando el video esté listo para reproducirse
+      bannerVideo.addEventListener('canplay', function() {
+          // Oculta la imagen de placeholder
+          bannerPlaceholder.style.display = 'none';
+  
+          // Muestra el video
+          bannerVideo.style.display = 'block';
+  
+          // Reproduce el video
+          bannerVideo.play();
+      });
+  
+      // Si el video ya está listo (por ejemplo, si se carga desde la caché)
+      if (bannerVideo.readyState >= 3) {  // 3 = HAVE_FUTURE_DATA, 4 = HAVE_ENOUGH_DATA
+          bannerPlaceholder.style.display = 'none';
+          bannerVideo.style.display = 'block';
+          bannerVideo.play();
+      }
+  
+      // Carga el video (por si acaso)
+      bannerVideo.load();
+  });
+    </script>
 {% endblock %}

@@ -14,6 +14,7 @@
 </section>
 
 <div id="video-banner" class="my-4">
+    <img src="{% static 'images/jinx-2.png' %}" alt="Banner placeholder" class="banner-placeholder">
     <video autoplay loop muted playsinline class="w-100">
         <source src="{% static 'videos/jinx-2-compres.mp4' %}" type="video/mp4">
         Tu navegador no soporta videos.
@@ -49,7 +50,7 @@
                     </div>
                 </div>
                 <div class="image">
-                    <img src="{% static 'images/card2.png' %}" alt="Juego 2">
+                    <img src="{% static 'images/katarina.jpg' %}" alt="Juego 2">
                 </div>
             </div>
             <div class="expandable">
@@ -85,7 +86,7 @@
                     </div>
                 </div>
                 <div class="image">
-                    <img src="{% static 'images/card1.png' %}" alt="Juego 4">
+                    <img src="{% static 'images/yone.jpg' %}" alt="Juego 4">
                 </div>
             </div>
             <div class="expandable">
@@ -107,5 +108,35 @@
         });
     });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const videoBanner = document.getElementById('video-banner');
+      const bannerPlaceholder = videoBanner.querySelector('.banner-placeholder');
+      const bannerVideo = videoBanner.querySelector('video');
+  
+      // Cuando el video esté listo para reproducirse
+      bannerVideo.addEventListener('canplay', function() {
+          // Oculta la imagen de placeholder
+          bannerPlaceholder.style.display = 'none';
+  
+          // Muestra el video
+          bannerVideo.style.display = 'block';
+  
+          // Reproduce el video
+          bannerVideo.play();
+      });
+  
+      // Si el video ya está listo (por ejemplo, si se carga desde la caché)
+      if (bannerVideo.readyState >= 3) {  // 3 = HAVE_FUTURE_DATA, 4 = HAVE_ENOUGH_DATA
+          bannerPlaceholder.style.display = 'none';
+          bannerVideo.style.display = 'block';
+          bannerVideo.play();
+      }
+  
+      // Carga el video (por si acaso)
+      bannerVideo.load();
+  });
+    </script>
 
 {% endblock %}
