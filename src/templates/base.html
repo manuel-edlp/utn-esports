@@ -78,9 +78,9 @@
             </ul>
           </div>
           {% else %}
-          <button id="iniciar-sesion-btn"class="glitch-button">
-            <a href="{% url 'login' %}"><span>Iniciar Sesión</span></a>
-          </button>
+          <a id="iniciar-sesion-btn" class="glitch-button" href="{% url 'login' %}">
+            <span>Iniciar Sesión</span>
+          </a>
           {% endif %}
 
         </div>

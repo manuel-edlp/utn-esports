@@ -24,6 +24,7 @@ html {
     background-color: #1e1e1ea8;
     margin-left: 40px;
     overflow: hidden;
+    text-decoration: none;
   }
 
   .glitch-button a {
