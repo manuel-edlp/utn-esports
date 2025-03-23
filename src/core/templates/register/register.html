@@ -113,6 +113,7 @@
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <input type="password" id="password" name="password" autocomplete="new-password" placeholder="Ingresa tu contraseña">
+                    <small class="form-text">La contraseña debe tener al menos 8 caracteres.</small>
                     {% if errors.password %}<span class="error">{{ errors.password }}</span>{% endif %}
                 </div>
                 <div class="form-group">

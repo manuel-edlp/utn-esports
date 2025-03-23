@@ -178,7 +178,9 @@ h3 {
 #pertenece-utn option:checked {
     background-color: #2781c3;
 }
-
+.form-text{
+    color: #ccc;
+}
 .error {
     margin-top: 5px;
     display: block;
