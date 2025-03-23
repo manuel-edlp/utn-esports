@@ -670,7 +670,7 @@ class ObtenerIntegrantesView(LoginRequiredMixin, DetailView):
 
 
 
-class GestionarClipsView(View):
+class GestionarClipsView(LoginRequiredMixin, View):
     def get(self, request):
         clips = TwitchClip.objects.all()  # Obtener todos los clips
         return render(request, 'staff/gestionar_clips.html', {'clips': clips})
@@ -685,7 +685,7 @@ class GestionarClipsView(View):
         messages.success(request, 'Clip guardado correctamente.')
         return redirect('gestionar_clips')
 
-class CambiarEstadoClipView(View):
+class CambiarEstadoClipView(LoginRequiredMixin, View):
     def post(self, request, clip_id):
         clip = get_object_or_404(TwitchClip, id=clip_id)
         clip.activo = not clip.activo  # Cambiar el estado (activo/inactivo)
@@ -693,7 +693,7 @@ class CambiarEstadoClipView(View):
         messages.success(request, f'Clip {"activado" if clip.activo else "desactivado"} correctamente.')
         return redirect('gestionar_clips')
 
-class EliminarClipView(View):
+class EliminarClipView(LoginRequiredMixin, View):
     def post(self, request, clip_id):
         clip = get_object_or_404(TwitchClip, id=clip_id)
         clip.delete()  # Eliminar el clip de la base de datos
