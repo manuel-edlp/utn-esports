@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views import View
-from .models import Equipo, EstadoAprobacion, Invitacion, Jugador
+from .models import Equipo, EstadoAprobacion, Invitacion, Jugador, TwitchClip
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -15,6 +15,12 @@ import re
 
 class Home(TemplateView):
     template_name = 'home/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # clips activos de Twitch
+        context['twitch_clips'] = TwitchClip.objects.filter(activo=True)
+        return context
 
 class Faq(TemplateView):
     template_name = 'faq/faq.html'
@@ -658,3 +664,35 @@ class ObtenerIntegrantesView(LoginRequiredMixin, DetailView):
             for jugador in integrantes
         ]
         return JsonResponse(data, safe=False)
+
+
+
+class GestionarClipsView(View):
+    def get(self, request):
+        clips = TwitchClip.objects.all()  # Obtener todos los clips
+        return render(request, 'staff/gestionar_clips.html', {'clips': clips})
+
+    def post(self, request):
+        nombre = request.POST.get('nombre')
+        url = request.POST.get('url')
+        activo = request.POST.get('activo') == 'on'  # Checkbox devuelve 'on' si está marcado
+
+        # Crear un nuevo clip
+        TwitchClip.objects.create(nombre=nombre, url=url, activo=activo)
+        messages.success(request, 'Clip guardado correctamente.')
+        return redirect('gestionar_clips')
+
+class CambiarEstadoClipView(View):
+    def post(self, request, clip_id):
+        clip = get_object_or_404(TwitchClip, id=clip_id)
+        clip.activo = not clip.activo  # Cambiar el estado (activo/inactivo)
+        clip.save()
+        messages.success(request, f'Clip {"activado" if clip.activo else "desactivado"} correctamente.')
+        return redirect('gestionar_clips')
+
+class EliminarClipView(View):
+    def post(self, request, clip_id):
+        clip = get_object_or_404(TwitchClip, id=clip_id)
+        clip.delete()  # Eliminar el clip de la base de datos
+        messages.success(request, 'Clip eliminado correctamente.')
+        return redirect('gestionar_clips')

@@ -32,6 +32,10 @@ urlpatterns = [
     path('staff/home/', views.StaffHomeView.as_view(), name='staff_home'),
     path('staff/obtener_integrantes/<int:equipo_id>/', views.ObtenerIntegrantesView.as_view(), name='obtener_integrantes'),
 
+    # Clips Twitch
+    path('staff/gestionar_clips/', views.GestionarClipsView.as_view(), name='gestionar_clips'),
+    path('staff/cambiar_estado_clip/<int:clip_id>/', views.CambiarEstadoClipView.as_view(), name='cambiar_estado_clip'),
+    path('staff/eliminar_clip/<int:clip_id>/', views.EliminarClipView.as_view(), name='eliminar_clip'),
 ]
 
 
