@@ -3,26 +3,22 @@ from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Equipo, Invitacion, Jugador
-import asyncio
+from threading import Thread
 
-async def enviar_correo_asincrono(subject, body, recipient_list):
-    """
-    Envía un correo electrónico de manera asíncrona.
-    """
-    send_mail(
-        subject=subject,
-        message=body,
-        html_message=body,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=recipient_list,
-    )
+def enviar_correo_thread(subject, body, recipient_list):
+    def _send():
+        send_mail(
+            subject=subject,
+            message=body,
+            html_message=body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=recipient_list,
+        )
+    Thread(target=_send).start()
 
 @receiver(post_save, sender=Jugador)
 def enviar_correo_bienvenida(sender, instance, created, **kwargs):
-    """
-    Envía un correo de bienvenida cuando se crea un nuevo jugador.
-    """
-    if created:  # Solo si es un nuevo jugador
+    if created:
         subject = "¡Bienvenido a Torneo Esports!"
         body = f"""
         <h1>Hola {instance.nombre},</h1>
@@ -42,14 +38,11 @@ def enviar_correo_bienvenida(sender, instance, created, **kwargs):
             Saludos, el<strong> Equipo del Torneo Liga Leyendas del Sur</strong>
         </p>
         """
-        asyncio.run(enviar_correo_asincrono(subject, body, [instance.email]))
+        enviar_correo_thread(subject, body, [instance.email])
 
 @receiver(post_save, sender=Invitacion)
 def enviar_correo_invitacion(sender, instance, created, **kwargs):
-    """
-    Envía un correo de invitación cuando se crea una nueva invitación.
-    """
-    if created:  # Solo si es una nueva invitación
+    if created:
         equipo = instance.equipo
         jugador_invitado = instance.jugador_invitado
 
@@ -69,30 +62,21 @@ def enviar_correo_invitacion(sender, instance, created, **kwargs):
             Saludos, el<strong> Equipo del Torneo Liga Leyendas del Sur</strong>
         </p>
         """
-        asyncio.run(enviar_correo_asincrono(subject, body, [jugador_invitado.email]))
+        enviar_correo_thread(subject, body, [jugador_invitado.email])
 
 @receiver(pre_save, sender=Equipo)
 def capturar_estado_original(sender, instance, **kwargs):
-    """
-    Captura el valor original de estadoAprobacion antes de guardar el objeto.
-    """
-    if instance.pk:  # Verifica si el objeto ya existe en la base de datos
+    if instance.pk:
         original = Equipo.objects.get(pk=instance.pk)
         instance._original_estadoAprobacion = original.estadoAprobacion
     else:
-        instance._original_estadoAprobacion = None  # Si es un nuevo objeto
+        instance._original_estadoAprobacion = None
 
 @receiver(post_save, sender=Equipo)
 def enviar_correo_cambio_estado(sender, instance, **kwargs):
-    """
-    Envía un correo a todos los integrantes del equipo cuando el estado de aprobación cambia.
-    """
     if hasattr(instance, '_original_estadoAprobacion') and instance._original_estadoAprobacion is not None:
-        if instance.estadoAprobacion != instance._original_estadoAprobacion:  # Verifica si el estado cambió
-            # Obtiene la lista de integrantes del equipo
-            integrantes = Jugador.objects.filter(equipo=instance)  # Filtra los jugadores del equipo
-
-            # Envía el correo a cada integrante
+        if instance.estadoAprobacion != instance._original_estadoAprobacion:
+            integrantes = Jugador.objects.filter(equipo=instance)
             for jugador in integrantes:
                 subject = f"Estado de aprobación actualizado: {instance.estadoAprobacion}"
                 body = f"""
@@ -122,4 +106,4 @@ def enviar_correo_cambio_estado(sender, instance, **kwargs):
                     Saludos, el<strong> Equipo del Torneo Liga Leyendas del Sur</strong>
                 </p>
                 """
-                asyncio.run(enviar_correo_asincrono(subject, body, [jugador.email]))
+                enviar_correo_thread(subject, body, [jugador.email])
