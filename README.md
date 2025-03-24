@@ -4,6 +4,7 @@
 
 Este proyecto, desarrollado con Django, es una plataforma web diseñada para gestionar las inscripciones al torneo, Liga Leyendas del Sur, un torneo de Esports organizado por la UTN FRLP. Permite a los participantes inscribirse al torneo y armar su equipo de competición. Y a los miembros coordinadores gestionar las inscripciones de los equipos.
 
+
 ### Tecnologías Utilizadas
 
 * **Framework:** Django 5.1.2
