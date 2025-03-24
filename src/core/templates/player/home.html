@@ -54,7 +54,7 @@
                 <ul class="members-list">
                     {% for jugador in equipo.miembros.all %}
                     <li>
-                        {{ jugador.nombre }} {{ jugador.apellido }}
+                        {{ jugador.riot_id }}
                         {% if jugador == equipo.capitan %}
                             <span class="capitan-badge">capitán</span>
                         {% endif %}
