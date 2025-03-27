@@ -12,6 +12,10 @@ body::before {
     z-index: -1;
 }
 
+.link{
+    color: white;
+}
+
 /* Estilo para el banner de video */
 #video-banner {
     width: 100%;
