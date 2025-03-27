@@ -114,6 +114,17 @@
     animation: slide-in-top 0.3s both;
 }
 
+.containerTiktok:hover {
+    background-color: #FE2C55;
+    transition-duration: .3s;
+}
+
+.tiktokSvg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+}
+
 @keyframes slide-in-top {
     0% {
         transform: translateY(-50px);
