@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+import os
+from uuid import uuid4
 
 
 class EstadoAprobacion(models.TextChoices):
@@ -44,6 +46,15 @@ class Usuario(models.Model):
         abstract = True
 
 
+def generar_ruta_unica_jugador(instance, filename):
+    # Extraer la extensión del archivo
+    ext = filename.split('.')[-1]
+    # Crear un nombre de archivo único usando UUID
+    filename = '{}.{}'.format(uuid4(), ext)
+    # Devolver la ruta completa donde se almacenará la imagen
+    return os.path.join('fotos', filename)
+
+
 class Jugador(Usuario):
     # Relacion con el modelo User de Django
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='jugador')
@@ -52,7 +63,7 @@ class Jugador(Usuario):
     telefono = models.CharField(max_length=40)
     telegram = models.CharField(max_length=40)
     pais = models.CharField(max_length=40)
-    foto = models.ImageField(upload_to='fotos/', null=True)
+    foto = models.ImageField(upload_to=generar_ruta_unica_jugador, null=True)
     legajo = models.CharField(max_length=40, blank=True ,null=True)
 
     # Datos de Riot
@@ -79,11 +90,29 @@ class Staff(Usuario):
         return f"{self.nombre} {self.apellido}"
 
 
+def generar_ruta_unica_logo(instance, filename):
+    # Extraer la extensión del archivo
+    ext = filename.split('.')[-1]
+    # Crear un nombre de archivo único usando UUID
+    filename = '{}.{}'.format(uuid4(), ext)
+    # Devolver la ruta completa donde se almacenará la imagen
+    return os.path.join('logo', filename)
+
+
+def generar_ruta_unica_comprobante(instance, filename):
+    # Extraer la extensión del archivo
+    ext = filename.split('.')[-1]
+    # Crear un nombre de archivo único usando UUID
+    filename = '{}.{}'.format(uuid4(), ext)
+    # Devolver la ruta completa donde se almacenará la imagen
+    return os.path.join('comprobantes', filename)
+
 class Equipo(models.Model):
     nombre = models.CharField(max_length=40, unique=True)
     abreviatura = models.CharField(max_length=10)
-    logo = models.ImageField(upload_to='logos/')
-    comprobante_pago = models.ImageField(upload_to='comprobantes/')
+    logo = models.ImageField(upload_to=generar_ruta_unica_logo)
+    comprobante_pago = models.ImageField(
+        upload_to=generar_ruta_unica_comprobante)
     estadoAprobacion = models.CharField(
         max_length=20,
         choices=EstadoAprobacion.choices,
