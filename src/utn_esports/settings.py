@@ -32,8 +32,8 @@ DEBUG = env.bool('DEBUG')
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
-if env('DEBUG') == True:
-    CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1']
+if env('DEBUG') == False:
+    CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1','https://esports.frlp.utn.edu.ar']
 
 SESSION_COOKIE_AGE = 60*60*1  # 1 hs
 
