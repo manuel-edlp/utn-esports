@@ -154,7 +154,7 @@ STATIC_ROOT = BASE_DIR / 'public/static'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Configuración para archivos multimedia
 MEDIA_URL = '/media/'  # URL base para servir archivos multimedia
