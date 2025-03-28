@@ -134,3 +134,31 @@ body::before {
 .alert-error-formato p {
     color: black;
 }
+
+.comprobante-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-delete {
+    background-color: #dd342e;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-delete i {
+    color: white;
+    font-size: 16px;
+}
+
+.btn-delete:hover {
+    background-color: #c9302c;
+}

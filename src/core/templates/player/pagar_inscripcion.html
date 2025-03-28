@@ -35,14 +35,27 @@
                     <strong>CBU:</strong> 0000003100065678901234
                 </p>
                 
-                <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/jpeg, image/jpg, image/png, application/zip, .rar">
-                
                 {% if equipo.comprobante_pago %}
                     <div class="comprobante-previo">
                         <p style="margin-bottom: 0;"><strong>Comprobante cargado:</strong></p>
-                        <a href="{{ equipo.comprobante_pago.url }}" target="_blank"> {{ equipo.comprobante_pago.name|basename }}</a>
+                        <div class="comprobante-wrapper">
+                            <span id="comprobante-nombre">
+                                <a id="comprobante-link" href="{{ equipo.comprobante_pago.url }}" target="_blank">
+                                    {{ equipo.comprobante_pago.name|basename }}
+                                </a>
+                            </span>
+                            <button type="button" id="eliminar-comprobante" class="btn-delete">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
                     </div>
                 {% endif %}
+            
+                <p id="mensaje-vacio" style="display: none; color: #ccc;">No hay ningún comprobante cargado aún.</p>
+            
+                <input type="file" id="comprobante_pago" name="comprobante_pago" accept="image/jpeg, image/jpg, image/png, application/zip, .rar"
+                    {% if equipo.comprobante_pago %}disabled{% endif %}>
+
             </div>
 
             {% if messages %}
@@ -63,5 +76,31 @@
         </form>
     </div>
 </section>
+
+<script>
+    // Script para manejar la habilitación del input de archivo
+    document.addEventListener("DOMContentLoaded", function () {
+        const btnEliminar = document.getElementById("eliminar-comprobante");
+        const comprobanteNombre = document.getElementById("comprobante-nombre");
+        const mensajeVacio = document.getElementById("mensaje-vacio");
+        const inputArchivo = document.getElementById("comprobante_pago");
+    
+        if (btnEliminar) {
+            btnEliminar.addEventListener("click", function () {
+                // Oculta el nombre del archivo y boton de eliminar
+                comprobanteNombre.style.display = "none";
+                btnEliminar.style.display = "none";
+    
+                // Muestra el mensaje de que no hay nada cargado
+                mensajeVacio.style.display = "block";
+    
+                // Habilita el input de archivo
+                inputArchivo.disabled = false;
+            });
+        }
+    });
+    </script>
+    
+
 
 {% endblock %}
