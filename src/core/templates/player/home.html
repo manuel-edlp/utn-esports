@@ -37,7 +37,14 @@
                     </span>
                 </p>                
                 <div class="card-actions">
-                    <a href="{% url 'pagar_inscripcion' equipo.id %}" class="btn btn-pay"><i class="fas fa-credit-card"></i> Pagar</a>
+                    <a href="{% url 'pagar_inscripcion' equipo.id %}" 
+                        class="btn btn-pay {% if equipo.estadoAprobacion != 'Pago pendiente' %}disabled-pay{% endif %}" 
+                        {% if equipo.estadoAprobacion != 'Pago pendiente' %} 
+                            onclick="return false;"
+                        {% endif %}>
+                        <i class="fas fa-credit-card"></i> Pagar
+                    </a>
+
                     <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Editar</a>
                     <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
                         data-equipo-nombre="{{ equipo.nombre }}" onclick="mostrarModalAbandonar(this)"><i class="fas fa-sign-out-alt"></i> Abandonar</button>
