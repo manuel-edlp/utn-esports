@@ -158,7 +158,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Configuración para archivos multimedia
 MEDIA_URL = '/media/'  # URL base para servir archivos multimedia
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ruta en el sistema de archivos donde se almacenan los archivos multimedia
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')  # Ruta en el sistema de archivos donde se almacenan los archivos multimedia
 
 
 # Default primary key field type
