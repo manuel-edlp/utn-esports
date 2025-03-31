@@ -16,7 +16,9 @@
     <p class="consejo">Para participar en el torneo, uno de los integrantes deberá registrar el equipo e invitar a sus compañeros. Quien realice esta acción será designado como capitán y asumirá las responsabilidades como tal, establecidas en el<a id="link-reglamento"
         href="{% url 'reglamento' %}" target="_blank"> reglamento oficial del torneo</a>. Si has recibido una invitación, revisa la sección 'Invitaciones Pendientes' y acéptala para unirte.</p>
     {% else %}
-    <p class="consejo">Recuerda que para poder participar en el torneo, tu equipo debe ser aprobado por los administradores. Para esto, deberás realizar el pago correspondiente y enviar el comprobante de pago tocando el boton 'Pagar'. Una vez enviado podrás hacer el seguimiento del estado de tu equipo viendo el 'Estado de aprobación'.</p>
+    <p class="consejo">Recuerda que para poder participar en el torneo, tu equipo debe ser aprobado por los administradores. Para esto, deberás realizar el pago correspondiente y enviar el comprobante de pago tocando el boton 'Pagar'. Una vez enviado podrás hacer el seguimiento del estado de tu equipo viendo el 'Estado de aprobación'.
+        Te avisaremos cuando la seccion de Pagos se habilite para que puedas realizar el pago.
+    </p>
     {% endif %}
 
     <!-- Muestra el equipo creado -->
@@ -37,13 +39,13 @@
                     </span>
                 </p>                
                 <div class="card-actions">
-                    <a href="{% url 'pagar_inscripcion' equipo.id %}" 
+                    <!-- <a href="{% url 'pagar_inscripcion' equipo.id %}" 
                         class="btn btn-pay {% if equipo.estadoAprobacion != 'Pago pendiente' %}disabled-pay{% endif %}" 
                         {% if equipo.estadoAprobacion != 'Pago pendiente' %} 
                             onclick="return false;"
                         {% endif %}>
                         <i class="fas fa-credit-card"></i> Pagar
-                    </a>
+                    </a> -->
 
                     <a href="{% url 'editar_equipo' equipo.id %}" class="btn btn-edit"><i class="fas fa-edit"></i> Editar</a>
                     <button class="btn btn-delete" id="btn-abandonar" data-equipo-id="{{ equipo.id }}"
