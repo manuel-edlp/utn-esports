@@ -28,12 +28,20 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG')
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+allowed_hosts = env.list('ALLOWED_HOSTS', default=[])
+render_external_hostname = env('RENDER_EXTERNAL_HOSTNAME', default='')
+if render_external_hostname:
+    allowed_hosts.append(render_external_hostname)
 
-if env('DEBUG') == False:
-    CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1','https://esports.frlp.utn.edu.ar']
+ALLOWED_HOSTS = allowed_hosts
+
+if not DEBUG:
+    csrf_trusted_origins = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+    if render_external_hostname:
+        csrf_trusted_origins.append(f'https://{render_external_hostname}')
+    CSRF_TRUSTED_ORIGINS = csrf_trusted_origins
 
 SESSION_COOKIE_AGE = 60*60*1  # 1 hs
 
@@ -55,6 +63,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -90,9 +99,7 @@ WSGI_APPLICATION = 'utn_esports.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-
-
-if env('DEBUG') == True:
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -100,19 +107,23 @@ if env('DEBUG') == True:
         }
     }
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': env('DATABASE_NAME'),
-            'USER': env('DATABASE_USER'),
-            'PASSWORD': env('DATABASE_PASS'),
-            'HOST': env('DATABASE_HOST'),
-            'PORT': env('DATABASE_PORT'),
-            'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-            },
+    database_url = env('DATABASE_URL', default='')
+    if database_url:
+        DATABASES = {
+            'default': env.db('DATABASE_URL')
         }
-    }
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': env('DATABASE_NAME', default=''),
+                'USER': env('DATABASE_USER', default=''),
+                'PASSWORD': env('DATABASE_PASS', default=''),
+                'HOST': env('DATABASE_HOST', default=''),
+                'PORT': env('DATABASE_PORT', default=''),
+            }
+        }
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -154,7 +165,7 @@ STATIC_ROOT = BASE_DIR / 'public/static'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Configuración para archivos multimedia
 MEDIA_URL = '/media/'  # URL base para servir archivos multimedia
