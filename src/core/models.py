@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 import os
-from uuid import uuid4
+from uuid import uuid4    
+from urllib.parse import urlparse
 
 
 class EstadoAprobacion(models.TextChoices):
@@ -132,7 +133,8 @@ class Invitacion(models.Model):
 
     def __str__(self):
         return f"Invitación a {self.jugador_invitado} para unirse a {self.equipo}"
-    
+
+
 class TwitchClip(models.Model):
     nombre = models.CharField(max_length=100, help_text="Nombre descriptivo del clip")
     url = models.URLField(help_text="URL completa del clip de Twitch")
@@ -143,7 +145,17 @@ class TwitchClip(models.Model):
 
     def get_embed_url(self):
         """
-        Convierte la URL del clip en un formato compatible con el iframe de Twitch.
+        Extrae el ID del clip y configura el parent para Render y Local.
         """
-        clip_id = self.url.split('/')[-1]  # Extrae el ID del clip de la URL
-        return f"https://clips.twitch.tv/embed?clip={clip_id}&parent=127.0.0.1"
+        # 1. Extraer el ID del clip (funciona con m.twitch.tv y clips.twitch.tv)
+        path = urlparse(self.url).path
+        clip_id = path.split('/')[-1]
+
+        # 2. Configurar el dominio permitido (Parent)
+        # Priorizamos el dominio de Render si existe, sino usamos el de local.
+        if os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
+            parent_domain = "utn-esports.onrender.com"
+        else:
+            parent_domain = "127.0.0.1"
+        
+        return f"https://clips.twitch.tv/embed?clip={clip_id}&parent={parent_domain}&autoplay=false"
