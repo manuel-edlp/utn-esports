@@ -1,4 +1,5 @@
 import json
+import os
 from django.db import DatabaseError
 from django.forms import ValidationError
 from django.http import JsonResponse
@@ -16,13 +17,42 @@ import re
 from django.utils.decorators import method_decorator
 from .mixins import StaffRequiredMixin
 
+
+class FallbackTwitchClip:
+    def __init__(self, nombre, url):
+        self.nombre = nombre
+        self.url = url
+
+    def get_embed_url(self):
+        clip_id = self.url.rstrip('/').split('/')[-1]
+        parent_domain = "utn-esports.onrender.com" if os.environ.get('RENDER_EXTERNAL_HOSTNAME') else "127.0.0.1"
+        return f"https://clips.twitch.tv/embed?clip={clip_id}&parent={parent_domain}&autoplay=false"
+
+
+FALLBACK_TWITCH_CLIPS = [
+    FallbackTwitchClip(
+        "Clip destacado 1",
+        "https://m.twitch.tv/elxokas/clip/DifficultCrazyWaspPastaThat-WBnFFGO3V_23BwB2",
+    ),
+    FallbackTwitchClip(
+        "Clip destacado 2",
+        "https://m.twitch.tv/elxokas/clip/CourageousHyperSeahorseMingLee-LE7ecd3KDEOgDYqo",
+    ),
+]
+
+
 class Home(TemplateView):
     template_name = 'home/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # clips activos de Twitch
-        context['twitch_clips'] = TwitchClip.objects.filter(activo=True)
+        # Intentamos usar los clips de la BD; si falla o no hay registros, usamos un fallback fijo.
+        try:
+            twitch_clips = list(TwitchClip.objects.filter(activo=True))
+        except DatabaseError:
+            twitch_clips = []
+
+        context['twitch_clips'] = twitch_clips or FALLBACK_TWITCH_CLIPS
         return context
 
 class Faq(TemplateView):
